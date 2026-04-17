@@ -19,7 +19,10 @@ def login():
     if user:
         # User role: 'admin' = Admin
         if user.G5_VaiTro == 'admin':
-            token = create_access_token(identity=user.G5_Email)
+            token = create_access_token(
+                identity=user.G5_Email,
+                additional_claims={"vai_tro": user.G5_VaiTro}
+            )
             return jsonify({
                 "status": "success",
                 "data": {
