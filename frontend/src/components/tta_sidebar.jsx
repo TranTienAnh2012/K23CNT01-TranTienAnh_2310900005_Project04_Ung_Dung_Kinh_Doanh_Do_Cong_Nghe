@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const navItems = [
   { to: '/admin/dashboard', icon: '📊', label: 'Tổng quan' },
@@ -11,6 +12,14 @@ const navItems = [
 ];
 
 export default function TtaSidebar() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -43,7 +52,7 @@ export default function TtaSidebar() {
             <div className="user-role">admin</div>
           </div>
         </div>
-        <button className="logout-btn">
+        <button className="logout-btn" onClick={handleLogout}>
           <span>🚪</span> Đăng xuất
         </button>
       </div>
