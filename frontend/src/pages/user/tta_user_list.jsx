@@ -48,8 +48,8 @@ export default function TtaUserList() {
                   <td><strong>{u.HoTen}</strong></td>
                   <td>{u.Email}</td>
                   <td>
-                    <span className={`role-badge ${u.VaiTro === 1 ? 'admin' : 'user'}`}>
-                      {u.VaiTro === 1 ? 'Quản trị viên' : 'Khách hàng'}
+                    <span className={`role-badge ${u.VaiTro === 'admin' ? 'admin' : 'user'}`}>
+                      {u.VaiTro === 'admin' ? 'Quản trị viên' : 'Khách hàng'}
                     </span>
                   </td>
                   <td>{new Date(u.NgayDangKy).toLocaleDateString('vi-VN')}</td>

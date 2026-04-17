@@ -8,22 +8,25 @@ from app.db.database import engine
 def get_all(params=None):
     with engine.connect() as conn:
         query = """
-            SELECT ct.*, sp.TenSanPham, sp.HinhAnh, dh.HoTenNguoiNhan, dh.NgayDatHang
+            SELECT ct.G5_MaChiTiet AS MaChiTiet, ct.G5_MaDonHang AS MaDonHang, 
+                   ct.G5_MaSanPham AS MaSanPham, ct.G5_SoLuong AS SoLuong,
+                   sp.G5_TenSanPham AS TenSanPham, sp.G5_HinhAnh AS HinhAnh, sp.G5_GiaBan AS DonGia,
+                   dh.G5_HoTenNguoiNhan AS HoTenNguoiNhan, dh.G5_NgayDatHang AS NgayDatHang
             FROM G5_chitietdonhang ct
-            JOIN G5_sanpham sp ON ct.MaSanPham = sp.MaSanPham
-            JOIN G5_donhang dh ON ct.MaDonHang = dh.MaDonHang
+            JOIN G5_sanpham sp ON ct.G5_MaSanPham = sp.G5_MaSanPham
+            JOIN G5_donhang dh ON ct.G5_MaDonHang = dh.G5_MaDonHang
             WHERE 1=1
         """
         args = {}
         if params:
             if params.get("ma_don_hang"):
-                query += " AND ct.MaDonHang = :ma_don"
+                query += " AND ct.G5_MaDonHang = :ma_don"
                 args["ma_don"] = params["ma_don_hang"]
             if params.get("q"):
-                query += " AND (sp.TenSanPham LIKE :q OR CAST(ct.MaDonHang AS VARCHAR) LIKE :q)"
+                query += " AND (sp.G5_TenSanPham LIKE :q OR CAST(ct.G5_MaDonHang AS VARCHAR) LIKE :q)"
                 args["q"] = f"%{params['q']}%"
         
-        query += " ORDER BY dh.NgayDatHang DESC"
+        query += " ORDER BY dh.G5_NgayDatHang DESC"
         result = conn.execute(text(query), args)
         items = [dict(row._mapping) for row in result]
         
@@ -33,10 +36,12 @@ def get_all(params=None):
 def get_by_id(ma):
     with engine.connect() as conn:
         query = """
-            SELECT ct.*, sp.TenSanPham, sp.Gia 
+            SELECT ct.G5_MaChiTiet AS MaChiTiet, ct.G5_MaDonHang AS MaDonHang, 
+                   ct.G5_MaSanPham AS MaSanPham, ct.G5_SoLuong AS SoLuong,
+                   sp.G5_TenSanPham AS TenSanPham, sp.G5_GiaBan AS gia_goc
             FROM G5_chitietdonhang ct
-            JOIN G5_sanpham sp ON ct.MaSanPham = sp.MaSanPham
-            WHERE ct.MaChiTiet = :ma
+            JOIN G5_sanpham sp ON ct.G5_MaSanPham = sp.G5_MaSanPham
+            WHERE ct.G5_MaChiTiet = :ma
         """
         row = conn.execute(text(query), {"ma": ma}).first()
         return dict(row._mapping) if row else None
