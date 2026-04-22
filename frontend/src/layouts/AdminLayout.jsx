@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import TtaSidebar from './tta_sidebar';
+import TtaSidebar from '../components/tta_sidebar';
 
 const pageTitles = {
   '/admin/dashboard': { title: 'Tổng quan', sub: 'Chào mừng trở lại!' },

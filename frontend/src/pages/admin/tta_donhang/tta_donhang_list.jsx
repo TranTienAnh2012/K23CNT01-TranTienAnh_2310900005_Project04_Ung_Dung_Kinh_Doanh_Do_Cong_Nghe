@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { donhangApi } from '../../api/tta_api';
+import { donhangApi } from '../../../api/tta_api';
 
 export default function TtaDonHangList() {
   const [data, setData] = useState({ orders: [], total: 0 });

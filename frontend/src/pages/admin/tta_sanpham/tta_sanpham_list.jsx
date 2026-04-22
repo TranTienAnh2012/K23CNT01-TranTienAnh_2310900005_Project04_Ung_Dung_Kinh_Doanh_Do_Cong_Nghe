@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { sanphamApi } from '../../api/tta_api';
+import { sanphamApi } from '../../../api/tta_api';
 
 export default function TtaSanPhamList() {
   const [products, setProducts] = useState([]);

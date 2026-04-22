@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { giatrithuoctinhApi, sanphamApi } from '../../api/tta_api';
+import { giatrithuoctinhApi, sanphamApi } from '../../../api/tta_api';
 
 export default function TtaGiaTriThuocTinhList() {
   const [values, setValues] = useState([]);

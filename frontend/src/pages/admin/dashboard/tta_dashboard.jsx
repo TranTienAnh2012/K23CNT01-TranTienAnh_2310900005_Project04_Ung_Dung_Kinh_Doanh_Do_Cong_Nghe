@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { sanphamApi, userApi, donhangApi, giatrithuoctinhApi } from '../../api/tta_api';
+import { sanphamApi, userApi, donhangApi, giatrithuoctinhApi } from '../../../api/tta_api';
 
 export default function TtaDashboard() {
   const [stats, setStats] = useState({

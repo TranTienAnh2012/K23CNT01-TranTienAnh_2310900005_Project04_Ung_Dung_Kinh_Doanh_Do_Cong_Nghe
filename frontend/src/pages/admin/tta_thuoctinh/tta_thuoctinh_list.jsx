@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { thuoctinhApi } from '../../api/tta_api';
+import { thuoctinhApi } from '../../../api/tta_api';
 
 export default function TtaThuocTinhList() {
   const [attributes, setAttributes] = useState([]);

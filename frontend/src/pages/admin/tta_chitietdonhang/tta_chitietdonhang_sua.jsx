@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { chitietApi } from '../../api/tta_api';
+import { chitietApi } from '../../../api/tta_api';
 
 export default function TtaChiTietDonHangSua() {
   const { ma } = useParams();

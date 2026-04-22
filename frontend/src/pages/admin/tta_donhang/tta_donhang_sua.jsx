@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from '../../api/tta_axios';
+import axios from '../../../api/tta_axios';
 
 export default function TtaDonHangSua() {
   const { ma } = useParams();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { danhmucApi } from '../../api/tta_api';
+import { danhmucApi } from '../../../api/tta_api';
 
 export default function TtaDanhMucList() {
   const [categories, setCategories] = useState([]);

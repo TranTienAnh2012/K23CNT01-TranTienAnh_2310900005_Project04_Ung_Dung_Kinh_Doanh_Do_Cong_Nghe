@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { donhangApi } from '../../api/tta_api';
+import { donhangApi } from '../../../api/tta_api';
 
 export default function TtaDonHangThem() {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { sanphamApi, giatrithuoctinhApi, danhmucThuoctinhApi } from '../../api/tta_api';
+import { sanphamApi, giatrithuoctinhApi, danhmucThuoctinhApi } from '../../../api/tta_api';
 
 export default function TtaGiaTriThuocTinhThem() {
   const navigate = useNavigate();

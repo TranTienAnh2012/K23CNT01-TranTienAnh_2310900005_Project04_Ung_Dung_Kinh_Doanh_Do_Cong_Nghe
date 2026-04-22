@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { chitietApi } from '../../api/tta_api';
+import { chitietApi } from '../../../api/tta_api';
 
 export default function TtaChiTietDonHangList() {
   const [data, setData] = useState({ items: [], total: 0 });

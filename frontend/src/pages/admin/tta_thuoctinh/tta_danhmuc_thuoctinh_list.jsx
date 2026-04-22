@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { danhmucThuoctinhApi, danhmucApi } from '../../api/tta_api';
+import { danhmucThuoctinhApi, danhmucApi } from '../../../api/tta_api';
 
 export default function TtaDanhMucThuocTinhList() {
   const [mappings, setMappings] = useState([]);

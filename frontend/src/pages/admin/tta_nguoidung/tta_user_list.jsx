@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { userApi } from '../../api/tta_api';
+import { userApi } from '../../../api/tta_api';
 
 export default function TtaUserList() {
   const [users, setUsers] = useState([]);

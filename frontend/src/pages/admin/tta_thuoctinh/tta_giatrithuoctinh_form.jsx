@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { sanphamApi, danhmucThuoctinhApi, giatrithuoctinhApi } from '../../api/tta_api';
+import { sanphamApi, danhmucThuoctinhApi, giatrithuoctinhApi } from '../../../api/tta_api';
 
 export default function TtaGiaTriThuocTinhForm() {
   const { ma } = useParams();
