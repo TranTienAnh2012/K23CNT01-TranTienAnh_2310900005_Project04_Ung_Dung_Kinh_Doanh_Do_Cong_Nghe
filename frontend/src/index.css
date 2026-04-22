@@ -197,3 +197,114 @@ td {
 
 .status-pill.active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
 .status-pill.inactive { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+/* Premium Specs UI */
+.specs-product-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+  overflow: hidden;
+  border: 1px solid #edf2f7;
+}
+
+.specs-card-header {
+  background: #f8fafc;
+  padding: 15px 20px;
+  border-bottom: 1px solid #edf2f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.specs-product-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.specs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.specs-table th {
+  background: white !important;
+  color: #718096 !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 20px !important;
+  text-align: left;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.specs-table td {
+  padding: 12px 20px !important;
+  border-bottom: 1px solid #f7fafc !important;
+  color: #4a5568 !important;
+}
+
+.attr-tag {
+  background: #ebf8ff;
+  color: #3182ce;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.bulk-form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.template-suggestions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.template-btn {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #4a5568;
+}
+
+.template-btn:hover {
+  border-color: #3182ce;
+  background: #f0f9ff;
+  color: #3182ce;
+}
+
+.template-btn i {
+  font-size: 20px;
+}
+
+.template-btn.laptop { border-left: 4px solid #3182ce; }
+.template-btn.phone { border-left: 4px solid #38a169; }
+.template-btn.audio { border-left: 4px solid #d69e2e; }
+
+.badge-count {
+  background: #3182ce;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+}
