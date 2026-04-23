@@ -5,3 +5,6 @@ flask-cors
 pyodbc
 sqlalchemy
 python-dotenv
+marshmallow
+flask-marshmallow
+flask-restful

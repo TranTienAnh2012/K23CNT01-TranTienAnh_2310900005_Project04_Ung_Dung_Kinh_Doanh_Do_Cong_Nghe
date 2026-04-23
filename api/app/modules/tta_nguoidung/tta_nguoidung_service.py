@@ -10,7 +10,7 @@ def create_user(data):
     return repo.create(data)
 
 def update_user(ma, data):
-    return repo.update(ma, data)
+    return repo.update_user(ma, data)
 
 def delete_user(ma):
-    return repo.delete(ma)
+    return repo.delete_user(ma)

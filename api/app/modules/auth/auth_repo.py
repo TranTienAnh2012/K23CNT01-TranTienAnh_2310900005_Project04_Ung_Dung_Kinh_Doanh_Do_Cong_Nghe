@@ -1,7 +1,13 @@
-from sqlalchemy import text
+from sqlalchemy import select
 from app.db.connection import engine
+from app.models.schema import user
 
 def find_user_by_credentials(email, password):
-    query = "SELECT * FROM G5_user WHERE G5_Email = :email AND G5_MatKhau = :pass AND G5_IsDeleted = 0"
+    stmt = select(user).where(
+        user.c.G5_Email == email,
+        user.c.G5_MatKhau == password,
+        user.c.G5_IsDeleted == 0
+    )
     with engine.connect() as conn:
-        return conn.execute(text(query), {"email": email, "pass": password}).fetchone()
+        result = conn.execute(stmt)
+        return result.fetchone()

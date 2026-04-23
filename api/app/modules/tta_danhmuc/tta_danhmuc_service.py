@@ -10,7 +10,7 @@ def create_category(data):
     return repo.create(data)
 
 def update_category(ma, data):
-    return repo.update(ma, data)
+    return repo.update_danhmuc(ma, data)
 
 def delete_category(ma):
-    return repo.delete(ma)
+    return repo.delete_danhmuc(ma)

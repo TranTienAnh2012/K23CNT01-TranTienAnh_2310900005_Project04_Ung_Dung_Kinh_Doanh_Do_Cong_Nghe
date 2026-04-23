@@ -10,7 +10,7 @@ def create_attribute(data):
     return repo.create(data)
 
 def update_attribute(ma, data):
-    return repo.update(ma, data)
+    return repo.update_thuoctinh(ma, data)
 
 def delete_attribute(ma):
-    return repo.delete(ma)
+    return repo.delete_thuoctinh(ma)

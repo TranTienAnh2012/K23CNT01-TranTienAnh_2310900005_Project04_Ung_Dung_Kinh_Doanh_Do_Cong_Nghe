@@ -1,51 +1,56 @@
-from sqlalchemy import text
+from sqlalchemy import select, insert, update, delete
 from app.db.connection import engine
+from app.models.schema import giatrithuoctinh, sanpham, thuoctinh
 
 def get_all(params=None):
-    query = """
-        SELECT gt.*, sp.G5_TenSanPham, tt.G5_TenThuocTinh
-        FROM G5_giatrithuoctinh gt
-        JOIN G5_sanpham sp ON gt.G5_MaSanPham = sp.G5_MaSanPham
-        JOIN G5_thuoctinh tt ON gt.G5_ThuocTinhID = tt.G5_ThuocTinhID
-    """
-    args = {}
-    if params and params.get('ma_sp'):
-        query += " WHERE gt.G5_MaSanPham = :ma_sp"
-        args['ma_sp'] = params['ma_sp']
+    stmt = select(
+        giatrithuoctinh,
+        sanpham.c.G5_TenSanPham,
+        thuoctinh.c.G5_TenThuocTinh
+    ).select_from(
+        giatrithuoctinh.join(sanpham, giatrithuoctinh.c.G5_MaSanPham == sanpham.c.G5_MaSanPham)
+        .join(thuoctinh, giatrithuoctinh.c.G5_ThuocTinhID == thuoctinh.c.G5_ThuocTinhID)
+    )
     
-    query += " ORDER BY gt.G5_GiaTriID DESC"
+    if params and params.get('ma_sp'):
+        stmt = stmt.where(giatrithuoctinh.c.G5_MaSanPham == params['ma_sp'])
+    
+    stmt = stmt.order_by(giatrithuoctinh.c.G5_GiaTriID.desc())
     
     with engine.connect() as conn:
-        result = conn.execute(text(query), args)
+        result = conn.execute(stmt)
         items = []
         for row in result:
+            row_dict = row._mapping
             items.append({
-                "GiaTriID": row.G5_GiaTriID,
-                "MaSanPham": row.G5_MaSanPham,
-                "TenSanPham": row.G5_TenSanPham,
-                "ThuocTinhID": row.G5_ThuocTinhID,
-                "TenThuocTinh": row.G5_TenThuocTinh,
-                "GiaTri": row.G5_GiaTri
+                "GiaTriID": row_dict['G5_GiaTriID'],
+                "MaSanPham": row_dict['G5_MaSanPham'],
+                "TenSanPham": row_dict['G5_TenSanPham'],
+                "ThuocTinhID": row_dict['G5_ThuocTinhID'],
+                "TenThuocTinh": row_dict['G5_TenThuocTinh'],
+                "GiaTri": row_dict['G5_GiaTri']
             })
         return {"items": items, "total": len(items)}
 
 def get_by_sanpham(ma_sp):
-    query = """
-        SELECT gt.*, tt.G5_TenThuocTinh
-        FROM G5_giatrithuoctinh gt
-        JOIN G5_thuoctinh tt ON gt.G5_ThuocTinhID = tt.G5_ThuocTinhID
-        WHERE gt.G5_MaSanPham = :ma_sp
-    """
+    stmt = select(
+        giatrithuoctinh,
+        thuoctinh.c.G5_TenThuocTinh
+    ).select_from(
+        giatrithuoctinh.join(thuoctinh, giatrithuoctinh.c.G5_ThuocTinhID == thuoctinh.c.G5_ThuocTinhID)
+    ).where(giatrithuoctinh.c.G5_MaSanPham == ma_sp)
+    
     with engine.connect() as conn:
-        result = conn.execute(text(query), {"ma_sp": ma_sp})
+        result = conn.execute(stmt)
         items = []
         for row in result:
+            row_dict = row._mapping
             items.append({
-                "GiaTriID": row.G5_GiaTriID,
-                "MaSanPham": row.G5_MaSanPham,
-                "ThuocTinhID": row.G5_ThuocTinhID,
-                "TenThuocTinh": row.G5_TenThuocTinh,
-                "GiaTri": row.G5_GiaTri
+                "GiaTriID": row_dict['G5_GiaTriID'],
+                "MaSanPham": row_dict['G5_MaSanPham'],
+                "ThuocTinhID": row_dict['G5_ThuocTinhID'],
+                "TenThuocTinh": row_dict['G5_TenThuocTinh'],
+                "GiaTri": row_dict['G5_GiaTri']
             })
         return items
 
@@ -57,43 +62,37 @@ def create(data):
     
     with engine.connect() as conn:
         if not tt_id and ten_tt:
-            check_q = "SELECT G5_ThuocTinhID FROM G5_thuoctinh WHERE G5_TenThuocTinh = :name"
-            res = conn.execute(text(check_q), {"name": ten_tt}).fetchone()
+            # Check if attribute exists
+            check_stmt = select(thuoctinh.c.G5_ThuocTinhID).where(thuoctinh.c.G5_TenThuocTinh == ten_tt)
+            res = conn.execute(check_stmt).fetchone()
             if res:
                 tt_id = res.G5_ThuocTinhID
             else:
-                ins_tt = "INSERT INTO G5_thuoctinh (G5_TenThuocTinh, G5_TrangThai) VALUES (:name, 1)"
-                conn.execute(text(ins_tt), {"name": ten_tt})
+                # Insert new attribute
+                ins_stmt = insert(thuoctinh).values(G5_TenThuocTinh=ten_tt)
+                conn.execute(ins_stmt)
                 conn.commit()
-                res = conn.execute(text(check_q), {"name": ten_tt}).fetchone()
+                res = conn.execute(check_stmt).fetchone()
                 tt_id = res.G5_ThuocTinhID
 
-        query = """
-            INSERT INTO G5_giatrithuoctinh (G5_MaSanPham, G5_ThuocTinhID, G5_GiaTri)
-            VALUES (:ma_sp, :ma_tt, :gia_tri)
-        """
-        conn.execute(text(query), {
-            "ma_sp": ma_sp,
-            "ma_tt": tt_id,
-            "gia_tri": gia_tri
-        })
+        stmt = insert(giatrithuoctinh).values(
+            G5_MaSanPham=ma_sp,
+            G5_ThuocTinhID=tt_id,
+            G5_GiaTri=gia_tri
+        )
+        conn.execute(stmt)
         conn.commit()
 
-def update(id, data):
-    query = """
-        UPDATE G5_giatrithuoctinh 
-        SET G5_GiaTri = :gia_tri
-        WHERE G5_GiaTriID = :id
-    """
+def update_value(id, data):
+    stmt = update(giatrithuoctinh).where(giatrithuoctinh.c.G5_GiaTriID == id).values(
+        G5_GiaTri=data.get('GiaTri')
+    )
     with engine.connect() as conn:
-        conn.execute(text(query), {
-            "gia_tri": data.get('GiaTri'),
-            "id": id
-        })
+        conn.execute(stmt)
         conn.commit()
 
-def delete(id):
-    query = "DELETE FROM G5_giatrithuoctinh WHERE G5_GiaTriID = :id"
+def delete_value(id):
+    stmt = delete(giatrithuoctinh).where(giatrithuoctinh.c.G5_GiaTriID == id)
     with engine.connect() as conn:
-        conn.execute(text(query), {"id": id})
+        conn.execute(stmt)
         conn.commit()

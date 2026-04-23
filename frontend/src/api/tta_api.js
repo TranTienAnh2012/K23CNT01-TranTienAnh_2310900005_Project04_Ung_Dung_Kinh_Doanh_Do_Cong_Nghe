@@ -6,3 +6,5 @@ export * from './admin/tta_nguoidung.api';
 export * from './admin/tta_thuoctinh.api';
 export * from './admin/tta_chitiet.api';
 export * from './client/tta_shop.api';
+export * from './admin/tta_danhgia.api';
+export * from './admin/tta_voucher.api';

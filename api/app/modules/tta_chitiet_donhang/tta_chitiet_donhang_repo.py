@@ -1,82 +1,122 @@
-from sqlalchemy import text
+from sqlalchemy import select, insert, update, delete, func, text, or_
 from app.db.connection import engine
+from app.models.schema import chitietdonhang, sanpham, donhang
 
 def get_all(params=None):
+    stmt = select(
+        chitietdonhang,
+        sanpham.c.G5_TenSanPham,
+        sanpham.c.G5_HinhAnh,
+        sanpham.c.G5_GiaBan,
+        donhang.c.G5_HoTenNguoiNhan,
+        donhang.c.G5_NgayDatHang
+    ).select_from(
+        chitietdonhang.join(sanpham, chitietdonhang.c.G5_MaSanPham == sanpham.c.G5_MaSanPham)
+        .join(donhang, chitietdonhang.c.G5_MaDonHang == donhang.c.G5_MaDonHang)
+    )
+    
+    if params:
+        if params.get("ma_don_hang"):
+            stmt = stmt.where(chitietdonhang.c.G5_MaDonHang == params["ma_don_hang"])
+        if params.get("q"):
+            stmt = stmt.where(or_(
+                sanpham.c.G5_TenSanPham.like(f"%{params['q']}%"),
+                text("CAST(G5_chitietdonhang.G5_MaDonHang AS VARCHAR) LIKE :q").bindparams(q=f"%{params['q']}%")
+            ))
+    
+    stmt = stmt.order_by(donhang.c.G5_NgayDatHang.desc())
+    
     with engine.connect() as conn:
-        query = """
-            SELECT ct.G5_MaChiTiet AS MaChiTiet, ct.G5_MaDonHang AS MaDonHang, 
-                   ct.G5_MaSanPham AS MaSanPham, ct.G5_SoLuong AS SoLuong,
-                   sp.G5_TenSanPham AS TenSanPham, sp.G5_HinhAnh AS HinhAnh, sp.G5_GiaBan AS DonGia,
-                   dh.G5_HoTenNguoiNhan AS HoTenNguoiNhan, dh.G5_NgayDatHang AS NgayDatHang
-            FROM G5_chitietdonhang ct
-            JOIN G5_sanpham sp ON ct.G5_MaSanPham = sp.G5_MaSanPham
-            JOIN G5_donhang dh ON ct.G5_MaDonHang = dh.G5_MaDonHang
-            WHERE 1=1
-        """
-        args = {}
-        if params:
-            if params.get("ma_don_hang"):
-                query += " AND ct.G5_MaDonHang = :ma_don"
-                args["ma_don"] = params["ma_don_hang"]
-            if params.get("q"):
-                query += " AND (sp.G5_TenSanPham LIKE :q OR CAST(ct.G5_MaDonHang AS VARCHAR) LIKE :q)"
-                args["q"] = f"%{params['q']}%"
+        result = conn.execute(stmt)
+        items = []
+        for row in result:
+            row_dict = row._asdict()
+            items.append({
+                "Id": row_dict['G5_MaChiTiet'],
+                "MaDonHang": row_dict['G5_MaDonHang'],
+                "MaSanPham": row_dict['G5_MaSanPham'],
+                "SoLuong": row_dict['G5_SoLuong'],
+                "TenSanPham": row_dict['G5_TenSanPham'],
+                "HinhAnh": row_dict['G5_HinhAnh'],
+                "DonGia": float(row_dict['G5_GiaBan']) if row_dict['G5_GiaBan'] is not None else 0,
+                "ThanhTien": float(row_dict['G5_GiaBan'] * row_dict['G5_SoLuong']) if row_dict['G5_GiaBan'] is not None else 0,
+                "HoTenNguoiNhan": row_dict['G5_HoTenNguoiNhan'],
+                "NgayDatHang": row_dict['G5_NgayDatHang'].isoformat() if row_dict['G5_NgayDatHang'] else None
+            })
         
-        query += " ORDER BY dh.G5_NgayDatHang DESC"
-        result = conn.execute(text(query), args)
-        items = [dict(row._mapping) for row in result]
-        
-        total = conn.execute(text("SELECT COUNT(*) FROM G5_chitietdonhang")).scalar()
+        total = conn.execute(select(func.count()).select_from(chitietdonhang)).scalar()
         return {"items": items, "total": total}
 
 def get_by_id(ma):
+    stmt = select(
+        chitietdonhang,
+        sanpham.c.G5_TenSanPham,
+        sanpham.c.G5_GiaBan
+    ).select_from(
+        chitietdonhang.join(sanpham, chitietdonhang.c.G5_MaSanPham == sanpham.c.G5_MaSanPham)
+    ).where(chitietdonhang.c.G5_MaChiTiet == ma)
+    
     with engine.connect() as conn:
-        query = """
-            SELECT ct.G5_MaChiTiet AS MaChiTiet, ct.G5_MaDonHang AS MaDonHang, 
-                   ct.G5_MaSanPham AS MaSanPham, ct.G5_SoLuong AS SoLuong,
-                   sp.G5_TenSanPham AS TenSanPham, sp.G5_GiaBan AS gia_goc
-            FROM G5_chitietdonhang ct
-            JOIN G5_sanpham sp ON ct.G5_MaSanPham = sp.G5_MaSanPham
-            WHERE ct.G5_MaChiTiet = :ma
-        """
-        row = conn.execute(text(query), {"ma": ma}).first()
-        return dict(row._mapping) if row else None
+        row = conn.execute(stmt).fetchone()
+        if not row:
+            return None
+        row_dict = row._asdict()
+        return {
+            "Id": row_dict['G5_MaChiTiet'],
+            "MaDonHang": row_dict['G5_MaDonHang'],
+            "MaSanPham": row_dict['G5_MaSanPham'],
+            "SoLuong": row_dict['G5_SoLuong'],
+            "TenSanPham": row_dict['G5_TenSanPham'],
+            "GiaBan": float(row_dict['G5_GiaBan']) if row_dict['G5_GiaBan'] is not None else 0
+        }
 
 def _recalculate_order_total(conn, order_id):
-    new_total = conn.execute(text("""
-        SELECT SUM(G5_SoLuong * G5_GiaBan) 
-        FROM G5_chitietdonhang ct
-        JOIN G5_sanpham sp ON ct.G5_MaSanPham = sp.G5_MaSanPham
-        WHERE G5_MaDonHang = :oid
-    """), {"oid": order_id}).scalar() or 0
+    # Recalculate total using GiaBan from sanpham since G5_Gia doesn't exist in DB
+    sum_stmt = select(
+        func.sum(chitietdonhang.c.G5_SoLuong * sanpham.c.G5_GiaBan)
+    ).select_from(
+        chitietdonhang.join(sanpham, chitietdonhang.c.G5_MaSanPham == sanpham.c.G5_MaSanPham)
+    ).where(chitietdonhang.c.G5_MaDonHang == order_id)
+    new_total = conn.execute(sum_stmt).scalar() or 0
     
-    conn.execute(text("UPDATE G5_donhang SET G5_TongTien = :total WHERE G5_MaDonHang = :oid"), 
-                 {"total": new_total, "oid": order_id})
+    upd_stmt = update(donhang).where(donhang.c.G5_MaDonHang == order_id).values(G5_TongTien=new_total)
+    conn.execute(upd_stmt)
 
 def update_qty(ma, new_qty):
     with engine.begin() as conn:
-        item = conn.execute(text("SELECT G5_MaDonHang, G5_MaSanPham, G5_SoLuong FROM G5_chitietdonhang WHERE G5_MaChiTiet = :ma"), {"ma": ma}).first()
+        item_stmt = select(chitietdonhang.c.G5_MaDonHang, chitietdonhang.c.G5_MaSanPham, chitietdonhang.c.G5_SoLuong).where(chitietdonhang.c.G5_MaChiTiet == ma)
+        item = conn.execute(item_stmt).fetchone()
         if not item: return False
         
-        diff = new_qty - item.G5_SoLuong
-        conn.execute(text("UPDATE G5_sanpham SET G5_SoLuongTon = G5_SoLuongTon - :diff WHERE G5_MaSanPham = :pid"), 
-                     {"diff": diff, "pid": item.G5_MaSanPham})
+        item_dict = item._asdict()
+        diff = new_qty - item_dict['G5_SoLuong']
         
-        conn.execute(text("UPDATE G5_chitietdonhang SET G5_SoLuong = :qty WHERE G5_MaChiTiet = :ma"), 
-                     {"qty": new_qty, "ma": ma})
+        # Update stock
+        upd_sp = update(sanpham).where(sanpham.c.G5_MaSanPham == item_dict['G5_MaSanPham']).values(G5_SoLuongTon=sanpham.c.G5_SoLuongTon - diff)
+        conn.execute(upd_sp)
         
-        _recalculate_order_total(conn, item.G5_MaDonHang)
+        # Update detail qty
+        upd_ct = update(chitietdonhang).where(chitietdonhang.c.G5_MaChiTiet == ma).values(G5_SoLuong=new_qty)
+        conn.execute(upd_ct)
+        
+        _recalculate_order_total(conn, item_dict['G5_MaDonHang'])
         return True
 
-def delete(ma):
+def delete_detail(ma):
     with engine.begin() as conn:
-        item = conn.execute(text("SELECT G5_MaDonHang, G5_MaSanPham, G5_SoLuong FROM G5_chitietdonhang WHERE G5_MaChiTiet = :ma"), {"ma": ma}).first()
+        item_stmt = select(chitietdonhang.c.G5_MaDonHang, chitietdonhang.c.G5_MaSanPham, chitietdonhang.c.G5_SoLuong).where(chitietdonhang.c.G5_MaChiTiet == ma)
+        item = conn.execute(item_stmt).fetchone()
         if not item: return False
         
-        conn.execute(text("UPDATE G5_sanpham SET G5_SoLuongTon = G5_SoLuongTon + :qty WHERE G5_MaSanPham = :pid"), 
-                     {"qty": item.G5_SoLuong, "pid": item.G5_MaSanPham})
+        item_dict = item._asdict()
         
-        conn.execute(text("DELETE FROM G5_chitietdonhang WHERE G5_MaChiTiet = :ma"), {"ma": ma})
+        # Restore stock
+        upd_sp = update(sanpham).where(sanpham.c.G5_MaSanPham == item_dict['G5_MaSanPham']).values(G5_SoLuongTon=sanpham.c.G5_SoLuongTon + item_dict['G5_SoLuong'])
+        conn.execute(upd_sp)
         
-        _recalculate_order_total(conn, item.G5_MaDonHang)
+        # Delete detail
+        del_stmt = delete(chitietdonhang).where(chitietdonhang.c.G5_MaChiTiet == ma)
+        conn.execute(del_stmt)
+        
+        _recalculate_order_total(conn, item_dict['G5_MaDonHang'])
         return True

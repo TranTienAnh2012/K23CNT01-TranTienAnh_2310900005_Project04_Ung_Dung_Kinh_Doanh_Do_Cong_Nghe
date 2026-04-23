@@ -28,6 +28,9 @@ export const danhmucThuoctinhApi = {
   
   // Xóa liên kết
   delete: (id) => axios.delete(`/api/tta_danhmuc_thuoctinh/${id}`),
+
+  // Lấy thuộc tính theo sản phẩm (từ danh mục)
+  getBySanPham: (ma_sp) => axios.get(`/api/tta_danhmuc_thuoctinh/product/${ma_sp}`),
 };
 
 // 3. API Quản lý Giá trị Thuộc tính cụ thể của Sản phẩm (VD: iPhone 15 có RAM 8GB)

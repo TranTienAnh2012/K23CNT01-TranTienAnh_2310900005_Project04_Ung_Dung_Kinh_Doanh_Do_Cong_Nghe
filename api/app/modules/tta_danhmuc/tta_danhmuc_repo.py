@@ -1,52 +1,60 @@
-from sqlalchemy import text
+from sqlalchemy import select, insert, update
 from app.db.connection import engine
+from app.models.schema import danhmuc
 
 def get_all(params=None):
-    query = "SELECT * FROM G5_danhmuc WHERE G5_IsDeleted = 0"
-    args = {}
-    if params and params.get('q'):
-        query += " AND G5_TenDanhMuc LIKE :q"
-        args['q'] = f"%{params['q']}%"
+    stmt = select(danhmuc).where(danhmuc.c.G5_IsDeleted == 0)
     
-    query += " ORDER BY G5_MaDanhMuc DESC"
+    if params and params.get('q'):
+        stmt = stmt.where(danhmuc.c.G5_TenDanhMuc.like(f"%{params['q']}%"))
+    
+    stmt = stmt.order_by(danhmuc.c.G5_MaDanhMuc.desc())
     
     with engine.connect() as conn:
-        result = conn.execute(text(query), args)
+        result = conn.execute(stmt)
         items = []
         for row in result:
+            row_dict = row._mapping
             items.append({
-                "MaDanhMuc": row.G5_MaDanhMuc,
-                "TenDanhMuc": row.G5_TenDanhMuc,
-                "MoTa": row.G5_MoTa
+                "MaDanhMuc": row_dict['G5_MaDanhMuc'],
+                "TenDanhMuc": row_dict['G5_TenDanhMuc'],
+                "MoTa": row_dict['G5_MoTa']
             })
         return {"items": items, "total": len(items)}
 
 def get_by_id(ma):
-    query = "SELECT * FROM G5_danhmuc WHERE G5_MaDanhMuc = :ma"
+    stmt = select(danhmuc).where(danhmuc.c.G5_MaDanhMuc == ma)
     with engine.connect() as conn:
-        row = conn.execute(text(query), {"ma": ma}).fetchone()
+        row = conn.execute(stmt).fetchone()
         if row:
+            row_dict = row._mapping
             return {
-                "MaDanhMuc": row.G5_MaDanhMuc,
-                "TenDanhMuc": row.G5_TenDanhMuc,
-                "MoTa": row.G5_MoTa
+                "MaDanhMuc": row_dict['G5_MaDanhMuc'],
+                "TenDanhMuc": row_dict['G5_TenDanhMuc'],
+                "MoTa": row_dict['G5_MoTa']
             }
         return None
 
 def create(data):
-    query = "INSERT INTO G5_danhmuc (G5_TenDanhMuc, G5_MoTa) VALUES (:ten, :mota)"
+    stmt = insert(danhmuc).values(
+        G5_TenDanhMuc=data['TenDanhMuc'],
+        G5_MoTa=data.get('MoTa')
+    )
     with engine.connect() as conn:
-        conn.execute(text(query), {"ten": data['TenDanhMuc'], "mota": data.get('MoTa')})
+        conn.execute(stmt)
         conn.commit()
 
-def update(ma, data):
-    query = "UPDATE G5_danhmuc SET G5_TenDanhMuc = :ten, G5_MoTa = :mota WHERE G5_MaDanhMuc = :ma"
+def update_danhmuc(ma, data):
+    stmt = update(danhmuc).where(danhmuc.c.G5_MaDanhMuc == ma).values(
+        G5_TenDanhMuc=data['TenDanhMuc'],
+        G5_MoTa=data.get('MoTa')
+    )
     with engine.connect() as conn:
-        conn.execute(text(query), {"ten": data['TenDanhMuc'], "mota": data.get('MoTa'), "ma": ma})
+        conn.execute(stmt)
         conn.commit()
 
-def delete(ma):
-    query = "UPDATE G5_danhmuc SET G5_IsDeleted = 1 WHERE G5_MaDanhMuc = :ma"
+def delete_danhmuc(ma):
+    stmt = update(danhmuc).where(danhmuc.c.G5_MaDanhMuc == ma).values(G5_IsDeleted=1)
     with engine.connect() as conn:
-        conn.execute(text(query), {"ma": ma})
+        conn.execute(stmt)
         conn.commit()

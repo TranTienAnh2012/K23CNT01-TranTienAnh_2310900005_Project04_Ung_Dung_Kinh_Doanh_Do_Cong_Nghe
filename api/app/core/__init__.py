@@ -1,56 +1,116 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-from app.core.config import SECRET_KEY
+from flask_restful import Api
+from app.core.config import get_config
 from app.db.connection import engine
 
-def create_app():
-    # Khởi tạo ứng dụng Flask
+def create_app(config_name=None):
     app = Flask(__name__, static_folder='../../static', static_url_path='/static')
-    
-    # Cấu hình bảo mật
-    app.config["SECRET_KEY"] = SECRET_KEY
-    app.config["JWT_SECRET_KEY"] = SECRET_KEY
-    
-    # Kích hoạt CORS và JWT
-    CORS(app) 
+
+    # Initialize Flask-RESTful
+    api = Api(app, catch_all_404s=True)
+
+    # Load configuration
+    config = get_config(config_name)
+    app.config.from_object(config)
+
+    # Initialize extensions
+    CORS(app, origins=config.CORS_ORIGINS)
     JWTManager(app)
-    
-    # --- IMPORT VÀ ĐĂNG KÝ ROUTE XÁC THỰC ---
-    from app.routes.auth_route import auth_bp
-    app.register_blueprint(auth_bp, url_prefix="/api/tta_auth")
-    
-    # --- IMPORT CÁC ROUTE ADMIN ---
-    from app.routes.admin.tta_sanpham_route import sanpham_admin_bp
-    from app.routes.admin.tta_danhmuc_route import danhmuc_admin_bp
-    from app.routes.admin.tta_donhang_route import donhang_admin_bp
-    from app.routes.admin.tta_nguoidung_route import nguoidung_admin_bp
-    from app.routes.admin.tta_thuoctinh_route import thuoctinh_admin_bp
-    from app.routes.admin.tta_danhmuc_thuoctinh_route import danhmuc_thuoctinh_admin_bp
-    from app.routes.admin.tta_giatrithuoctinh_route import giatrithuoctinh_admin_bp
-    from app.routes.admin.tta_chitiet_donhang_route import chitiet_donhang_admin_bp
-    
-    # Đăng ký Route Admin (Giữ tiền tố cũ để tương thích Frontend)
-    app.register_blueprint(sanpham_admin_bp,           url_prefix="/api/tta_sanpham")
-    app.register_blueprint(danhmuc_admin_bp,           url_prefix="/api/tta_danhmuc")
-    app.register_blueprint(donhang_admin_bp,           url_prefix="/api/tta_donhang")
-    app.register_blueprint(nguoidung_admin_bp,         url_prefix="/api/tta_user")
-    app.register_blueprint(thuoctinh_admin_bp,         url_prefix="/api/tta_thuoctinh")
-    app.register_blueprint(danhmuc_thuoctinh_admin_bp, url_prefix="/api/tta_danhmuc_thuoctinh")
-    app.register_blueprint(giatrithuoctinh_admin_bp,   url_prefix="/api/tta_giatrithuoctinh")
-    app.register_blueprint(chitiet_donhang_admin_bp,   url_prefix="/api/tta_chitiet_donhang")
-    
-    # --- IMPORT CÁC ROUTE CLIENT (Mới) ---
-    from app.routes.client.tta_sanpham_route import sanpham_client_bp
-    from app.routes.client.tta_danhmuc_route import danhmuc_client_bp
-    from app.routes.client.tta_donhang_route import donhang_client_bp
-    
-    app.register_blueprint(sanpham_client_bp, url_prefix="/api/client/tta_sanpham")
-    app.register_blueprint(danhmuc_client_bp, url_prefix="/api/client/tta_danhmuc")
-    app.register_blueprint(donhang_client_bp, url_prefix="/api/client/tta_donhang")
-    
+
+    # Register middleware
+    register_middleware(app)
+
+    # Register error handlers
+    register_error_handlers(app)
+
+    # Register resources
+    register_resources(api)
+
     @app.route("/api/health")
     def health():
-        return {"status": "ok", "message": "Backend standardized structure is fully operational!"}
-        
+        return {"status": "ok", "message": "Backend standardized structure with Flask-RESTful and SQLAlchemy Core is fully operational!"}
+
     return app
+
+def register_middleware(app):
+    """Register middleware"""
+    from app.middleware.request_middleware import request_logger_middleware
+    request_logger_middleware(app)
+
+def register_error_handlers(app):
+    """Register error handlers"""
+    from app.utils.error_handlers import (
+        handle_400, handle_401, handle_403, handle_404,
+        handle_500, handle_validation_error
+    )
+
+    app.register_error_handler(400, handle_400)
+    app.register_error_handler(401, handle_401)
+    app.register_error_handler(403, handle_403)
+    app.register_error_handler(404, handle_404)
+    app.register_error_handler(500, handle_500)
+    app.register_error_handler(Exception, handle_validation_error)
+
+def register_resources(api):
+    """Register all Flask-RESTful resources"""
+    # Auth resources
+    from app.modules.auth.auth_resource import LoginResource
+    api.add_resource(LoginResource, '/api/tta_auth/login')
+
+    # SanPham resources
+    from app.modules.tta_sanpham.tta_sanpham_resource import SanPhamListResource, SanPhamResource
+    api.add_resource(SanPhamListResource, '/api/tta_sanpham')
+    api.add_resource(SanPhamResource, '/api/tta_sanpham/<int:ma>')
+
+    # DanhMuc resources
+    from app.modules.tta_danhmuc.tta_danhmuc_resource import DanhMucListResource, DanhMucResource
+    api.add_resource(DanhMucListResource, '/api/tta_danhmuc')
+    api.add_resource(DanhMucResource, '/api/tta_danhmuc/<int:ma>')
+
+    # NguoiDung resources
+    from app.modules.tta_nguoidung.tta_nguoidung_resource import NguoiDungListResource, NguoiDungResource
+    api.add_resource(NguoiDungListResource, '/api/tta_user')
+    api.add_resource(NguoiDungResource, '/api/tta_user/<int:ma>')
+
+    # DonHang resources
+    from app.modules.tta_donhang.tta_donhang_resource import DonHangListResource, DonHangResource
+    api.add_resource(DonHangListResource, '/api/tta_donhang')
+    api.add_resource(DonHangResource, '/api/tta_donhang/<int:ma>')
+
+    # ThuocTinh resources
+    from app.modules.tta_thuoctinh.tta_thuoctinh_resource import ThuocTinhListResource, ThuocTinhResource
+    api.add_resource(ThuocTinhListResource, '/api/tta_thuoctinh')
+    api.add_resource(ThuocTinhResource, '/api/tta_thuoctinh/<int:ma>')
+
+    # GiaTriThuocTinh resources
+    from app.modules.tta_giatrithuoctinh.tta_giatrithuoctinh_resource import GiaTriThuocTinhListResource, GiaTriThuocTinhResource
+    api.add_resource(GiaTriThuocTinhListResource, '/api/tta_giatrithuoctinh')
+    api.add_resource(GiaTriThuocTinhResource, '/api/tta_giatrithuoctinh/<int:id>')
+
+    # DanhMucThuocTinh resources
+    from app.modules.tta_danhmuc_thuoctinh.tta_danhmuc_thuoctinh_resource import DanhMucThuocTinhListResource, DanhMucThuocTinhResource, ProductAttributeResource
+    api.add_resource(DanhMucThuocTinhListResource, '/api/tta_danhmuc_thuoctinh')
+    api.add_resource(DanhMucThuocTinhResource, '/api/tta_danhmuc_thuoctinh/<int:id>')
+    api.add_resource(ProductAttributeResource, '/api/tta_danhmuc_thuoctinh/product/<int:ma_sp>')
+
+    # ChiTietDonHang resources
+    from app.modules.tta_chitiet_donhang.tta_chitiet_donhang_resource import ChiTietDonHangListResource, ChiTietDonHangResource
+    api.add_resource(ChiTietDonHangListResource, '/api/tta_chitiet_donhang')
+    api.add_resource(ChiTietDonHangResource, '/api/tta_chitiet_donhang/<int:ma>')
+
+    # Review (danhgia) resources
+    from app.modules.tta_danhgia.tta_danhgia_resource import ReviewListResource, ReviewResource
+    api.add_resource(ReviewListResource, '/api/tta_danhgia')
+    api.add_resource(ReviewResource, '/api/tta_danhgia/<int:id>')
+
+    # Voucher resources
+    from app.modules.tta_voucher.tta_voucher_resource import VoucherListResource, VoucherResource
+    api.add_resource(VoucherListResource, '/api/tta_voucher')
+    api.add_resource(VoucherResource, '/api/tta_voucher/<int:id>')
+
+    # TODO: Register other resources as they are refactored
+    
+    # We still keep blueprints for non-RESTful routes or legacy support if needed
+    # but the goal is to migrate them all.

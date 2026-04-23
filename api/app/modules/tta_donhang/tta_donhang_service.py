@@ -6,11 +6,11 @@ def get_all_orders(params=None):
 def get_order_detail(ma):
     return repo.get_by_id(ma)
 
-def place_order(data):
+def create_order(data):
     return repo.create(data)
 
-def change_order_status(ma, status):
+def update_order_status(ma, status):
     return repo.update_status(ma, status)
 
-def cancel_order(ma):
-    return repo.delete(ma)
+def delete_order(ma):
+    return repo.delete_donhang(ma)
