@@ -10,7 +10,7 @@ import ClientLayout from './layouts/ClientLayout'; // Layout mới
 // --- PAGES: AUTH ---
 import NnhLoginPage from './pages/auth/nnh_login_page';
 import NnhRegisterPage from './pages/auth/nnh_register_page';
-import NnhHomePage from './pages/shop/NnhHomePage';
+import NnhClientHome from './pages/client/NnhClientHome';
 
 // --- PAGES: ADMIN ---
 import NnhDashboard from './pages/admin/dashboard/nnh_dashboard';
@@ -44,7 +44,7 @@ export default function App() {
 
           {/* CLIENT ROUTES */}
           <Route path="/" element={<ClientLayout />}>
-            <Route index element={<NnhHomePage />} />
+            <Route index element={<NnhClientHome />} />
           </Route>
 
           {/* ADMIN ROUTES (Bảo vệ bởi ProtectedRoute) */}

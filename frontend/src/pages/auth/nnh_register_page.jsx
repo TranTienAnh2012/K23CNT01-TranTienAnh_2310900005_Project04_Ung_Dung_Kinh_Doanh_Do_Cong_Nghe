@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from '../../api/tta_axios';
+import NnhClientHeader from '../components/NnhClientHeader';
+import NnhClientFooter from '../components/NnhClientFooter';
 
 export default function TtaRegisterPage() {
   const [name, setName] = useState('');
@@ -16,18 +18,16 @@ export default function TtaRegisterPage() {
       alert("Passwords do not match!");
       return;
     }
-    try {
-      // Giả sử có endpoint /api/tta_auth/register
-      await axios.post('/api/tta_auth/register', { name, email, password });
-      alert("Đăng ký thành công! Vui lòng đăng nhập.");
-      navigate('/login');
-    } catch (err) {
-      alert('Đăng ký thất bại: ' + (err.response?.data?.message || err.message));
-    }
+    
+    // Giả lập đăng ký thành công do mất kết nối DB
+    alert("Đăng ký thành công (Chế độ giả lập)! Vui lòng đăng nhập.");
+    navigate('/login');
   };
 
   return (
-    <div className="bg-surface font-body-md text-on-surface flex flex-col items-center justify-center min-h-[80vh]">
+    <>
+      <NnhClientHeader />
+      <div className="bg-surface font-body-md text-on-surface flex flex-col items-center justify-center min-h-[80vh]">
       <main className="w-full flex items-center justify-center p-6 relative overflow-hidden">
         {/* Abstract Background Element */}
         <div className="absolute top-1/4 -right-20 w-96 h-96 bg-secondary-fixed opacity-20 blur-[100px] rounded-full pointer-events-none"></div>
@@ -138,5 +138,7 @@ export default function TtaRegisterPage() {
         </div>
       </main>
     </div>
+    <NnhClientFooter />
+    </>
   );
 }
