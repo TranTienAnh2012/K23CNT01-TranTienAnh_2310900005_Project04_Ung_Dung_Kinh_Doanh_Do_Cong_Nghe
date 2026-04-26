@@ -1,13 +1,114 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dien Tu Store - Admin</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zenith Zhop</title>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <script id="tailwind-config">
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                "colors": {
+                    "inverse-primary": "#bec6e0",
+                    "on-tertiary-container": "#0090b0",
+                    "surface-dim": "#d8dadc",
+                    "secondary-container": "#2170e4",
+                    "primary-fixed": "#dae2fd",
+                    "on-tertiary-fixed": "#001f28",
+                    "on-error": "#ffffff",
+                    "surface": "#f7f9fb",
+                    "surface-container-highest": "#e0e3e5",
+                    "secondary-fixed": "#d8e2ff",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed-variant": "#004395",
+                    "on-surface-variant": "#45464d",
+                    "surface-variant": "#e0e3e5",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "primary-container": "#131b2e",
+                    "outline-variant": "#c6c6cd",
+                    "inverse-on-surface": "#eff1f3",
+                    "outline": "#76777d",
+                    "surface-container": "#eceef0",
+                    "secondary": "#0058be",
+                    "surface-bright": "#f7f9fb",
+                    "surface-container-low": "#f2f4f6",
+                    "tertiary-fixed-dim": "#4cd6ff",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed-dim": "#bec6e0",
+                    "tertiary": "#000000",
+                    "on-primary-fixed": "#131b2e",
+                    "on-background": "#191c1e",
+                    "on-primary-container": "#7c839b",
+                    "on-secondary-fixed": "#001a42",
+                    "error": "#ba1a1a",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-secondary-container": "#fefcff",
+                    "primary": "#000000",
+                    "tertiary-container": "#001f28",
+                    "surface-tint": "#565e74",
+                    "tertiary-fixed": "#b7eaff",
+                    "surface-container-high": "#e6e8ea",
+                    "on-tertiary-fixed-variant": "#004e60",
+                    "background": "#f7f9fb",
+                    "inverse-surface": "#2d3133",
+                    "on-surface": "#191c1e"
+                },
+                "borderRadius": {
+                    "DEFAULT": "0.5rem",
+                    "lg": "0.75rem",
+                    "xl": "1rem",
+                    "full": "9999px"
+                },
+                "spacing": {
+                    "margin-desktop": "40px",
+                    "base": "8px",
+                    "container-max": "1280px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px"
+                },
+                "fontFamily": {
+                    "headline-xl": ["Space Grotesk"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Space Grotesk"],
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Space Grotesk"]
+                },
+                "fontSize": {
+                    "headline-xl": ["48px", {"lineHeight": "1.1", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "label-sm": ["14px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}]
+                }
+            }
+        }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+        background-color: #f7f9fb;
+        color: #191c1e;
+    }
+  </style>
+</head>
+<body class="font-body-md">
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>

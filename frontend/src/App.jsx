@@ -3,49 +3,85 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/TtaProtectedRoute';
 
-import AdminLayout from './components/tta_admin_layout';
-import TtaLoginPage from './pages/auth/tta_login_page';
+// --- LAYOUTS ---
+import AdminLayout from './layouts/AdminLayout'; // Đường dẫn mới
+import ClientLayout from './layouts/ClientLayout'; // Layout mới
 
-// Pages
-import TtaDanhMucList      from './pages/danhmuc/tta_danhmuc_list';
-import TtaSanPhamList      from './pages/sanpham/tta_sanpham_list';
-import TtaUserList         from './pages/user/tta_user_list';
+// --- PAGES: AUTH ---
+import NnhLoginPage from './pages/auth/nnh_login_page';
+import NnhRegisterPage from './pages/auth/nnh_register_page';
+import NnhClientHome from './pages/client/NnhClientHome';
 
-import TtaDonHangList      from './pages/donhang/tta_donhang_list';
-import TtaDonHangThem      from './pages/donhang/tta_donhang_them';
-import TtaDonHangSua       from './pages/donhang/tta_donhang_sua';
-import TtaDonHangXoa       from './pages/donhang/tta_donhang_xoa';
+// --- PAGES: ADMIN ---
+import NnhDashboard from './pages/admin/dashboard/nnh_dashboard';
+import NnhDanhMucList from './pages/admin/nnh_danhmuc/nnh_danhmuc_list';
+import NnhSanPhamList from './pages/admin/nnh_sanpham/nnh_sanpham_list';
+import NnhUserList from './pages/admin/nnh_nguoidung/nnh_user_list';
 
-import TtaChiTietDonHangList from './pages/chitiet/tta_chitietdonhang_list';
-import TtaChiTietDonHangSua  from './pages/chitiet/tta_chitietdonhang_sua';
-import TtaChiTietDonHangXoa  from './pages/chitiet/tta_chitietdonhang_xoa';
+import NnhThuocTinhList from './pages/admin/nnh_thuoctinh/nnh_thuoctinh_list';
+import NnhDanhMucThuocTinhList from './pages/admin/nnh_thuoctinh/nnh_danhmuc_thuoctinh_list';
+import NnhGiaTriThuocTinhList from './pages/admin/nnh_thuoctinh/nnh_giatrithuoctinh_list';
+import NnhGiaTriThuocTinhThem from './pages/admin/nnh_thuoctinh/nnh_giatrithuoctinh_them';
+import NnhGiaTriThuocTinhForm from './pages/admin/nnh_thuoctinh/nnh_giatrithuoctinh_form';
+
+import NnhDonHangList from './pages/admin/nnh_donhang/nnh_donhang_list';
+import NnhDonHangThem from './pages/admin/nnh_donhang/nnh_donhang_them';
+import NnhDonHangSua from './pages/admin/nnh_donhang/nnh_donhang_sua';
+import NnhDonHangXoa from './pages/admin/nnh_donhang/nnh_donhang_xoa';
+
+import NnhChiTietDonHangList from './pages/admin/nnh_chitietdonhang/nnh_chitietdonhang_list';
+import NnhChiTietDonHangSua from './pages/admin/nnh_chitietdonhang/nnh_chitietdonhang_sua';
+import NnhChiTietDonHangXoa from './pages/admin/nnh_chitietdonhang/nnh_chitietdonhang_xoa';
+
+import NnhDanhGiaList from './pages/admin/nnh_danhgia/nnh_danhgia_list';
+import NnhVoucherList from './pages/admin/nnh_voucher/nnh_voucher_list';
+import NnhVoucherThem from './pages/admin/nnh_voucher/nnh_voucher_them';
 
 export default function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<TtaLoginPage />} />
-          
-          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="dashboard" element={<div>Dashboard Placeholder</div>} />
-            
-            <Route path="danh-muc"            element={<TtaDanhMucList />} />
-            <Route path="san-pham"            element={<TtaSanPhamList />} />
-            <Route path="user"                element={<TtaUserList />} />
+          {/* AUTH ROUTES (Standalone) */}
+          <Route path="/login" element={<NnhLoginPage />} />
+          <Route path="/register" element={<NnhRegisterPage />} />
 
-            <Route path="don-hang"            element={<TtaDonHangList />} />
-            <Route path="don-hang/them"       element={<TtaDonHangThem />} />
-            <Route path="don-hang/edit/:ma"   element={<TtaDonHangSua />} />
-            <Route path="don-hang/delete/:ma" element={<TtaDonHangXoa />} />
-
-            <Route path="chi-tiet"            element={<TtaChiTietDonHangList />} />
-            <Route path="chi-tiet/edit/:ma"   element={<TtaChiTietDonHangSua />} />
-            <Route path="chi-tiet/delete/:ma" element={<TtaChiTietDonHangXoa />} />
+          {/* CLIENT ROUTES */}
+          <Route path="/" element={<ClientLayout />}>
+            <Route index element={<NnhClientHome />} />
           </Route>
 
-          <Route path="/" element={<Navigate to="/admin" replace />} />
+          {/* ADMIN ROUTES (Bảo vệ bởi ProtectedRoute) */}
+          <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<NnhDashboard />} />
+            
+            <Route path="danh-muc"            element={<NnhDanhMucList />} />
+            <Route path="san-pham"            element={<NnhSanPhamList />} />
+            <Route path="san-pham/thong-so/:ma" element={<NnhGiaTriThuocTinhForm />} />
+            <Route path="user"                element={<NnhUserList />} />
+            
+            <Route path="thuoc-tinh"          element={<NnhThuocTinhList />} />
+            <Route path="danhmuc-thuoctinh"   element={<NnhDanhMucThuocTinhList />} />
+            <Route path="giatri-thuoctinh"   element={<NnhGiaTriThuocTinhList />} />
+            <Route path="giatri-thuoctinh/them" element={<NnhGiaTriThuocTinhThem />} />
+
+            <Route path="don-hang"            element={<NnhDonHangList />} />
+            <Route path="don-hang/them"       element={<NnhDonHangThem />} />
+            <Route path="don-hang/edit/:ma"   element={<NnhDonHangSua />} />
+            <Route path="don-hang/delete/:ma" element={<NnhDonHangXoa />} />
+
+            <Route path="chi-tiet"            element={<NnhChiTietDonHangList />} />
+            <Route path="chi-tiet/edit/:ma"   element={<NnhChiTietDonHangSua />} />
+            <Route path="chi-tiet/delete/:ma" element={<NnhChiTietDonHangXoa />} />
+
+            <Route path="danh-gia"            element={<NnhDanhGiaList />} />
+            <Route path="voucher"             element={<NnhVoucherList />} />
+            <Route path="voucher/them"        element={<NnhVoucherThem />} />
+          </Route>
+
+          {/* Catch-all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

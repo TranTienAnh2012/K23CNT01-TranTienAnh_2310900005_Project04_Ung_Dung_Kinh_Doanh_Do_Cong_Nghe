@@ -9,6 +9,9 @@ const navItems = [
   { to: '/admin/user',      icon: '👥', label: 'Người dùng' },
   { to: '/admin/don-hang',  icon: '🚛', label: 'Đơn hàng' },
   { to: '/admin/chi-tiet',  icon: '📖', label: 'Chi tiết đơn hàng' },
+  { to: '/admin/thuoc-tinh', icon: '🏷️', label: 'Thuộc tính' },
+  { to: '/admin/danhmuc-thuoctinh', icon: '🔗', label: 'Thông số theo danh mục' },
+  { to: '/admin/giatri-thuoctinh', icon: '⚙️', label: 'Giá trị thuộc tính' },
 ];
 
 export default function TtaSidebar() {
