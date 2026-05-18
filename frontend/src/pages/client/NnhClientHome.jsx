@@ -56,7 +56,7 @@ export default function NnhClientHome() {
         <div>
           <span className="text-xs font-bold text-purple-600 uppercase tracking-wider block mb-1">Cập nhật 24/7</span>
           <h2 className="text-2xl font-extrabold text-slate-900 font-['Space_Grotesk'] tracking-tight">
-            Tin tức & Xu hướng công nghệ
+            Tin tức & Bài viết mới nhất
           </h2>
         </div>
         <span className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-slate-500 bg-slate-50 px-3 py-1 rounded-full">
