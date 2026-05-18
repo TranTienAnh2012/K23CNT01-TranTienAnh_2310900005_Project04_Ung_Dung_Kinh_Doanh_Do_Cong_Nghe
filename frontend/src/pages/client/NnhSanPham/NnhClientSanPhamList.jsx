@@ -83,7 +83,7 @@ export default function NnhClientSanPhamList({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {/* DANH SÁCH THẺ SẢN PHẨM */}
           {filteredProducts.map((prod, index) => {
             // Chuẩn hóa tên sản phẩm, hình ảnh và định danh
