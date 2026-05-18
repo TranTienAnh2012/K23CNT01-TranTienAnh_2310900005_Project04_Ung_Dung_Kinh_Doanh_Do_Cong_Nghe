@@ -1,3 +1,4 @@
+﻿// NnhClientSanPhamChiTiet - Trang chi tiet san pham client
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { shopApi } from '../../../api/client/tta_shop.api';
@@ -156,7 +157,7 @@ export default function NnhClientSanPhamChiTiet() {
               <button
                 key={i}
                 onClick={() => setSelectedThumb(i)}
-                className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${selectedThumb === i ? 'border-purple-600 shadow-md' : 'border-slate-200 hover:border-purple-300'}`}
+                className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${selectedThumb === i ? 'border-purple-600 shadow-md' : 'border-slate-200 hover:border-purple-300'}`}
               >
                 <img src={src} alt={`thumb-${i}`} className="w-full h-full object-cover" />
               </button>
@@ -181,7 +182,7 @@ export default function NnhClientSanPhamChiTiet() {
           </div>
 
           {/* Product Name */}
-          <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">
             {name}
           </h1>
 
@@ -197,7 +198,7 @@ export default function NnhClientSanPhamChiTiet() {
           </div>
 
           {/* Price */}
-          <div className="bg-gradient-to-r from-purple-50 to-indigo-50/30 p-4 rounded-2xl border border-purple-100/50 flex items-baseline gap-4">
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50/30 p-5 rounded-2xl border border-purple-100/50 flex items-baseline gap-4">
             <span className="text-3xl font-extrabold text-red-600 font-['Space_Grotesk'] tracking-tight">
               {formatPrice(priceSale)}
             </span>
@@ -298,7 +299,7 @@ export default function NnhClientSanPhamChiTiet() {
           </div>
 
           {/* ============ KHUYẾN MẠI & ƯU ĐÃI ============ */}
-          <div className="bg-purple-50/70 border border-purple-200 rounded-2xl p-5 space-y-3">
+          <div className="bg-purple-50/70 border border-purple-200 rounded-2xl p-5 shadow-sm space-y-3">
             <div className="flex items-center gap-2 text-purple-700 font-bold text-sm">
               <span className="material-symbols-outlined text-lg">redeem</span>
               Khuyến mãi & Ưu đãi
@@ -336,7 +337,7 @@ export default function NnhClientSanPhamChiTiet() {
             <button
               onClick={handleBuyNow}
               disabled={stock <= 0}
-              className="flex-1 py-3.5 px-6 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+              className="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
             >
               <span className="material-symbols-outlined text-lg">bolt</span>
               Mua ngay
