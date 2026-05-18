@@ -299,7 +299,7 @@ export default function NnhClientSanPhamChiTiet() {
           </div>
 
           {/* ============ KHUYẾN MẠI & ƯU ĐÃI ============ */}
-          <div className="bg-purple-50/70 border border-purple-200 rounded-2xl p-5 shadow-sm space-y-3">
+          <div className="bg-purple-50/70 border border-purple-200 rounded-2xl p-5 shadow-sm shadow-sm space-y-3">
             <div className="flex items-center gap-2 text-purple-700 font-bold text-sm">
               <span className="material-symbols-outlined text-lg">redeem</span>
               Khuyến mãi & Ưu đãi
