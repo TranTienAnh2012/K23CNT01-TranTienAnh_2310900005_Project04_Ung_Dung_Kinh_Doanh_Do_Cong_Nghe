@@ -127,9 +127,9 @@ export default function NnhClientSanPhamChiTiet() {
         <Link to="/" className="hover:text-purple-600 transition-colors flex items-center gap-1 font-medium">
           <span className="material-symbols-outlined text-xs">home</span> Home
         </Link>
-        <span className="material-symbols-outlined text-[10px]">chevron_right</span>
+        <span className="material-symbols-outlined text-[10px]">arrow_forward_ios</span>
         <span className="text-slate-600 font-medium">{product.TenDanhMuc || 'Phone'}</span>
-        <span className="material-symbols-outlined text-[10px]">chevron_right</span>
+        <span className="material-symbols-outlined text-[10px]">arrow_forward_ios</span>
         <span className="text-purple-700 font-bold">{product.TenDanhMuc ? `${product.TenDanhMuc} (${product.ThuongHieu || 'Apple'})` : name}</span>
       </div>
 
