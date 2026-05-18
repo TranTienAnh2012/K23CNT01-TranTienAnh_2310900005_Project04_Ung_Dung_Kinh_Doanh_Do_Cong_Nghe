@@ -176,7 +176,7 @@ export default function ClientLayout() {
             </div>
             <div>
               <p className="text-xs md:text-sm font-bold text-purple-950">Miễn phí giao hàng</p>
-              <p className="text-xs text-purple-600/80">Cho đơn từ 300k</p>
+              <p className="text-xs text-purple-600/80">Cho đơn từ 500k</p>
             </div>
           </div>
 
