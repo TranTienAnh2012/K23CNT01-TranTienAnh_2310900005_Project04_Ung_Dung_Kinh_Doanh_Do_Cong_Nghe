@@ -91,11 +91,24 @@ export default function NnhClientSanPhamList({
             const name = prod.TenSanPham || prod.G5_TenSP || 'Sản phẩm cao cấp';
             const image = prod.HinhAnh || prod.G5_HinhAnh;
             
-            // Tính toán giá bán và giá gốc linh hoạt theo DB thực tế
+            // =========================================================================
+            // KHU VỰC TÍNH TOÁN GIÁ & PHẦN TRĂM GIẢM GIÁ (FRONTEND LOGIC)
+            // LƯU Ý: Phần trăm giảm giá KHÔNG được lưu cứng trong CSDL mà được tính toán real-time tại Frontend.
+            // =========================================================================
+            
+            // 1. Xác định Giá Bán (GiaBan):
+            // Lấy từ DB (prod.GiaBan hoặc prod.G5_Gia). Nếu DB lỗi hoặc để trống, set mặc định 15,000,000 VND.
             const priceSale = prod.GiaBan || prod.G5_Gia || 15000000;
+            
+            // 2. Xác định Giá Gốc (GiaOriginal):
+            // - Nếu CSDL có nhập Giá Gốc (prod.Gia) VÀ Giá Gốc > Giá Bán thì lấy Giá Gốc.
+            // - THỦ THUẬT: Nếu CSDL KHÔNG nhập Giá Gốc, hệ thống sẽ TỰ ĐỘNG fake Giá Gốc cao hơn 15% (priceSale * 1.15) 
+            //   để UI luôn có badge giảm giá bắt mắt thu hút khách hàng.
             const priceOriginal = prod.Gia && prod.Gia > priceSale ? prod.Gia : priceSale * 1.15;
             
-            // Tự động gán nhãn phần trăm giảm giá dựa trên chênh lệch giá hoặc chu kỳ
+            // 3. Công thức tính Phần Trăm Giảm Giá: % = (1 - (Giá Bán / Giá Gốc)) * 100
+            // Dùng Math.round() để làm tròn số (VD: 14.2% -> 14%). 
+            // Bọc chuỗi lại thành định dạng "-14%" cho Badge. Đảm bảo tối thiểu hiện -10%.
             const calculatedDiscount = Math.round((1 - priceSale / priceOriginal) * 100);
             const badgeText = prod.discount || `-${calculatedDiscount > 0 ? calculatedDiscount : 10}%`;
 

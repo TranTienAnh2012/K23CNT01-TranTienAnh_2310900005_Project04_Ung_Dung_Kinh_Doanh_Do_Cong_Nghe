@@ -107,10 +107,15 @@ export default function NnhClientSanPhamChiTiet() {
     );
   }
 
-  // Chuẩn hóa dữ liệu hiển thị
+  // =========================================================================
+  // KHU VỰC TÍNH TOÁN GIÁ & PHẦN TRĂM GIẢM GIÁ (FRONTEND LOGIC)
+  // Tính toán tương tự trang Danh Sách (List). Công thức: (1 - Giá bán/Giá gốc) * 100
+  // =========================================================================
   const name = product.TenSanPham || 'Sản phẩm cao cấp';
   const priceSale = product.GiaBan || 15000000;
+  // Thủ thuật fake giá gốc lớn hơn 15% nếu người nhập liệu quên không điền Giá gốc
   const priceOriginal = product.Gia && product.Gia > priceSale ? product.Gia : priceSale * 1.15;
+  // Làm tròn phần trăm (ví dụ: 14.5% -> 15%)
   const discountPercent = Math.round((1 - priceSale / priceOriginal) * 100);
   const stock = product.SoLuongTon ?? 10;
 
