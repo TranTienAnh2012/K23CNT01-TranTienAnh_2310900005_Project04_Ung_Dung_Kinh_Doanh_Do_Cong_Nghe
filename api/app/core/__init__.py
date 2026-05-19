@@ -65,8 +65,16 @@ def register_error_handlers(app):
 
 def register_resources(api):
     """Register all Flask-RESTful resources"""
+    
+    # =========================================================================
+    # ĐĂNG KÝ ĐƯỜNG DẪN (ROUTING) - KẾT NỐI API VỚI FRONTEND
+    # Các Class Resource (Controller) được đăng ký với các URL cụ thể.
+    # Khi Frontend gọi đúng chuỗi URL, Backend sẽ kích hoạt Class tương ứng.
+    # =========================================================================
+
     # Auth resources
     from app.modules.auth.auth_resource import LoginResource, RegisterResource
+    # Đăng ký URL. Ví dụ frontend gọi POST /api/tta_auth/login thì chạy LoginResource
     api.add_resource(LoginResource, '/api/tta_auth/login')
     api.add_resource(RegisterResource, '/api/tta_auth/register')
 
@@ -168,8 +176,8 @@ def register_resources(api):
 
     # Banner resources
     from app.modules.tta_banner.tta_banner_resource import BannerListResource, BannerResource
-    api.add_resource(BannerListResource, '/api/tta_banner')
-    api.add_resource(BannerResource, '/api/tta_banner/<int:id>')
+    api.add_resource(BannerListResource, '/api/tta_banner')      # Ánh xạ GET / POST cho danh sách
+    api.add_resource(BannerResource, '/api/tta_banner/<int:id>') # Ánh xạ GET / PUT / DELETE cho chi tiết
 
     # TODO: Register other resources as they are refactored
     

@@ -6,12 +6,24 @@ from app.utils.helpers import response_success, response_error
 from app.middleware.request_middleware import admin_required
 from app.schemas.validation_schemas import BannerCreateSchema, BannerUpdateSchema, validate_schema
 
+# =========================================================================
+# LỚP 3 (BACKEND): RESOURCE / CONTROLLER (Nhận Request từ Frontend)
+# OOP TRONG CONTROLLER:
+# Flask-RESTful sử dụng OOP để đóng gói và tái sử dụng code.
+# =========================================================================
+
+# OOP: Tính kế thừa (BannerListResource kế thừa thư viện Resource của Flask)
 class BannerListResource(Resource):
     @jwt_required()
     @admin_required
+    # OOP: Đây là một Phương thức (Method) gắn liền với đối tượng Class này.
+    # 'self' chính là con trỏ đại diện cho đối tượng hiện tại đang chạy.
     def get(self):
+        # Khi Frontend gọi axios.get('/api/tta_banner'), hàm get() này sẽ chạy
         params = request.args.to_dict()
+        # Lớp này gọi xuống tầng Service -> Repo -> CSDL để lấy dữ liệu
         data = service.get_all_banners(params)
+        # Hàm response_success đóng gói kết quả thành chuẩn JSON trả về cho Frontend
         return response_success(data=data)
 
     @jwt_required()
