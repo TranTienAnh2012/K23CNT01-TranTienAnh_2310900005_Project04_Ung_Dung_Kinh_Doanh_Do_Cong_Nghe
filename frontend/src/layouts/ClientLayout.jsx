@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import NnhClientHeader from '../pages/components/NnhClientHeader';
 import NnhClientFooter from '../pages/components/NnhClientFooter';
@@ -135,17 +135,44 @@ export default function ClientLayout() {
     'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=200&auto=format&fit=crop'
   ];
 
+  // Gradient pastel colors cho từng danh mục
+  const gradientColors = [
+    'from-purple-100 to-violet-200',
+    'from-blue-100 to-cyan-200',
+    'from-pink-100 to-rose-200',
+    'from-emerald-100 to-teal-200',
+    'from-amber-100 to-orange-200',
+    'from-indigo-100 to-blue-200',
+    'from-fuchsia-100 to-pink-200',
+    'from-sky-100 to-indigo-200',
+    'from-lime-100 to-emerald-200',
+    'from-rose-100 to-purple-200',
+  ];
+
+  // Ref cho scroll container
+  const categoryScrollRef = useRef(null);
+  const scrollCategories = (direction) => {
+    if (categoryScrollRef.current) {
+      const scrollAmount = 220;
+      categoryScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const finalCategoriesList = categories.length > 0
     ? categories.map((c, index) => ({
         name: c.TenDanhMuc || c.G5_TenDanhMuc,
         icon: defaultIcons[index % defaultIcons.length],
-        img: defaultImages[index % defaultImages.length]
+        img: defaultImages[index % defaultImages.length],
+        gradient: gradientColors[index % gradientColors.length]
       }))
     : [
-        { name: 'Điện thoại', icon: 'smartphone', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=200&auto=format&fit=crop' },
-        { name: 'Laptop', icon: 'laptop_mac', img: 'https://images.unsplash.com/photo-1496181130329-d50675f07ac5?q=80&w=200&auto=format&fit=crop' },
-        { name: 'Tai nghe', icon: 'headphones', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=200&auto=format&fit=crop' },
-        { name: 'Đồng hồ', icon: 'watch', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=200&auto=format&fit=crop' },
+        { name: 'Điện thoại', icon: 'smartphone', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=200&auto=format&fit=crop', gradient: gradientColors[0] },
+        { name: 'Laptop', icon: 'laptop_mac', img: 'https://images.unsplash.com/photo-1496181130329-d50675f07ac5?q=80&w=200&auto=format&fit=crop', gradient: gradientColors[1] },
+        { name: 'Tai nghe', icon: 'headphones', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=200&auto=format&fit=crop', gradient: gradientColors[2] },
+        { name: 'Đồng hồ', icon: 'watch', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=200&auto=format&fit=crop', gradient: gradientColors[3] },
       ];
 
   const location = useLocation();
@@ -162,11 +189,7 @@ export default function ClientLayout() {
         {isHomePage && (
           <div className="space-y-10">
             {/* KHU VỰC BANNER HERO NỔI BẬT ĐỘNG TỪ CSDL G5_BANNER */}
-        <NnhClientBanners 
-          banners={banners} 
-          selectedCategory={selectedCategory} 
-          setSelectedCategory={setSelectedCategory} 
-        />
+        <NnhClientBanners banners={banners} />
 
         {/* THANH CAM KẾT CHẤT LƯỢNG (TRUST BADGES / FEATURES) */}
         <div className="bg-[#f8f5ff] border border-purple-100 rounded-2xl p-6 flex flex-wrap items-center justify-between gap-6 shadow-sm">
@@ -211,55 +234,48 @@ export default function ClientLayout() {
           </div>
         </div>
 
-        {/* DANH SÁCH DANH MỤC TRÒN NỔI BẬT (CIRCULAR CATEGORIES) */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-900 font-['Space_Grotesk']">Danh mục sản phẩm</h2>
-            <button
-              onClick={() => setSelectedCategory('')}
-              className="text-xs font-semibold text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-1"
-            >
-              Xem tất cả <span className="material-symbols-outlined text-xs">arrow_forward</span>
-            </button>
-          </div>
+        {/* DANH SÁCH DANH MỤC SẢN PHẨM - PILL TAGS VỚI NÚT CUỘN 2 BÊN */}
+        <div className="relative bg-slate-100/80 rounded-2xl px-2 py-3">
+          {/* NÚT CUỘN TRÁI - NHỎ GỌN BÊN TRÁI */}
+          <button
+            onClick={() => scrollCategories('left')}
+            className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white/90 border border-slate-200 shadow-md hover:shadow-lg hover:bg-white flex items-center justify-center text-slate-500 hover:text-purple-600 transition-all active:scale-90"
+          >
+            <span className="material-symbols-outlined" style={{fontSize: '18px'}}>chevron_left</span>
+          </button>
 
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-4 pt-2">
+          {/* THANH CUỘN NGANG DANH MỤC */}
+          <div
+            ref={categoryScrollRef}
+            className="flex gap-2.5 overflow-x-auto scroll-smooth mx-8"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            <style>{`div::-webkit-scrollbar { display: none; }`}</style>
             {finalCategoriesList.map((cat) => {
               const isSelected = selectedCategory.toLowerCase() === cat.name.toLowerCase();
               return (
-                <div
+                <button
                   key={cat.name}
                   onClick={() => setSelectedCategory(isSelected ? '' : cat.name)}
-                  className="flex flex-col items-center gap-2 cursor-pointer group text-center"
+                  className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                    isSelected
+                      ? 'bg-purple-600 text-white shadow-md shadow-purple-200'
+                      : 'bg-white text-slate-700 border border-slate-200 hover:border-purple-300 hover:text-purple-700 hover:bg-purple-50 shadow-sm'
+                  }`}
                 >
-                  {/* HÌNH ẢNH HOẶC ICON DANH MỤC BO TRÒN */}
-                  <div
-                    className={`w-16 h-16 rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 border-2 ${
-                      isSelected
-                        ? 'border-purple-600 shadow-md ring-2 ring-purple-100 scale-105'
-                        : 'border-transparent bg-slate-100 group-hover:bg-purple-50 group-hover:border-purple-200'
-                    }`}
-                  >
-                    {cat.img ? (
-                      <img src={cat.img} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    ) : (
-                      <span className="material-symbols-outlined text-slate-600 group-hover:text-purple-600 text-2xl transition-colors">
-                        {cat.icon}
-                      </span>
-                    )}
-                  </div>
-                  {/* TÊN DANH MỤC */}
-                  <span
-                    className={`text-xs transition-colors line-clamp-1 px-1 ${
-                      isSelected ? 'font-bold text-purple-700' : 'font-medium text-slate-600 group-hover:text-purple-600'
-                    }`}
-                  >
-                    {cat.name}
-                  </span>
-                </div>
+                  {cat.name}
+                </button>
               );
             })}
           </div>
+
+          {/* NÚT CUỘN PHẢI - NHỎ GỌN BÊN PHẢI */}
+          <button
+            onClick={() => scrollCategories('right')}
+            className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white/90 border border-slate-200 shadow-md hover:shadow-lg hover:bg-white flex items-center justify-center text-slate-500 hover:text-purple-600 transition-all active:scale-90"
+          >
+            <span className="material-symbols-outlined" style={{fontSize: '18px'}}>chevron_right</span>
+          </button>
         </div>
 
         {/* LƯỚI SẢN PHẨM BÁN CHẠY HOẶC SẢN PHẨM ĐƯỢC LỌC (PRODUCTS GRID) */}
