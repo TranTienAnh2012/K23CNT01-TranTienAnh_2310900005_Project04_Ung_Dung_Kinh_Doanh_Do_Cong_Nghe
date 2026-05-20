@@ -27,16 +27,7 @@ def create_app(config_name=None):
 
     # Register resources
     register_resources(api)
-
-    # Register client blueprints
-    from app.routes.client.tta_sanpham_route import sanpham_client_bp
-    from app.routes.client.tta_danhmuc_route import danhmuc_client_bp
-    from app.routes.client.tta_donhang_route import donhang_client_bp
-    from app.routes.client.tta_banner_route import banner_client_bp
-    app.register_blueprint(sanpham_client_bp, url_prefix="/api/client/tta_sanpham")
-    app.register_blueprint(danhmuc_client_bp, url_prefix="/api/client/tta_danhmuc")
-    app.register_blueprint(donhang_client_bp, url_prefix="/api/client/tta_donhang")
-    app.register_blueprint(banner_client_bp, url_prefix="/api/client/tta_banner")
+    # Client blueprints registration removed (migrated to RESTful Resources)
 
     @app.route("/api/health")
     def health():
@@ -79,107 +70,113 @@ def register_resources(api):
     api.add_resource(RegisterResource, '/api/tta_auth/register')
 
     # SanPham resources
-    from app.modules.tta_sanpham.tta_sanpham_resource import SanPhamListResource, SanPhamResource
+    from app.modules.admin.tta_sanpham.tta_sanpham_resource import SanPhamListResource, SanPhamResource
     api.add_resource(SanPhamListResource, '/api/tta_sanpham')
     api.add_resource(SanPhamResource, '/api/tta_sanpham/<int:ma>')
 
     # DanhMuc resources
-    from app.modules.tta_danhmuc.tta_danhmuc_resource import DanhMucListResource, DanhMucResource
+    from app.modules.admin.tta_danhmuc.tta_danhmuc_resource import DanhMucListResource, DanhMucResource
     api.add_resource(DanhMucListResource, '/api/tta_danhmuc')
     api.add_resource(DanhMucResource, '/api/tta_danhmuc/<int:ma>')
 
     # NguoiDung resources
-    from app.modules.tta_nguoidung.tta_nguoidung_resource import NguoiDungListResource, NguoiDungResource
+    from app.modules.admin.tta_nguoidung.tta_nguoidung_resource import NguoiDungListResource, NguoiDungResource
     api.add_resource(NguoiDungListResource, '/api/tta_user')
     api.add_resource(NguoiDungResource, '/api/tta_user/<int:ma>')
 
     # DonHang resources
-    from app.modules.tta_donhang.tta_donhang_resource import DonHangListResource, DonHangResource
+    from app.modules.admin.tta_donhang.tta_donhang_resource import DonHangListResource, DonHangResource
     api.add_resource(DonHangListResource, '/api/tta_donhang')
     api.add_resource(DonHangResource, '/api/tta_donhang/<int:ma>')
 
     # ThuocTinh resources
-    from app.modules.tta_thuoctinh.tta_thuoctinh_resource import ThuocTinhListResource, ThuocTinhResource
+    from app.modules.admin.tta_thuoctinh.tta_thuoctinh_resource import ThuocTinhListResource, ThuocTinhResource
     api.add_resource(ThuocTinhListResource, '/api/tta_thuoctinh')
     api.add_resource(ThuocTinhResource, '/api/tta_thuoctinh/<int:ma>')
 
     # GiaTriThuocTinh resources
-    from app.modules.tta_giatrithuoctinh.tta_giatrithuoctinh_resource import GiaTriThuocTinhListResource, GiaTriThuocTinhResource, GiaTriThuocTinhProductResource
+    from app.modules.admin.tta_giatrithuoctinh.tta_giatrithuoctinh_resource import GiaTriThuocTinhListResource, GiaTriThuocTinhResource, GiaTriThuocTinhProductResource
     api.add_resource(GiaTriThuocTinhListResource, '/api/tta_giatrithuoctinh')
     api.add_resource(GiaTriThuocTinhResource, '/api/tta_giatrithuoctinh/<int:id>')
     api.add_resource(GiaTriThuocTinhProductResource, '/api/tta_giatrithuoctinh/product/<int:ma_sp>')
 
     # DanhMucThuocTinh resources
-    from app.modules.tta_danhmuc_thuoctinh.tta_danhmuc_thuoctinh_resource import DanhMucThuocTinhListResource, DanhMucThuocTinhResource, ProductAttributeResource
+    from app.modules.admin.tta_danhmuc_thuoctinh.tta_danhmuc_thuoctinh_resource import DanhMucThuocTinhListResource, DanhMucThuocTinhResource, ProductAttributeResource
     api.add_resource(DanhMucThuocTinhListResource, '/api/tta_danhmuc_thuoctinh')
     api.add_resource(DanhMucThuocTinhResource, '/api/tta_danhmuc_thuoctinh/<int:id>')
     api.add_resource(ProductAttributeResource, '/api/tta_danhmuc_thuoctinh/product/<int:ma_sp>')
 
     # ChiTietDonHang resources
-    from app.modules.tta_chitiet_donhang.tta_chitiet_donhang_resource import ChiTietDonHangListResource, ChiTietDonHangResource
+    from app.modules.admin.tta_chitiet_donhang.tta_chitiet_donhang_resource import ChiTietDonHangListResource, ChiTietDonHangResource
     api.add_resource(ChiTietDonHangListResource, '/api/tta_chitiet_donhang')
     api.add_resource(ChiTietDonHangResource, '/api/tta_chitiet_donhang/<int:ma>')
 
     # Review (danhgia) resources
-    from app.modules.tta_danhgia.tta_danhgia_resource import ReviewListResource, ReviewResource
+    from app.modules.admin.tta_danhgia.tta_danhgia_resource import ReviewListResource, ReviewResource
     api.add_resource(ReviewListResource, '/api/tta_danhgia')
     api.add_resource(ReviewResource, '/api/tta_danhgia/<int:id>')
 
     # Voucher resources
-    from app.modules.tta_voucher.tta_voucher_resource import VoucherListResource, VoucherResource
+    from app.modules.admin.tta_voucher.tta_voucher_resource import VoucherListResource, VoucherResource
     api.add_resource(VoucherListResource, '/api/tta_voucher')
     api.add_resource(VoucherResource, '/api/tta_voucher/<int:id>')
 
 
     # Thue resources
-    from app.modules.tta_sanpham_thue.tta_sanpham_thue_resource import SanPhamThueListResource, SanPhamThueResource
+    from app.modules.admin.tta_sanpham_thue.tta_sanpham_thue_resource import SanPhamThueListResource, SanPhamThueResource
     api.add_resource(SanPhamThueListResource, '/api/tta_sanpham_thue')
     api.add_resource(SanPhamThueResource, '/api/tta_sanpham_thue/<int:id>')
-    from app.modules.tta_donhang_thue.tta_donhang_thue_resource import DonHangThueListResource, DonHangThueResource
+    from app.modules.admin.tta_donhang_thue.tta_donhang_thue_resource import DonHangThueListResource, DonHangThueResource
     api.add_resource(DonHangThueListResource, '/api/tta_donhang_thue')
     api.add_resource(DonHangThueResource, '/api/tta_donhang_thue/<int:id>')
-    from app.modules.tta_chitiet_donhang_thue.tta_chitiet_donhang_thue_resource import ChiTietDonHangThueListResource, ChiTietDonHangThueResource
+    from app.modules.admin.tta_chitiet_donhang_thue.tta_chitiet_donhang_thue_resource import ChiTietDonHangThueListResource, ChiTietDonHangThueResource
     api.add_resource(ChiTietDonHangThueListResource, '/api/tta_chitiet_donhang_thue')
     api.add_resource(ChiTietDonHangThueResource, '/api/tta_chitiet_donhang_thue/<int:id>')
-    from app.modules.tta_lich_su_thue.tta_lich_su_thue_resource import LichSuThueListResource, LichSuThueResource
+    from app.modules.admin.tta_lich_su_thue.tta_lich_su_thue_resource import LichSuThueListResource, LichSuThueResource
     api.add_resource(LichSuThueListResource, '/api/tta_lich_su_thue')
     api.add_resource(LichSuThueResource, '/api/tta_lich_su_thue/<int:id>')
 
 
     # Rest modules resources
-    from app.modules.tta_dichvu_tuvan.tta_dichvu_tuvan_resource import DichVuTuVanListResource, DichVuTuVanResource
+    from app.modules.admin.tta_dichvu_tuvan.tta_dichvu_tuvan_resource import DichVuTuVanListResource, DichVuTuVanResource
     api.add_resource(DichVuTuVanListResource, '/api/tta_dichvu_tuvan')
     api.add_resource(DichVuTuVanResource, '/api/tta_dichvu_tuvan/<int:id>')
-    from app.modules.tta_lich_tuvan.tta_lich_tuvan_resource import LichTuVanListResource, LichTuVanResource
+    from app.modules.admin.tta_lich_tuvan.tta_lich_tuvan_resource import LichTuVanListResource, LichTuVanResource
     api.add_resource(LichTuVanListResource, '/api/tta_lich_tuvan')
     api.add_resource(LichTuVanResource, '/api/tta_lich_tuvan/<int:id>')
-    from app.modules.tta_lich_tuvan_nhanvien.tta_lich_tuvan_nhanvien_resource import LichTuVanNhanVienListResource, LichTuVanNhanVienResource
+    from app.modules.admin.tta_lich_tuvan_nhanvien.tta_lich_tuvan_nhanvien_resource import LichTuVanNhanVienListResource, LichTuVanNhanVienResource
     api.add_resource(LichTuVanNhanVienListResource, '/api/tta_lich_tuvan_nhanvien')
     api.add_resource(LichTuVanNhanVienResource, '/api/tta_lich_tuvan_nhanvien/<int:id>')
-    from app.modules.tta_sanpham_hinhanh.tta_sanpham_hinhanh_resource import SanPhamHinhAnhListResource, SanPhamHinhAnhResource
+    from app.modules.admin.tta_sanpham_hinhanh.tta_sanpham_hinhanh_resource import SanPhamHinhAnhListResource, SanPhamHinhAnhResource
     api.add_resource(SanPhamHinhAnhListResource, '/api/tta_sanpham_hinhanh')
     api.add_resource(SanPhamHinhAnhResource, '/api/tta_sanpham_hinhanh/<int:id>')
-    from app.modules.tta_uservoucher.tta_uservoucher_resource import UserVoucherListResource, UserVoucherResource
+    from app.modules.admin.tta_uservoucher.tta_uservoucher_resource import UserVoucherListResource, UserVoucherResource
     api.add_resource(UserVoucherListResource, '/api/tta_uservoucher')
     api.add_resource(UserVoucherResource, '/api/tta_uservoucher/<int:id>')
-    from app.modules.tta_giohangtam.tta_giohangtam_resource import GioHangTamListResource, GioHangTamResource
+    from app.modules.admin.tta_giohangtam.tta_giohangtam_resource import GioHangTamListResource, GioHangTamResource
     api.add_resource(GioHangTamListResource, '/api/tta_giohangtam')
     api.add_resource(GioHangTamResource, '/api/tta_giohangtam/<int:id>')
 
     # Dashboard resources
-    from app.modules.tta_dashboard.dashboard_resource import DashboardResource
+    from app.modules.admin.tta_dashboard.dashboard_resource import DashboardResource
     api.add_resource(DashboardResource, '/api/dashboard')
 
     # Upload resources
-    from app.modules.tta_upload.upload_resource import UploadResource
+    from app.modules.admin.tta_upload.upload_resource import UploadResource
     api.add_resource(UploadResource, '/api/upload')
 
     # Banner resources
-    from app.modules.tta_banner.tta_banner_resource import BannerListResource, BannerResource
+    from app.modules.admin.tta_banner.tta_banner_resource import BannerListResource, BannerResource
     api.add_resource(BannerListResource, '/api/tta_banner')      # Ánh xạ GET / POST cho danh sách
     api.add_resource(BannerResource, '/api/tta_banner/<int:id>') # Ánh xạ GET / PUT / DELETE cho chi tiết
+    # Client resources
+    from app.modules.client.tta_sanpham.tta_sanpham_resource import ClientSanPhamListResource, ClientSanPhamResource
+    from app.modules.client.tta_danhmuc.tta_danhmuc_resource import ClientDanhMucListResource
+    from app.modules.client.tta_banner.tta_banner_resource import ClientBannerListResource
+    from app.modules.client.tta_donhang.tta_donhang_resource import ClientDonHangListResource
 
-    # TODO: Register other resources as they are refactored
-    
-    # We still keep blueprints for non-RESTful routes or legacy support if needed
-    # but the goal is to migrate them all.
+    api.add_resource(ClientSanPhamListResource, '/api/client/tta_sanpham')
+    api.add_resource(ClientSanPhamResource, '/api/client/tta_sanpham/<int:ma>')
+    api.add_resource(ClientDanhMucListResource, '/api/client/tta_danhmuc')
+    api.add_resource(ClientBannerListResource, '/api/client/tta_banner')
+    api.add_resource(ClientDonHangListResource, '/api/client/tta_donhang')

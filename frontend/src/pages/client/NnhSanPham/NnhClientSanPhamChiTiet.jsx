@@ -308,6 +308,12 @@ export default function NnhClientSanPhamChiTiet() {
               <span className="text-slate-500 font-medium">Chứng nhận chất lượng:</span>
               <span className="font-bold text-emerald-600">ISO 9001:2015</span>
             </div>
+            {product.specifications && product.specifications.map((spec, idx) => (
+              <div key={idx} className="flex justify-between py-2.5 px-4 bg-purple-50/40 rounded-xl border border-purple-100/50">
+                <span className="text-slate-500 font-semibold">{spec.TenThuocTinh}:</span>
+                <span className="font-extrabold text-purple-950">{spec.GiaTri}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
