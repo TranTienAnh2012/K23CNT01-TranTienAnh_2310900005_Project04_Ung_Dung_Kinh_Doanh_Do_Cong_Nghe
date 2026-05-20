@@ -101,8 +101,13 @@ export default function App() {
           </Route>
 
           {/* ADMIN ROUTES (Bảo vệ bởi ProtectedRoute) */}
+          {/* Khi gặp đường dẫn /admin, React Router sẽ dựng cái khung AdminLayout lên trước. */}
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            
+            {/* Nếu chỉ gõ /admin, tự động chuyển hướng sang /admin/dashboard */}
             <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            
+            {/* Tất cả các Route con này chính là nội dung sẽ được ném vào vị trí <Outlet /> của AdminLayout */}
             <Route path="dashboard" element={<NnhDashboard />} />
             
             <Route path="danh-muc"            element={<NnhDanhMucList />} />
