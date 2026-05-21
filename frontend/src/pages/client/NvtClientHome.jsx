@@ -1,7 +1,7 @@
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
 
-export default function NnhClientHome() {
+export default function NvtClientHome() {
   // Lấy dữ liệu context (nếu cần) từ ClientLayout
   const { selectedCategory, setSelectedCategory } = useOutletContext() || {};
 
@@ -24,7 +24,7 @@ export default function NnhClientHome() {
       category: 'Xu hướng công nghệ',
       date: '12 Tháng 5, 2026',
       readTime: '4 phút đọc',
-      image: 'https://images.unsplash.com/photo-1496181130329-d50675f07ac5?q=80&w=600&auto=format&fit=crop',
+      image: 'https://i.pinimg.com/736x/63/31/0d/63310de93fcf10d24c0d4ea2d8379a45.jpg',
       featured: false,
     },
     {

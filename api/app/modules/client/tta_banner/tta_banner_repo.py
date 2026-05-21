@@ -27,6 +27,7 @@ def get_all(params=None):
                 "UrlAnh": row_dict['G5_UrlAnh'],
                 "LinkRedirect": row_dict['G5_LinkRedirect'],
                 "TrangThai": row_dict['G5_TrangThai'],
+                "ViTri": row_dict['G5_ViTri'],
                 "NgayTao": row_dict['G5_NgayTao'].isoformat() if row_dict['G5_NgayTao'] else None
             })
         return {"items": items, "total": len(items)}

@@ -10,8 +10,11 @@ import ClientLayout from './layouts/ClientLayout'; // Layout mới
 // --- PAGES: AUTH ---
 import NnhLoginPage from './pages/auth/nnh_login_page';
 import NnhRegisterPage from './pages/auth/nnh_register_page';
-import NnhClientHome from './pages/client/NnhClientHome';
-import NnhClientSanPhamChiTiet from './pages/client/NnhSanPham/NnhClientSanPhamChiTiet';
+import NvtClientHome from './pages/client/NvtClientHome';
+import NvtClientSanPhamChiTiet from './pages/client/NvtSanPham/NvtClientSanPhamChiTiet';
+import NvtClientDatHang from './pages/client/NvtDonHang/NvtClientDatHang';
+import NvtClientLichSuDonHang from './pages/client/NvtDonHang/NvtClientLichSuDonHang';
+import NvtClientTrangCaNhan from './pages/client/NvtTrangCaNhan/NvtClientTrangCaNhan';
 
 // --- PAGES: ADMIN ---
 import NnhDashboard from './pages/admin/dashboard/nnh_dashboard';
@@ -96,8 +99,11 @@ export default function App() {
 
           {/* CLIENT ROUTES */}
           <Route path="/" element={<ClientLayout />}>
-            <Route index element={<NnhClientHome />} />
-            <Route path="san-pham/:ma" element={<NnhClientSanPhamChiTiet />} />
+            <Route index element={<NvtClientHome />} />
+            <Route path="san-pham/:ma" element={<NvtClientSanPhamChiTiet />} />
+            <Route path="dat-hang/:ma" element={<NvtClientDatHang />} />
+            <Route path="lich-su-don-hang" element={<NvtClientLichSuDonHang />} />
+            <Route path="trang-ca-nhan" element={<NvtClientTrangCaNhan />} />
           </Route>
 
           {/* ADMIN ROUTES (Bảo vệ bởi ProtectedRoute) */}

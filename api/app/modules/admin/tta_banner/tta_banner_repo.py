@@ -26,6 +26,7 @@ def get_all(params=None):
                 "UrlAnh": row_dict['G5_UrlAnh'],
                 "LinkRedirect": row_dict['G5_LinkRedirect'],
                 "TrangThai": row_dict['G5_TrangThai'],
+                "ViTri": row_dict['G5_ViTri'],
                 "NgayTao": row_dict['G5_NgayTao'].isoformat() if row_dict['G5_NgayTao'] else None
             })
         return {"items": items, "total": len(items)}
@@ -48,6 +49,7 @@ def get_by_id(id):
                 "UrlAnh": row_dict['G5_UrlAnh'],
                 "LinkRedirect": row_dict['G5_LinkRedirect'],
                 "TrangThai": row_dict['G5_TrangThai'],
+                "ViTri": row_dict['G5_ViTri'],
                 "NgayTao": row_dict['G5_NgayTao'].isoformat() if row_dict['G5_NgayTao'] else None
             }
         return None
@@ -59,7 +61,8 @@ def create(data):
         G5_MoTa=data.get('MoTa'),
         G5_UrlAnh=data['UrlAnh'],
         G5_LinkRedirect=data.get('LinkRedirect'),
-        G5_TrangThai=data.get('TrangThai', 1)
+        G5_TrangThai=data.get('TrangThai', 1),
+        G5_ViTri=data.get('ViTri')
     )
     with engine.connect() as conn:
         conn.execute(stmt)
@@ -73,6 +76,7 @@ def update_banner(id, data):
     if 'UrlAnh' in data: update_values['G5_UrlAnh'] = data['UrlAnh']
     if 'LinkRedirect' in data: update_values['G5_LinkRedirect'] = data['LinkRedirect']
     if 'TrangThai' in data: update_values['G5_TrangThai'] = data['TrangThai']
+    if 'ViTri' in data: update_values['G5_ViTri'] = data['ViTri']
     
     if not update_values:
         return

@@ -1,4 +1,4 @@
-from sqlalchemy import insert, update
+from sqlalchemy import select, insert, update
 from app.db.connection import engine
 from app.models.schema import donhang, chitietdonhang, sanpham
 
@@ -53,3 +53,51 @@ def place_order(user_id, data):
                 conn.execute(stmt_stock)
                 
         return order_id
+
+def get_orders_by_user(user_id):
+    stmt = select(donhang).where(donhang.c.G5_MaNguoiDung == user_id, donhang.c.G5_IsDeleted == 0).order_by(donhang.c.G5_NgayDatHang.desc())
+    with engine.connect() as conn:
+        result = conn.execute(stmt)
+        orders = []
+        for row in result:
+            row_dict = row._mapping
+            order_id = row_dict['G5_MaDonHang']
+            
+            # Lấy danh sách sản phẩm trong đơn hàng
+            stmt_items = select(
+                chitietdonhang.c.G5_SoLuong,
+                sanpham.c.G5_MaSanPham,
+                sanpham.c.G5_TenSanPham,
+                sanpham.c.G5_HinhAnh,
+                sanpham.c.G5_GiaBan
+            ).select_from(
+                chitietdonhang.join(sanpham, chitietdonhang.c.G5_MaSanPham == sanpham.c.G5_MaSanPham)
+            ).where(chitietdonhang.c.G5_MaDonHang == order_id)
+            
+            items_res = conn.execute(stmt_items)
+            items = []
+            for item_row in items_res:
+                item_dict = item_row._mapping
+                items.append({
+                    "MaSanPham": item_dict['G5_MaSanPham'],
+                    "TenSanPham": item_dict['G5_TenSanPham'],
+                    "HinhAnh": item_dict['G5_HinhAnh'],
+                    "GiaBan": float(item_dict['G5_GiaBan']) if item_dict['G5_GiaBan'] else 0,
+                    "SoLuong": item_dict['G5_SoLuong']
+                })
+                
+            orders.append({
+                "MaDonHang": order_id,
+                "NgayDatHang": row_dict['G5_NgayDatHang'].isoformat() if row_dict['G5_NgayDatHang'] else None,
+                "TongTien": float(row_dict['G5_TongTien']) if row_dict['G5_TongTien'] else 0,
+                "TrangThai": row_dict['G5_TrangThai'],
+                "HoTenNguoiNhan": row_dict['G5_HoTenNguoiNhan'],
+                "SoDienThoai": row_dict['G5_SoDienThoaiNguoiNhan'],
+                "DiaChi": row_dict['G5_DiaChiNguoiNhan'],
+                "Email": row_dict['G5_EmailNguoiNhan'],
+                "PhuongThucThanhToan": row_dict['G5_PhuongThucThanhToan'],
+                "TrangThaiThanhToan": row_dict['G5_TrangThaiThanhToan'],
+                "GhiChu": row_dict['G5_GhiChu'],
+                "items": items
+            })
+        return orders

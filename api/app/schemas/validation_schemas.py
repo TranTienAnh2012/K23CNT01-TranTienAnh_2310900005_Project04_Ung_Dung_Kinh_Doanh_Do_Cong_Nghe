@@ -90,6 +90,7 @@ class BannerCreateSchema(Schema):
     UrlAnh = fields.Str(required=True)
     LinkRedirect = fields.Str(validate=validate.Length(max=500), allow_none=True)
     TrangThai = fields.Int(validate=validate.OneOf([0, 1]), load_default=1)
+    ViTri = fields.Int(allow_none=True)
 
 class BannerUpdateSchema(Schema):
     """Schema for updating a banner"""
@@ -101,6 +102,7 @@ class BannerUpdateSchema(Schema):
     UrlAnh = fields.Str()
     LinkRedirect = fields.Str(validate=validate.Length(max=500), allow_none=True)
     TrangThai = fields.Int(validate=validate.OneOf([0, 1]))
+    ViTri = fields.Int(allow_none=True)
 
 def validate_schema(schema_class):
     """Decorator to validate request data against a schema"""

@@ -136,7 +136,14 @@ export default function NnhBannerList() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <p className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'} text-sm`}>{item.TieuDe || '(Không tiêu đề)'}</p>
+                        <div className="flex items-center gap-2">
+                          <p className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'} text-sm`}>{item.TieuDe || '(Không tiêu đề)'}</p>
+                          {item.ViTri && (
+                            <span className="inline-block px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[9px] font-bold">
+                              Vị trí {item.ViTri}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-slate-400 mt-1 max-w-xs truncate">{item.MoTa || '(Không mô tả)'}</p>
                         {item.LinkRedirect && (
                           <a href={item.LinkRedirect} target="_blank" rel="noreferrer" className="text-[10px] text-blue-500 hover:underline block mt-1 truncate max-w-xs">

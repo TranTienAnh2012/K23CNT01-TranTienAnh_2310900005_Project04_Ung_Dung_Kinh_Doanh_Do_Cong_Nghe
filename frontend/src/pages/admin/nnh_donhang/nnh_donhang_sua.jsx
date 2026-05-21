@@ -13,6 +13,12 @@ export default function TtaDonHangSua() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `http://localhost:5000${path}`;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -120,8 +126,12 @@ export default function TtaDonHangSua() {
                       <tr key={item.Id} className="group transition-colors hover:bg-blue-600/5">
                         <td className="px-8 py-5">
                           <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 flex-shrink-0">
-                              <img src={item.HinhAnh || 'https://via.placeholder.com/100'} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <div className="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 flex-shrink-0 flex items-center justify-center">
+                              {getImageUrl(item.HinhAnh) ? (
+                                <img src={getImageUrl(item.HinhAnh)} alt={item.TenSanPham} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                              ) : (
+                                <span className="material-symbols-outlined text-slate-400 text-2xl">image_not_supported</span>
+                              )}
                             </div>
                             <div>
                               <p className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.TenSanPham}</p>

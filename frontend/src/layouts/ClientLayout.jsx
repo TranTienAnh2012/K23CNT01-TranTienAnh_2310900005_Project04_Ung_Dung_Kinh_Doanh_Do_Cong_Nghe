@@ -3,10 +3,21 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import NnhClientHeader from '../pages/components/NnhClientHeader';
 import NnhClientFooter from '../pages/components/NnhClientFooter';
 import NnhClientBanners from '../pages/components/NnhClientBanners';
-import NnhClientSanPhamList from '../pages/client/NnhSanPham/NnhClientSanPhamList';
+import NvtClientSanPhamList from '../pages/client/NvtSanPham/NvtClientSanPhamList';
 import { shopApi } from '../api/client/tta_shop.api';
 
 export default function ClientLayout() {
+  const scrollRef = React.useRef(null);
+
+  const handleScroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 250;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
   // Trạng thái lưu trữ danh sách sản phẩm lấy từ API
   const [products, setProducts] = useState([]);
   // Trạng thái lưu trữ danh sách banner động lấy từ CSDL
@@ -206,64 +217,56 @@ export default function ClientLayout() {
             </div>
             <div>
               <p className="text-xs md:text-sm font-bold text-purple-950">Hỗ trợ 24/7</p>
-              <p className="text-xs text-purple-600/80">1900 1234</p>
+              <p className="text-xs text-purple-600/80">0387742492</p>
             </div>
           </div>
         </div>
 
-        {/* DANH SÁCH DANH MỤC TRÒN NỔI BẬT (CIRCULAR CATEGORIES) */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-900 font-['Space_Grotesk']">Danh mục sản phẩm</h2>
-            <button
-              onClick={() => setSelectedCategory('')}
-              className="text-xs font-semibold text-purple-600 hover:text-purple-800 transition-colors flex items-center gap-1"
-            >
-              Xem tất cả <span className="material-symbols-outlined text-xs">arrow_forward</span>
-            </button>
-          </div>
+        {/* DANH SÁCH DANH MỤC DẠNG PILLS TRƯỢT */}
+        <div className="relative flex items-center bg-slate-50/40 border border-slate-100 rounded-2xl p-2 max-w-full">
+          {/* Nút scroll trái */}
+          <button
+            onClick={() => handleScroll('left')}
+            className="w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center shadow-sm text-slate-500 active:scale-95 transition-all z-10 shrink-0 cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-sm font-bold">chevron_left</span>
+          </button>
 
-          <div className="grid grid-cols-4 sm:grid-cols-8 gap-4 pt-2">
+          {/* Container các pills */}
+          <div
+            ref={scrollRef}
+            className="flex items-center gap-2.5 overflow-x-auto scrollbar-none px-2 scroll-smooth w-full"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
             {finalCategoriesList.map((cat) => {
               const isSelected = selectedCategory.toLowerCase() === cat.name.toLowerCase();
               return (
-                <div
+                <button
                   key={cat.name}
                   onClick={() => setSelectedCategory(isSelected ? '' : cat.name)}
-                  className="flex flex-col items-center gap-2 cursor-pointer group text-center"
+                  className={`px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border duration-300 active:scale-95 cursor-pointer ${
+                    isSelected
+                      ? 'bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-200'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
+                  }`}
                 >
-                  {/* HÌNH ẢNH HOẶC ICON DANH MỤC BO TRÒN */}
-                  <div
-                    className={`w-16 h-16 rounded-full overflow-hidden flex items-center justify-center transition-all duration-300 border-2 ${
-                      isSelected
-                        ? 'border-purple-600 shadow-md ring-2 ring-purple-100 scale-105'
-                        : 'border-transparent bg-slate-100 group-hover:bg-purple-50 group-hover:border-purple-200'
-                    }`}
-                  >
-                    {cat.img ? (
-                      <img src={cat.img} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    ) : (
-                      <span className="material-symbols-outlined text-slate-600 group-hover:text-purple-600 text-2xl transition-colors">
-                        {cat.icon}
-                      </span>
-                    )}
-                  </div>
-                  {/* TÊN DANH MỤC */}
-                  <span
-                    className={`text-xs transition-colors line-clamp-1 px-1 ${
-                      isSelected ? 'font-bold text-purple-700' : 'font-medium text-slate-600 group-hover:text-purple-600'
-                    }`}
-                  >
-                    {cat.name}
-                  </span>
-                </div>
+                  {cat.name}
+                </button>
               );
             })}
           </div>
+
+          {/* Nút scroll phải */}
+          <button
+            onClick={() => handleScroll('right')}
+            className="w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center shadow-sm text-slate-500 active:scale-95 transition-all z-10 shrink-0 cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-sm font-bold">chevron_right</span>
+          </button>
         </div>
 
         {/* LƯỚI SẢN PHẨM BÁN CHẠY HOẶC SẢN PHẨM ĐƯỢC LỌC (PRODUCTS GRID) */}
-        <NnhClientSanPhamList 
+        <NvtClientSanPhamList 
           products={products} 
           loading={loading} 
           selectedCategory={selectedCategory} 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { shopApi } from '../../../api/client/tta_shop.api';
 
-export default function NnhClientSanPhamChiTiet() {
+export default function NvtClientSanPhamChiTiet() {
   const { ma } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
@@ -82,7 +82,7 @@ export default function NnhClientSanPhamChiTiet() {
   // Xử lý nút Mua ngay (Chuyển đến trang thanh toán)
   const handleBuyNow = () => {
     if (!product) return;
-    alert(`Đang tiến hành thanh toán cho "${product.TenSanPham}"...`);
+    navigate(`/dat-hang/${product.MaSanPham}?qty=${quantity}`);
   };
 
   if (loading) {
