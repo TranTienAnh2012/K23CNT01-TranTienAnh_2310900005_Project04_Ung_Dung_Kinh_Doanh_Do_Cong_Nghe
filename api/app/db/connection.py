@@ -4,8 +4,10 @@ from sqlalchemy.ext.declarative import declarative_base # Lớp cơ sở cho cá
 from sqlalchemy.orm import sessionmaker # Tạo phiên làm việc (session) với DB
 from app.core.config import get_config
 
-# Get configuration
+# 1. Gọi cấu hình đã được lấy và xử lý từ file config.py (vốn được đọc từ file .env)
 config = get_config()
+
+# 2. Lấy các thông tin gán vào biến nội bộ để chuẩn bị tạo chuỗi kết nối
 DB_SERVER = config.DB_SERVER
 DB_NAME = config.DB_NAME
 DB_USER = config.DB_USER

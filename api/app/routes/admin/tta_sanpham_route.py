@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt
-from app.modules.tta_sanpham import tta_sanpham_service as service # Sử dụng service thay vì query trực tiếp
+from app.modules.admin.tta_sanpham import tta_sanpham_service as service # Sử dụng service thay vì query trực tiếp
 from app.utils.helpers import response_success, response_error
 
 # Blueprint cho các chức năng Admin của Sản phẩm

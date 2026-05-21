@@ -1,12 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import NnhClientHeader from '../pages/components/NnhClientHeader';
 import NnhClientFooter from '../pages/components/NnhClientFooter';
 import NnhClientBanners from '../pages/components/NnhClientBanners';
-import NnhClientSanPhamList from '../pages/client/NnhSanPham/NnhClientSanPhamList';
+import NvtClientSanPhamList from '../pages/client/NvtSanPham/NvtClientSanPhamList';
 import { shopApi } from '../api/client/tta_shop.api';
 
 export default function ClientLayout() {
+  const scrollRef = React.useRef(null);
+
+  const handleScroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 250;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
   // Trạng thái lưu trữ danh sách sản phẩm lấy từ API
   const [products, setProducts] = useState([]);
   // Trạng thái lưu trữ danh sách banner động lấy từ CSDL
@@ -135,44 +146,17 @@ export default function ClientLayout() {
     'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?q=80&w=200&auto=format&fit=crop'
   ];
 
-  // Gradient pastel colors cho từng danh mục
-  const gradientColors = [
-    'from-purple-100 to-violet-200',
-    'from-blue-100 to-cyan-200',
-    'from-pink-100 to-rose-200',
-    'from-emerald-100 to-teal-200',
-    'from-amber-100 to-orange-200',
-    'from-indigo-100 to-blue-200',
-    'from-fuchsia-100 to-pink-200',
-    'from-sky-100 to-indigo-200',
-    'from-lime-100 to-emerald-200',
-    'from-rose-100 to-purple-200',
-  ];
-
-  // Ref cho scroll container
-  const categoryScrollRef = useRef(null);
-  const scrollCategories = (direction) => {
-    if (categoryScrollRef.current) {
-      const scrollAmount = 220;
-      categoryScrollRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
   const finalCategoriesList = categories.length > 0
     ? categories.map((c, index) => ({
         name: c.TenDanhMuc || c.G5_TenDanhMuc,
         icon: defaultIcons[index % defaultIcons.length],
-        img: defaultImages[index % defaultImages.length],
-        gradient: gradientColors[index % gradientColors.length]
+        img: defaultImages[index % defaultImages.length]
       }))
     : [
-        { name: 'Điện thoại', icon: 'smartphone', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=200&auto=format&fit=crop', gradient: gradientColors[0] },
-        { name: 'Laptop', icon: 'laptop_mac', img: 'https://images.unsplash.com/photo-1496181130329-d50675f07ac5?q=80&w=200&auto=format&fit=crop', gradient: gradientColors[1] },
-        { name: 'Tai nghe', icon: 'headphones', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=200&auto=format&fit=crop', gradient: gradientColors[2] },
-        { name: 'Đồng hồ', icon: 'watch', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=200&auto=format&fit=crop', gradient: gradientColors[3] },
+        { name: 'Điện thoại', icon: 'smartphone', img: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=200&auto=format&fit=crop' },
+        { name: 'Laptop', icon: 'laptop_mac', img: 'https://images.unsplash.com/photo-1496181130329-d50675f07ac5?q=80&w=200&auto=format&fit=crop' },
+        { name: 'Tai nghe', icon: 'headphones', img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=200&auto=format&fit=crop' },
+        { name: 'Đồng hồ', icon: 'watch', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=200&auto=format&fit=crop' },
       ];
 
   const location = useLocation();
@@ -189,7 +173,11 @@ export default function ClientLayout() {
         {isHomePage && (
           <div className="space-y-10">
             {/* KHU VỰC BANNER HERO NỔI BẬT ĐỘNG TỪ CSDL G5_BANNER */}
-        <NnhClientBanners banners={banners} />
+        <NnhClientBanners 
+          banners={banners} 
+          selectedCategory={selectedCategory} 
+          setSelectedCategory={setSelectedCategory} 
+        />
 
         {/* THANH CAM KẾT CHẤT LƯỢNG (TRUST BADGES / FEATURES) */}
         <div className="bg-[#f8f5ff] border border-purple-100 rounded-2xl p-6 flex flex-wrap items-center justify-between gap-6 shadow-sm">
@@ -229,38 +217,37 @@ export default function ClientLayout() {
             </div>
             <div>
               <p className="text-xs md:text-sm font-bold text-purple-950">Hỗ trợ 24/7</p>
-              <p className="text-xs text-purple-600/80">1900 1234</p>
+              <p className="text-xs text-purple-600/80">0387742492</p>
             </div>
           </div>
         </div>
 
-        {/* DANH SÁCH DANH MỤC SẢN PHẨM - PILL TAGS VỚI NÚT CUỘN 2 BÊN */}
-        <div className="relative bg-slate-100/80 rounded-2xl px-2 py-3">
-          {/* NÚT CUỘN TRÁI - NHỎ GỌN BÊN TRÁI */}
+        {/* DANH SÁCH DANH MỤC DẠNG PILLS TRƯỢT */}
+        <div className="relative flex items-center bg-slate-50/40 border border-slate-100 rounded-2xl p-2 max-w-full">
+          {/* Nút scroll trái */}
           <button
-            onClick={() => scrollCategories('left')}
-            className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white/90 border border-slate-200 shadow-md hover:shadow-lg hover:bg-white flex items-center justify-center text-slate-500 hover:text-purple-600 transition-all active:scale-90"
+            onClick={() => handleScroll('left')}
+            className="w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center shadow-sm text-slate-500 active:scale-95 transition-all z-10 shrink-0 cursor-pointer"
           >
-            <span className="material-symbols-outlined" style={{fontSize: '18px'}}>chevron_left</span>
+            <span className="material-symbols-outlined text-sm font-bold">chevron_left</span>
           </button>
 
-          {/* THANH CUỘN NGANG DANH MỤC */}
+          {/* Container các pills */}
           <div
-            ref={categoryScrollRef}
-            className="flex gap-2.5 overflow-x-auto scroll-smooth mx-8"
+            ref={scrollRef}
+            className="flex items-center gap-2.5 overflow-x-auto scrollbar-none px-2 scroll-smooth w-full"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            <style>{`div::-webkit-scrollbar { display: none; }`}</style>
             {finalCategoriesList.map((cat) => {
               const isSelected = selectedCategory.toLowerCase() === cat.name.toLowerCase();
               return (
                 <button
                   key={cat.name}
                   onClick={() => setSelectedCategory(isSelected ? '' : cat.name)}
-                  className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                  className={`px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all border duration-300 active:scale-95 cursor-pointer ${
                     isSelected
-                      ? 'bg-purple-600 text-white shadow-md shadow-purple-200'
-                      : 'bg-white text-slate-700 border border-slate-200 hover:border-purple-300 hover:text-purple-700 hover:bg-purple-50 shadow-sm'
+                      ? 'bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-200'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300'
                   }`}
                 >
                   {cat.name}
@@ -269,17 +256,17 @@ export default function ClientLayout() {
             })}
           </div>
 
-          {/* NÚT CUỘN PHẢI - NHỎ GỌN BÊN PHẢI */}
+          {/* Nút scroll phải */}
           <button
-            onClick={() => scrollCategories('right')}
-            className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-7 h-7 rounded-full bg-white/90 border border-slate-200 shadow-md hover:shadow-lg hover:bg-white flex items-center justify-center text-slate-500 hover:text-purple-600 transition-all active:scale-90"
+            onClick={() => handleScroll('right')}
+            className="w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center shadow-sm text-slate-500 active:scale-95 transition-all z-10 shrink-0 cursor-pointer"
           >
-            <span className="material-symbols-outlined" style={{fontSize: '18px'}}>chevron_right</span>
+            <span className="material-symbols-outlined text-sm font-bold">chevron_right</span>
           </button>
         </div>
 
         {/* LƯỚI SẢN PHẨM BÁN CHẠY HOẶC SẢN PHẨM ĐƯỢC LỌC (PRODUCTS GRID) */}
-        <NnhClientSanPhamList 
+        <NvtClientSanPhamList 
           products={products} 
           loading={loading} 
           selectedCategory={selectedCategory} 

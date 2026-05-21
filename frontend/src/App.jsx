@@ -10,8 +10,12 @@ import ClientLayout from './layouts/ClientLayout'; // Layout mới
 // --- PAGES: AUTH ---
 import NnhLoginPage from './pages/auth/nnh_login_page';
 import NnhRegisterPage from './pages/auth/nnh_register_page';
-import NnhClientHome from './pages/client/NnhClientHome';
-import NnhClientSanPhamChiTiet from './pages/client/NnhSanPham/NnhClientSanPhamChiTiet';
+import NvtClientHome from './pages/client/NvtClientHome';
+import NvtClientSanPhamChiTiet from './pages/client/NvtSanPham/NvtClientSanPhamChiTiet';
+import NvtClientDatHang from './pages/client/NvtDonHang/NvtClientDatHang';
+import NvtClientLichSuDonHang from './pages/client/NvtDonHang/NvtClientLichSuDonHang';
+import NvtClientChiTietDonHang from './pages/client/NvtDonHang/NvtClientChiTietDonHang';
+import NvtClientTrangCaNhan from './pages/client/NvtTrangCaNhan/NvtClientTrangCaNhan';
 
 // --- PAGES: ADMIN ---
 import NnhDashboard from './pages/admin/dashboard/nnh_dashboard';
@@ -96,13 +100,22 @@ export default function App() {
 
           {/* CLIENT ROUTES */}
           <Route path="/" element={<ClientLayout />}>
-            <Route index element={<NnhClientHome />} />
-            <Route path="san-pham/:ma" element={<NnhClientSanPhamChiTiet />} />
+            <Route index element={<NvtClientHome />} />
+            <Route path="san-pham/:ma" element={<NvtClientSanPhamChiTiet />} />
+            <Route path="dat-hang/:ma" element={<NvtClientDatHang />} />
+            <Route path="lich-su-don-hang" element={<NvtClientLichSuDonHang />} />
+            <Route path="chi-tiet-don-hang/:ma" element={<NvtClientChiTietDonHang />} />
+            <Route path="trang-ca-nhan" element={<NvtClientTrangCaNhan />} />
           </Route>
 
           {/* ADMIN ROUTES (Bảo vệ bởi ProtectedRoute) */}
+          {/* Khi gặp đường dẫn /admin, React Router sẽ dựng cái khung AdminLayout lên trước. */}
           <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
+            
+            {/* Nếu chỉ gõ /admin, tự động chuyển hướng sang /admin/dashboard */}
             <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            
+            {/* Tất cả các Route con này chính là nội dung sẽ được ném vào vị trí <Outlet /> của AdminLayout */}
             <Route path="dashboard" element={<NnhDashboard />} />
             
             <Route path="danh-muc"            element={<NnhDanhMucList />} />

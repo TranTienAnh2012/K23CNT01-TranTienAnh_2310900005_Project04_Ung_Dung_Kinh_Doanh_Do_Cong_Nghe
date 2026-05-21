@@ -216,6 +216,9 @@ export default function AdminLayout() {
 
       {/* Main Content Area */}
       <main className="ml-64">
+        {/* <Outlet /> chính là "vùng trống" chờ nội dung.
+            Khi người dùng truy cập một URL (vd: /admin/san-pham), React Router sẽ lấy component
+            tương ứng (NnhSanPhamList) và bơm (inject) vào đúng vị trí này để hiển thị. */}
         <Outlet />
       </main>
       

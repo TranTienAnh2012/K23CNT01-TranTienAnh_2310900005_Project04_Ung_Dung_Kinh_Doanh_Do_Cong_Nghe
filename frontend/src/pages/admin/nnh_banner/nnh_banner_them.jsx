@@ -21,7 +21,8 @@ export default function NnhBannerThem() {
     MoTa: '',
     UrlAnh: '',
     LinkRedirect: '',
-    TrangThai: 1
+    TrangThai: 1,
+    ViTri: ''
   });
 
   useEffect(() => {
@@ -65,7 +66,8 @@ export default function NnhBannerThem() {
     try {
       const payload = {
         ...formData,
-        MaDanhMuc: formData.MaDanhMuc ? parseInt(formData.MaDanhMuc) : null
+        MaDanhMuc: formData.MaDanhMuc ? parseInt(formData.MaDanhMuc) : null,
+        ViTri: formData.ViTri ? parseInt(formData.ViTri) : null
       };
       await bannerApi.create(payload);
       alert("Thêm banner mới thành công!");
@@ -179,6 +181,21 @@ export default function NnhBannerThem() {
                 ))}
               </select>
               <p className="text-[10px] text-slate-500">Banner sẽ tự động thay đổi khi khách hàng bấm vào danh mục tương ứng trên trang chủ.</p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Vị trí hiển thị Banner</label>
+              <select 
+                className={`w-full px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-950 border-slate-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-400'} outline-none transition-all`}
+                value={formData.ViTri}
+                onChange={e => setFormData({...formData, ViTri: e.target.value})}
+              >
+                <option value="">-- Mặc định (Tự động theo thứ tự) --</option>
+                <option value="1">Vị trí 1: Banner chính (Bên trái lớn)</option>
+                <option value="2">Vị trí 2: Banner phụ 1 (Góc trên bên phải)</option>
+                <option value="3">Vị trí 3: Banner phụ 2 (Góc dưới bên phải)</option>
+              </select>
+              <p className="text-[10px] text-slate-500">Đặt vị trí cụ thể cho banner để cố định vị trí của nó trên trang chủ.</p>
             </div>
 
             <div className="space-y-2">

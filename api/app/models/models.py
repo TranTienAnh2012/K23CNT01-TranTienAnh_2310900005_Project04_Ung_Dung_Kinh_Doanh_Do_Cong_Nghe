@@ -5,9 +5,17 @@ from datetime import datetime
 
 Base = declarative_base()
 
+# =========================================================================
+# OOP TRONG QUẢN LÝ CSDL (ORM - Object Relational Mapping)
+# Mỗi bảng trong CSDL được đại diện bởi một Class (Lớp).
+# Mỗi dòng dữ liệu được truy vấn ra sẽ biến thành một Object (Đối tượng).
+# =========================================================================
+
+# OOP: Tính kế thừa (Class NguoiDung kế thừa các đặc tính từ class Base của SQLAlchemy)
 class NguoiDung(Base):
     __tablename__ = 'G5_nguoidung'
 
+    # OOP: Các thuộc tính (Attributes) của đối tượng NguoiDung
     G5_MaNguoiDung = Column(Integer, primary_key=True, autoincrement=True)
     G5_TenDangNhap = Column(String(50), unique=True, nullable=False)
     G5_MatKhau = Column(String(255), nullable=False)
@@ -19,6 +27,7 @@ class NguoiDung(Base):
     G5_NgayTao = Column(DateTime, default=datetime.utcnow)
     G5_IsDeleted = Column(Integer, default=0)
 
+    # OOP: Thể hiện mối quan hệ giữa các đối tượng (1 NguoiDung có nhiều DonHang)
     don_hangs = relationship('DonHang', back_populates='nguoi_dung')
 
 class DanhMuc(Base):

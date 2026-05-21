@@ -5,6 +5,11 @@ import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NnhBannerList() {
   const isDark = useAdminTheme();
+
+  // =========================================================================
+  // LỚP 3 (FRONTEND): THỰC THI TẠI COMPONENT VÀ GẮN DỮ LIỆU LÊN GIAO DIỆN
+  // Khai báo State để lưu trữ dữ liệu trả về từ API và trạng thái loading
+  // =========================================================================
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,7 +22,9 @@ export default function NnhBannerList() {
   const fetchBanners = async () => {
     setLoading(true);
     try {
+      // Gọi API ở Lớp 2 (bannerApi) thay vì gọi trực tiếp axios
       const res = await bannerApi.getAll();
+      // Nhận JSON từ Backend, lấy đúng cấu trúc res.data.data.items và lưu vào State
       setBanners(res.data.data.items || []);
     } catch (err) {
       console.error("Lỗi lấy dữ liệu banner:", err);
@@ -27,6 +34,7 @@ export default function NnhBannerList() {
     }
   };
 
+  // useEffect sẽ kích hoạt tự động 1 lần duy nhất khi màn hình này vừa được mở lên
   useEffect(() => {
     fetchBanners();
   }, []);
@@ -96,7 +104,7 @@ export default function NnhBannerList() {
               Danh Sách Banner
             </h3>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -128,7 +136,14 @@ export default function NnhBannerList() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <p className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'} text-sm`}>{item.TieuDe || '(Không tiêu đề)'}</p>
+                        <div className="flex items-center gap-2">
+                          <p className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'} text-sm`}>{item.TieuDe || '(Không tiêu đề)'}</p>
+                          {item.ViTri && (
+                            <span className="inline-block px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[9px] font-bold">
+                              Vị trí {item.ViTri}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-slate-400 mt-1 max-w-xs truncate">{item.MoTa || '(Không mô tả)'}</p>
                         {item.LinkRedirect && (
                           <a href={item.LinkRedirect} target="_blank" rel="noreferrer" className="text-[10px] text-blue-500 hover:underline block mt-1 truncate max-w-xs">
@@ -150,11 +165,10 @@ export default function NnhBannerList() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 rounded text-xs font-bold ${
-                          item.TrangThai === 1 
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                        <span className={`px-2.5 py-1 rounded text-xs font-bold ${item.TrangThai === 1
+                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                             : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                        }`}>
+                          }`}>
                           {item.TrangThai === 1 ? 'Hiển thị' : 'Đang ẩn'}
                         </span>
                       </td>

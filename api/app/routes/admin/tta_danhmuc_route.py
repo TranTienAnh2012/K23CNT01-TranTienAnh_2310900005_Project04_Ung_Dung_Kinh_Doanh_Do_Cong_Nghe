@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt
-from app.modules.tta_danhmuc import tta_danhmuc_service as service
+from app.modules.admin.tta_danhmuc import tta_danhmuc_service as service
 from app.utils.helpers import response_success, response_error
 
 danhmuc_admin_bp = Blueprint("danhmuc_admin", __name__)

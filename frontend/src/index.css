@@ -30,7 +30,7 @@ body {
 
 /* Sidebar Styling */
 .sidebar {
-  width: 280px;
+  width: 260px;
   background: #111827;
   border-right: 1px solid #1f2937;
   display: flex;
@@ -307,4 +307,15 @@ td {
   padding: 2px 8px;
   border-radius: 999px;
   font-size: 11px;
+}
+
+/* Ẩn TOÀN BỘ thanh cuộn trên mọi thành phần nhưng vẫn cho phép cuộn */
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+* {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;     /* Firefox */
 }

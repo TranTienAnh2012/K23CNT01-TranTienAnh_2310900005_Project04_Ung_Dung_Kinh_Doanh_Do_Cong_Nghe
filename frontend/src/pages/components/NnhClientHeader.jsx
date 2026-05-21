@@ -1,16 +1,29 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 export default function NnhClientHeader({ categories = [], selectedCategory = '', onSelectCategory }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Đóng dropdown khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   // Xây dựng danh sách tab điều hướng động từ danh mục thực tế của Admin
   const navTabs = categories.length > 0
     ? [
       { id: '', name: 'Trang chủ' },
       ...categories.map(c => ({ id: c.TenDanhMuc || c.G5_TenDanhMuc, name: c.TenDanhMuc || c.G5_TenDanhMuc })),
-      // { id: 'Khuyến mãi', name: 'Khuyến mãi' }
     ]
     : [
       { id: '', name: 'Trang chủ' },
@@ -20,7 +33,6 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
       { id: 'Đồng hồ', name: 'Đồng hồ' },
       { id: 'Phụ kiện', name: 'Phụ kiện' },
       { id: 'Thiết bị thông minh', name: 'Thiết bị thông minh' },
-      // { id: 'Khuyến mãi', name: 'Khuyến mãi' },
     ];
 
   return (
@@ -40,7 +52,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
       {/* KHU VỰC HEADER CHÍNH (LOGO, TÌM KIẾM, TÀI KHOẢN, GIỎ HÀNG) */}
       <div className="max-w-[1320px] mx-auto px-4 md:px-8 py-4 flex items-center justify-between gap-4 md:gap-8">
         {/* LOGO THƯƠNG HIỆU */}
-        <Link to="/" className="flex items-center gap-3 group cursor-pointer" onClick={() => onSelectCategory?.('')}>
+        <Link to="/" className="flex items-center gap-3 group cursor-pointer shrink-0" onClick={() => onSelectCategory?.('')}>
           <div className="w-10 h-10 rounded-full bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 group-hover:scale-105 transition-transform shadow-inner">
             <span className="material-symbols-outlined text-xl">devices</span>
           </div>
@@ -63,25 +75,83 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
           </div>
         </div>
 
-        {/* CÁC NÚT TÁC VỤ (ĐĂNG NHẬP / GIỎ HÀNG) */}
-        <div className="flex items-center gap-6">
+        {/* CÁC NÚT TÁC VỤ (GIỎ HÀNG / ĐĂNG NHẬP / AVATAR) */}
+        <div className="flex items-center gap-3 shrink-0">
+          {/* GIỎ HÀNG - luôn hiển thị trên thanh header, bên trái avatar */}
+          <div className="flex items-center gap-2 text-purple-950 hover:text-purple-600 transition-colors cursor-pointer group relative">
+            <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-700 group-hover:bg-purple-100 transition-colors relative">
+              <span className="material-symbols-outlined text-lg">shopping_cart</span>
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-sm animate-pulse">
+                2
+              </span>
+            </div>
+            <span className="text-sm font-semibold hidden md:block"></span>
+          </div>
           {user ? (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-purple-950">
-                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xs">
-                  {user.email?.[0]?.toUpperCase() || 'U'}
-                </div>
-                <span className="text-xs font-semibold hidden lg:block max-w-[120px] truncate" title={user.email}>{user.email}</span>
-              </div>
+            /* AVATAR DROPDOWN KHI ĐÃ ĐĂNG NHẬP */
+            <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => { logout(); navigate('/login'); }}
-                className="text-xs font-semibold text-red-600 hover:text-red-700 px-2.5 py-1.5 rounded bg-red-50 hover:bg-red-100 transition-colors whitespace-nowrap"
-                title="Đăng xuất"
+                id="user-avatar-btn"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-white font-black text-sm shadow-md hover:scale-105 active:scale-95 transition-all ring-2 ring-purple-200 ring-offset-1"
+                title={user.email}
               >
-                Đăng xuất
+                {user.email?.[0]?.toUpperCase() || 'U'}
               </button>
+
+              {/* DROPDOWN MENU */}
+              {dropdownOpen && (
+                <div className="absolute right-0 top-full mt-3 w-64 bg-white border border-purple-100 rounded-2xl shadow-2xl shadow-purple-900/10 z-50 overflow-hidden animate-fade-in">
+                  {/* Header dropdown */}
+                  <div className="px-4 py-3.5 bg-gradient-to-br from-purple-50 to-violet-50 border-b border-purple-100/60">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-white font-black text-sm shadow-md">
+                        {user.email?.[0]?.toUpperCase() || 'U'}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-black text-slate-800 truncate">{user.email}</p>
+                        <p className="text-[10px] text-slate-400 font-medium">Tài khoản Zenith Store</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu items */}
+                  <div className="p-2 space-y-0.5">
+                    <Link
+                      to="/trang-ca-nhan"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-700 transition-colors group"
+                    >
+                      <span className="material-symbols-outlined text-base text-slate-400 group-hover:text-purple-600">account_circle</span>
+                      <span className="text-sm font-semibold">Trang cá nhân</span>
+                    </Link>
+
+                    <Link
+                      to="/lich-su-don-hang"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-700 transition-colors group"
+                    >
+                      <span className="material-symbols-outlined text-base text-slate-400 group-hover:text-purple-600">receipt_long</span>
+                      <span className="text-sm font-semibold">Lịch sử đơn hàng</span>
+                    </Link>
+
+
+                  </div>
+
+                  <div className="p-2 border-t border-slate-100">
+                    <button
+                      onClick={() => { setDropdownOpen(false); logout(); navigate('/login'); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-rose-50 text-rose-600 hover:text-rose-700 transition-colors group"
+                    >
+                      <span className="material-symbols-outlined text-base">logout</span>
+                      <span className="text-sm font-semibold">Đăng xuất</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
+            /* NÚT ĐĂNG NHẬP KHI CHƯA ĐĂNG NHẬP */
             <Link to="/login" className="flex items-center gap-2 text-purple-950 hover:text-purple-600 transition-colors group">
               <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-700 group-hover:bg-purple-100 transition-colors">
                 <span className="material-symbols-outlined text-lg">person</span>
@@ -90,16 +160,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
             </Link>
           )}
 
-          <div className="flex items-center gap-2 text-purple-950 hover:text-purple-600 transition-colors cursor-pointer group relative">
-            <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-700 group-hover:bg-purple-100 transition-colors relative">
-              <span className="material-symbols-outlined text-lg">shopping_cart</span>
-              {/* HUY HIỆU SỐ LƯỢNG SẢN PHẨM TRONG GIỎ HÀNG */}
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-sm animate-pulse">
-                2
-              </span>
-            </div>
-            <span className="text-sm font-semibold hidden md:block">Giỏ hàng</span>
-          </div>
+
         </div>
       </div>
 

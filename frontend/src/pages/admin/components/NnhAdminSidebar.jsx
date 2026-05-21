@@ -59,7 +59,7 @@ export default function NnhAdminSidebar() {
 
   return (
     <aside className={`fixed left-0 top-0 h-full flex flex-col ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-lg'} text-sm tracking-tight w-64 border-r transition-colors duration-300 z-50 font-['Space_Grotesk']`}>
-      <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 80px)' }}>
+      <div className="p-6 overflow-y-auto no-scrollbar" style={{ maxHeight: 'calc(100vh - 80px)' }}>
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 bg-blue-600 rounded flex items-center justify-center flex-shrink-0">
             <span className="material-symbols-outlined text-white">rocket_launch</span>
