@@ -8,6 +8,26 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  // === LOGIC TỰ ĐỘNG ẨN/HIỆN HEADER KHI CUỘN TRANG ===
+  const [headerVisible, setHeaderVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      // Nếu cuộn xuống quá 80px và đang cuộn xuống → ẩn header
+      if (currentScrollY > 80 && currentScrollY > lastScrollY.current) {
+        setHeaderVisible(false);
+      } else {
+        // Cuộn lên hoặc ở đầu trang → hiện header
+        setHeaderVisible(true);
+      }
+      lastScrollY.current = currentScrollY;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Đóng dropdown khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -36,7 +56,13 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
     ];
 
   return (
-    <header className="w-full bg-white font-['Inter'] select-none border-b border-purple-100/50 sticky top-0 z-50 shadow-sm">
+    <header
+      className="w-full bg-white font-['Inter'] select-none border-b border-purple-100/50 sticky top-0 z-50 shadow-sm"
+      style={{
+        transform: headerVisible ? 'translateY(0)' : 'translateY(-100%)',
+        transition: 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+      }}
+    >
       {/* THANH THÔNG BÁO TRÊN CÙNG (TOP BAR) */}
       <div className="w-full bg-[#fdfcff] border-b border-purple-50 py-2 px-4 md:px-12 flex justify-between items-center text-xs text-purple-950/70 font-medium">
         <div className="flex items-center gap-2">
