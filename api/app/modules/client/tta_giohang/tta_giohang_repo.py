@@ -64,7 +64,7 @@ def add_to_cart(user_id, data):
             )
             with engine.begin() as transaction_conn:
                 res = transaction_conn.execute(stmt_insert)
-                new_id = res.lastrowid
+                new_id = res.inserted_primary_key[0]
             return new_id
 
 def update_quantity(id, user_id, qty):

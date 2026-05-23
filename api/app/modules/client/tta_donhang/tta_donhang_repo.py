@@ -28,7 +28,7 @@ def place_order(user_id, data):
             G5_IsDeleted=0
         )
         result = conn.execute(stmt_order)
-        order_id = result.lastrowid
+        order_id = result.inserted_primary_key[0]
         
         # 2. Tạo các chi tiết đơn hàng trong G5_chitietdonhang & Cập nhật số lượng tồn kho
         items = data.get('items') or []
@@ -64,7 +64,7 @@ def place_order(user_id, data):
 def get_orders_by_user(user_id):
     stmt = select(donhang).where(donhang.c.G5_MaNguoiDung == user_id, donhang.c.G5_IsDeleted == 0).order_by(donhang.c.G5_NgayDatHang.desc())
     with engine.connect() as conn:
-        result = conn.execute(stmt)
+        result = conn.execute(stmt).fetchall()
         orders = []
         for row in result:
             row_dict = row._mapping

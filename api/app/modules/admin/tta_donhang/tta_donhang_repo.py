@@ -54,7 +54,7 @@ def create(data):
     with engine.connect() as conn:
         result = conn.execute(stmt)
         conn.commit()
-        return result.lastrowid
+        return result.inserted_primary_key[0]
 
 def update_status(ma, status):
     stmt = update(donhang).where(donhang.c.G5_MaDonHang == ma).values(G5_TrangThai=status)
