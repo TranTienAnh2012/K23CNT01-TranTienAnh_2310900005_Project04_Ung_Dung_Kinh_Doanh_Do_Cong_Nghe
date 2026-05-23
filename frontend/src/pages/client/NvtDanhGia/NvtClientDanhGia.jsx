@@ -124,17 +124,11 @@ export default function NvtClientDanhGia({ maSanPham }) {
           <p className="text-xs text-slate-500 font-medium">({reviewsData.total} lượt đánh giá thực tế)</p>
         </div>
 
-        {/* Mẹo nhỏ giải thích logic tính trung bình */}
-        <div className="flex-1 max-w-md text-xs text-slate-500/80 bg-white border border-purple-50/60 p-4 rounded-2xl leading-relaxed space-y-1.5 shadow-sm">
-          <p className="font-bold text-purple-950 flex items-center gap-1.5 text-xs">
-            <span className="material-symbols-outlined text-sm text-purple-600">verified</span>
-            Logic đánh giá Zenith Store:
-          </p>
-          <ul className="list-disc pl-4 space-y-1">
-            <li>Chỉ những khách hàng đã mua sản phẩm (qua giỏ hàng hoặc mua ngay) mới được đánh giá 1 lần.</li>
-            <li>Điểm đánh giá thực tế hiển thị là giá trị trung bình cộng tất cả lượt đánh giá.</li>
-          </ul>
-        </div>
+        {/* 
+          QUY ĐỊNH ĐÁNH GIÁ (CHỈ LƯU NOTE TRONG CODE, KHÔNG HIỂN THỊ LÊN CLIENT):
+          - Chỉ những khách hàng đã mua sản phẩm (qua giỏ hàng hoặc mua ngay) mới được đánh giá 1 lần.
+          - Điểm đánh giá thực tế hiển thị là giá trị trung bình cộng tất cả lượt đánh giá.
+        */}
       </div>
 
       {/* FORM VIẾT ĐÁNH GIÁ (Nếu được phép) */}
