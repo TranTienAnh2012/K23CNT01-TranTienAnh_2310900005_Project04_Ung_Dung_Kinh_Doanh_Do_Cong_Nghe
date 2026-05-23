@@ -25,32 +25,22 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      const scrollHeight = document.documentElement.scrollHeight;
-      const clientHeight = window.innerHeight;
-      
-      // Kiểm tra xem có đang ở sát đáy trang hay không (khoảng cách 150px)
-      const isNearBottom = clientHeight + currentScrollY >= scrollHeight - 150;
       
       setIsNavVisible(prev => {
-        // Hysteresis (Độ trễ) để triệt tiêu hoàn toàn vòng lặp phản hồi gây nhấp nháy/giật giao diện
         if (prev) {
-          // Trạng thái Đang Hiện: Chỉ ẩn đi khi cuộn xuống quá ngưỡng của trang và KHÔNG ở gần đáy
-          const threshold = isHomePage ? 450 : 100;
-          if (currentScrollY > threshold && !isNearBottom) {
-            const diff = currentScrollY - lastScrollY.current;
-            if (diff > 8) {
-              return false; // Cuộn xuống -> Ẩn thanh nav
-            }
+          // Trạng thái Đang Hiện: Ẩn đi khi cuộn xuống vượt quá ngưỡng trên
+          const collapseThreshold = isHomePage ? 450 : 100;
+          if (currentScrollY > collapseThreshold) {
+            return false; // Thu gọn thanh nav
           }
-          return prev;
         } else {
-          // Trạng thái Đang Ẩn: Chỉ hiện lại khi cuộn ngược lên một khoảng đáng kể HOẶC gần đầu trang
-          const diff = currentScrollY - lastScrollY.current;
-          if (currentScrollY < 100 || diff < -15) {
-            return true; // Hiện lại thanh nav
+          // Trạng thái Đang Ẩn: Chỉ hiện lại khi cuộn ngược hẳn về gần đầu trang (tránh giật lag ở giữa/dưới trang)
+          const expandThreshold = isHomePage ? 300 : 40;
+          if (currentScrollY <= expandThreshold) {
+            return true; // Mở rộng thanh nav
           }
-          return prev;
         }
+        return prev;
       });
       
       lastScrollY.current = currentScrollY;
