@@ -27,4 +27,9 @@ export const shopApi = {
   getProductReviews: (ma_sp) => axios.get(`/api/client/tta_danhgia/${ma_sp}`),
   checkCanReview: (ma_sp) => axios.get(`/api/client/tta_danhgia/check/${ma_sp}`),
   submitReview: (data) => axios.post('/api/client/tta_danhgia', data),
+
+  // Voucher / Khuyến mãi
+  getPublicVouchers: () => axios.get('/api/client/tta_voucher/public'),
+  claimVoucher: (data) => axios.post('/api/client/tta_voucher/claim', data),
+  getMyVouchers: () => axios.get('/api/client/tta_voucher/my-vouchers'),
 };

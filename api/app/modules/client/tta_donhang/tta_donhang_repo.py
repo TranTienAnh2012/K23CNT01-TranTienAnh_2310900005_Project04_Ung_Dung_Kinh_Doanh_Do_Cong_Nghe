@@ -1,6 +1,7 @@
 from sqlalchemy import select, insert, update, delete
 from app.db.connection import engine
-from app.models.schema import donhang, chitietdonhang, sanpham, giohangtam
+from app.models.schema import donhang, chitietdonhang, sanpham, giohangtam, uservoucher, voucher
+from datetime import datetime
 
 def place_order(user_id, data):
     hoten = data.get('HoTenNguoiNhan') or data.get('HoTen') or ''
@@ -59,6 +60,37 @@ def place_order(user_id, data):
                 )
                 conn.execute(stmt_del_cart)
                 
+        # 3. Áp dụng voucher (nếu có)
+        voucher_id = data.get('VoucherId')
+        if voucher_id:
+            # Kiểm tra xem người dùng có voucher này và chưa dùng không
+            stmt_uv = select(uservoucher).where(
+                uservoucher.c.G5_UserId == user_id,
+                uservoucher.c.G5_VoucherId == voucher_id,
+                uservoucher.c.G5_IsUsed == 0
+            )
+            uv_row = conn.execute(stmt_uv).fetchone()
+            if not uv_row:
+                raise Exception("Mã giảm giá không hợp lệ hoặc đã được sử dụng trước đó.")
+                
+            # Đánh dấu đã sử dụng
+            stmt_mark_used = update(uservoucher).where(
+                uservoucher.c.G5_Id == uv_row._mapping['G5_Id']
+            ).values(
+                G5_IsUsed=1,
+                G5_UsedAt=datetime.utcnow(),
+                G5_OrderId=order_id
+            )
+            conn.execute(stmt_mark_used)
+            
+            # Tăng số lượng sử dụng của voucher
+            stmt_update_qty = update(voucher).where(
+                voucher.c.G5_Id == voucher_id
+            ).values(
+                G5_UsedQuantity=voucher.c.G5_UsedQuantity + 1
+            )
+            conn.execute(stmt_update_qty)
+            
         return order_id
 
 def get_orders_by_user(user_id):
@@ -194,5 +226,30 @@ def cancel_order(user_id, order_id):
                     G5_SoLuongTon=sanpham.c.G5_SoLuongTon + item._mapping['G5_SoLuong']
                 )
             )
+            
+        # Hoàn trả voucher (nếu có)
+        stmt_uv_check = select(uservoucher).where(
+            uservoucher.c.G5_OrderId == order_id,
+            uservoucher.c.G5_IsUsed == 1
+        )
+        uv_row = conn.execute(stmt_uv_check).fetchone()
+        if uv_row:
+            # Khôi phục trạng thái chưa dùng
+            stmt_restore_uv = update(uservoucher).where(
+                uservoucher.c.G5_Id == uv_row._mapping['G5_Id']
+            ).values(
+                G5_IsUsed=0,
+                G5_UsedAt=None,
+                G5_OrderId=None
+            )
+            conn.execute(stmt_restore_uv)
+            
+            # Giảm số lượng đã dùng của voucher
+            stmt_restore_qty = update(voucher).where(
+                voucher.c.G5_Id == uv_row._mapping['G5_VoucherId']
+            ).values(
+                G5_UsedQuantity=voucher.c.G5_UsedQuantity - 1
+            )
+            conn.execute(stmt_restore_qty)
             
         return True

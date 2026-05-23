@@ -176,6 +176,7 @@ def register_resources(api):
     from app.modules.client.tta_donhang.tta_donhang_resource import ClientDonHangListResource, ClientDonHangResource, ClientDonHangCancelResource
     from app.modules.client.tta_giohang.tta_giohang_resource import ClientGioHangListResource, ClientGioHangResource
     from app.modules.client.tta_danhgia.tta_danhgia_resource import ClientReviewListResource, ClientReviewCheckResource, ClientReviewCreateResource
+    from app.modules.client.tta_voucher.tta_voucher_resource import ClientVoucherPublicResource, ClientVoucherClaimResource, ClientVoucherMyResource
 
     api.add_resource(ClientSanPhamListResource, '/api/client/tta_sanpham')
     api.add_resource(ClientSanPhamResource, '/api/client/tta_sanpham/<int:ma>')
@@ -189,3 +190,6 @@ def register_resources(api):
     api.add_resource(ClientReviewListResource, '/api/client/tta_danhgia/<int:ma_sp>')
     api.add_resource(ClientReviewCheckResource, '/api/client/tta_danhgia/check/<int:ma_sp>')
     api.add_resource(ClientReviewCreateResource, '/api/client/tta_danhgia')
+    api.add_resource(ClientVoucherPublicResource, '/api/client/tta_voucher/public')
+    api.add_resource(ClientVoucherClaimResource, '/api/client/tta_voucher/claim')
+    api.add_resource(ClientVoucherMyResource, '/api/client/tta_voucher/my-vouchers')

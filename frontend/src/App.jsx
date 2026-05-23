@@ -17,6 +17,7 @@ import NvtClientLichSuDonHang from './pages/client/NvtDonHang/NvtClientLichSuDon
 import NvtClientChiTietDonHang from './pages/client/NvtDonHang/NvtClientChiTietDonHang';
 import NvtClientTrangCaNhan from './pages/client/NvtTrangCaNhan/NvtClientTrangCaNhan';
 import NvtClientGioHang from './pages/client/NvtGioHang/NvtClientGioHang';
+import NvtClientVoucher from './pages/client/NvtVoucher/NvtClientVoucher';
 
 // --- PAGES: ADMIN ---
 import NnhDashboard from './pages/admin/dashboard/nnh_dashboard';
@@ -108,6 +109,7 @@ export default function App() {
             <Route path="lich-su-don-hang/:id" element={<NvtClientChiTietDonHang />} />
             <Route path="trang-ca-nhan" element={<NvtClientTrangCaNhan />} />
             <Route path="gio-hang" element={<NvtClientGioHang />} />
+            <Route path="voucher" element={<NvtClientVoucher />} />
           </Route>
 
           {/* ADMIN ROUTES (Bảo vệ bởi ProtectedRoute) */}

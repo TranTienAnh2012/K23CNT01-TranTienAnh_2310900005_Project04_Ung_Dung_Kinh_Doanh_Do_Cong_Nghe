@@ -223,7 +223,14 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
                       <span className="text-sm font-semibold">Lịch sử đơn hàng</span>
                     </Link>
 
-
+                    <Link
+                      to="/voucher"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-700 transition-colors group"
+                    >
+                      <span className="material-symbols-outlined text-base text-slate-400 group-hover:text-purple-600">confirmation_number</span>
+                      <span className="text-sm font-semibold">Ví voucher</span>
+                    </Link>
                   </div>
 
                   <div className="p-2 border-t border-slate-100">

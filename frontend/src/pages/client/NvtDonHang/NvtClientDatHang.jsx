@@ -18,6 +18,10 @@ export default function NvtClientDatHang() {
     return !isNaN(qty) && qty > 0 ? qty : 1;
   });
 
+  const [vouchers, setVouchers] = useState([]);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [discount, setDiscount] = useState(0);
+
   const cartItems = location.state?.items || [];
   const isFromCart = ma === 'cart' || ma === 'gio-hang';
 
@@ -61,6 +65,53 @@ export default function NvtClientDatHang() {
     };
     fetchProduct();
   }, [ma, isFromCart]);
+
+  // Lấy danh sách voucher đã nhận chưa dùng
+  useEffect(() => {
+    if (!user) return;
+    const fetchUserVouchers = async () => {
+      try {
+        const res = await shopApi.getMyVouchers();
+        if (res.data?.data) {
+          const unused = res.data.data.filter(v => !v.IsUsed);
+          setVouchers(unused);
+        }
+      } catch (err) {
+        console.error("Lỗi lấy ví voucher:", err);
+      }
+    };
+    fetchUserVouchers();
+  }, [user]);
+
+  // Tính toán số tiền được giảm giá
+  useEffect(() => {
+    if (!selectedVoucher) {
+      setDiscount(0);
+      return;
+    }
+    
+    // Kiểm tra xem đơn hàng có thỏa mãn điều kiện tối thiểu không
+    if (totalPrice < selectedVoucher.MinOrderValue) {
+      alert(`Đơn hàng chưa đạt giá trị tối thiểu ${formatPrice(selectedVoucher.MinOrderValue)} để áp dụng mã này.`);
+      setSelectedVoucher(null);
+      setDiscount(0);
+      return;
+    }
+
+    if (selectedVoucher.DiscountType === 'percent') {
+      let calcDiscount = (totalPrice * selectedVoucher.DiscountValue) / 100;
+      if (selectedVoucher.MaxDiscount > 0 && calcDiscount > selectedVoucher.MaxDiscount) {
+        calcDiscount = selectedVoucher.MaxDiscount;
+      }
+      setDiscount(calcDiscount);
+    } else {
+      let calcDiscount = selectedVoucher.DiscountValue;
+      if (calcDiscount > totalPrice) {
+        calcDiscount = totalPrice;
+      }
+      setDiscount(calcDiscount);
+    }
+  }, [selectedVoucher, totalPrice]);
 
   // Tự động điền email của người dùng đã đăng nhập nếu có
   useEffect(() => {
@@ -167,10 +218,11 @@ export default function NvtClientDatHang() {
         SoDienThoaiNguoiNhan: formData.SoDienThoaiNguoiNhan,
         DiaChiNguoiNhan: formData.DiaChiNguoiNhan,
         EmailNguoiNhan: formData.EmailNguoiNhan,
-        TongTien: totalPrice,
+        TongTien: totalPrice - discount,
         GhiChu: formData.GhiChu,
         PhuongThucThanhToan: formData.PhuongThucThanhToan,
         TrangThaiThanhToan: formData.PhuongThucThanhToan === 'Bank Transfer' ? 'Paid' : 'Unpaid',
+        VoucherId: selectedVoucher ? selectedVoucher.VoucherId : null,
         items: isFromCart
           ? cartItems.map(item => ({
               MaSanPham: item.MaSanPham,
@@ -442,7 +494,61 @@ export default function NvtClientDatHang() {
             </div>
           )}
 
-          <div className="space-y-3 pt-2">
+          {/* PHẦN CHỌN VOUCHER */}
+          <div className="bg-purple-50/40 border border-purple-100/50 rounded-2xl p-4 space-y-3 mt-4">
+            <div className="flex items-center gap-2 text-purple-950 font-bold text-sm font-['Space_Grotesk']">
+              <span className="material-symbols-outlined text-purple-600 text-lg">local_activity</span>
+              Zenith Voucher
+            </div>
+            
+            {vouchers.length === 0 ? (
+              <p className="text-xs text-slate-400 italic">Bạn không có mã giảm giá nào khả dụng.</p>
+            ) : (
+              <div className="space-y-2">
+                <select
+                  value={selectedVoucher ? selectedVoucher.VoucherId : ''}
+                  onChange={(e) => {
+                    const vId = parseInt(e.target.value);
+                    const found = vouchers.find(v => v.VoucherId === vId);
+                    setSelectedVoucher(found || null);
+                  }}
+                  className="w-full px-3 py-2 bg-white border border-purple-200 rounded-xl text-xs font-semibold text-slate-800 outline-none focus:border-purple-500"
+                >
+                  <option value="">-- Chọn mã giảm giá của bạn --</option>
+                  {vouchers.map((v) => {
+                    const isApplicable = totalPrice >= v.MinOrderValue;
+                    return (
+                      <option key={v.VoucherId} value={v.VoucherId} disabled={!isApplicable}>
+                        {v.Code} - {v.DiscountType === 'percent' ? `Giảm ${v.DiscountValue}%` : `Giảm ${formatPrice(v.DiscountValue)}`} 
+                        {!isApplicable ? ` (Đơn tối thiểu ${formatPrice(v.MinOrderValue)})` : ''}
+                      </option>
+                    );
+                  })}
+                </select>
+                
+                {selectedVoucher && (
+                  <div className="p-2.5 bg-white border border-purple-100 rounded-xl flex items-start gap-2 shadow-inner">
+                    <span className="material-symbols-outlined text-purple-600 text-sm mt-0.5">verified</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-purple-700 truncate">{selectedVoucher.Name}</p>
+                      <p className="text-[10px] text-slate-400 leading-relaxed">
+                        Đã áp dụng mã <span className="font-bold text-slate-800">{selectedVoucher.Code}</span>.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedVoucher(null)}
+                      className="text-xs font-bold text-rose-500 hover:text-rose-750 cursor-pointer"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3 pt-4 border-t border-slate-100 mt-4">
             {!isFromCart ? (
               <>
                 <div className="flex items-center justify-between text-sm">
@@ -464,6 +570,16 @@ export default function NvtClientDatHang() {
               <span className="text-slate-500">Phí giao hàng</span>
               <span className="text-emerald-600 font-bold">Miễn phí</span>
             </div>
+
+            {discount > 0 && (
+              <div className="flex items-center justify-between text-sm text-purple-700 font-bold bg-purple-50/50 p-2.5 rounded-xl border border-purple-100/50">
+                <span className="flex items-center gap-1.5 font-['Space_Grotesk']">
+                  <span className="material-symbols-outlined text-sm">local_activity</span>
+                  Giảm giá voucher
+                </span>
+                <span>-{formatPrice(discount)}</span>
+              </div>
+            )}
             
             <div className="border-t border-dashed border-slate-200 pt-4 flex items-center justify-between">
               <div>
@@ -471,7 +587,7 @@ export default function NvtClientDatHang() {
                 <p className="text-[10px] text-slate-400">Đã bao gồm VAT nếu có</p>
               </div>
               <span className="text-xl font-extrabold text-purple-600 font-['Space_Grotesk']">
-                {formatPrice(totalPrice)}
+                {formatPrice(totalPrice - discount)}
               </span>
             </div>
           </div>
