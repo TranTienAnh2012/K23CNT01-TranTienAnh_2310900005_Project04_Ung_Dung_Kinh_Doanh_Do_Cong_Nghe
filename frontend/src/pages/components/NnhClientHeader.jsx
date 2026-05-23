@@ -25,28 +25,28 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      const threshold = isHomePage ? 450 : 100;
       
-      if (currentScrollY <= threshold) {
-        setIsNavVisible(prev => {
-          if (!prev) return true;
+      setIsNavVisible(prev => {
+        // Hysteresis (Độ trễ) để triệt tiêu hoàn toàn vòng lặp phản hồi gây nhấp nháy/giật giao diện
+        if (prev) {
+          // Trạng thái Đang Hiện: Chỉ ẩn đi khi cuộn xuống quá ngưỡng của trang
+          const threshold = isHomePage ? 450 : 100;
+          if (currentScrollY > threshold) {
+            const diff = currentScrollY - lastScrollY.current;
+            if (diff > 8) {
+              return false; // Cuộn xuống -> Ẩn thanh nav
+            }
+          }
           return prev;
-        });
-      } else {
-        const diff = currentScrollY - lastScrollY.current;
-        // Chỉ đổi trạng thái khi cuộn 1 khoảng đáng kể (tránh khựng/nháy giật)
-        if (diff > 8) {
-          setIsNavVisible(prev => {
-            if (prev) return false;
-            return prev;
-          });
-        } else if (diff < -8) {
-          setIsNavVisible(prev => {
-            if (!prev) return true;
-            return prev;
-          });
+        } else {
+          // Trạng thái Đang Ẩn: Chỉ hiện lại khi cuộn ngược lên một khoảng đáng kể HOẶC gần đầu trang
+          const diff = currentScrollY - lastScrollY.current;
+          if (currentScrollY < 100 || diff < -15) {
+            return true; // Hiện lại thanh nav
+          }
+          return prev;
         }
-      }
+      });
       
       lastScrollY.current = currentScrollY;
     };
@@ -124,7 +124,10 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   return (
     <header className="w-full bg-white font-['Inter'] select-none border-b border-purple-100/50 sticky top-0 z-50 shadow-sm">
       {/* THANH THÔNG BÁO TRÊN CÙNG (TOP BAR) */}
-      <div className={`w-full bg-[#fdfcff] border-b border-purple-50 px-4 md:px-12 flex justify-between items-center text-xs text-purple-950/70 font-medium transition-all duration-300 ease-in-out overflow-hidden ${isNavVisible ? 'max-h-[36px] py-2 opacity-100' : 'max-h-0 py-0 opacity-0 pointer-events-none'}`}>
+      <div 
+        style={{ transition: 'max-height 0.3s ease-in-out, opacity 0.2s ease-in-out, padding 0.3s ease-in-out' }}
+        className={`w-full bg-[#fdfcff] border-b border-purple-50 px-4 md:px-12 flex justify-between items-center text-xs text-purple-950/70 font-medium overflow-hidden ${isNavVisible ? 'max-h-[36px] py-2 opacity-100' : 'max-h-0 py-0 opacity-0 pointer-events-none'}`}
+      >
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-purple-600 text-sm">local_shipping</span>
           <span>Miễn phí giao hàng cho đơn từ 500k</span>
@@ -255,7 +258,10 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
       </div>
 
       {/* THANH ĐIỀU HƯỚNG DANH MUC (NAVIGATION TABS) */}
-      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isNavVisible ? 'max-h-[50px] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+      <div 
+        style={{ transition: 'max-height 0.3s ease-in-out, opacity 0.2s ease-in-out' }}
+        className={`overflow-hidden ${isNavVisible ? 'max-h-[50px] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}
+      >
         <div className="max-w-[1320px] mx-auto px-4 md:px-8 flex items-center gap-1 md:gap-2 overflow-x-auto scrollbar-none border-t border-purple-50/50 pt-1">
           {navTabs.map((cat) => {
             const isActive = selectedCategory.toLowerCase() === cat.id.toLowerCase();
