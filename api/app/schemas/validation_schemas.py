@@ -1,11 +1,11 @@
-from marshmallow import Schema, fields, validate, ValidationError
+from marshmallow import Schema, fields, validate, ValidationError, EXCLUDE
 
 class SanPhamCreateSchema(Schema):
     """Schema for creating a product"""
     TenSanPham = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     MaDanhMuc = fields.Int(required=True)
-    GiaGoc = fields.Decimal(required=True, as_string=True)
-    GiaBan = fields.Decimal(required=True, as_string=True)
+    GiaGoc = fields.Decimal()
+    GiaBan = fields.Decimal()
     SoLuongTon = fields.Int(required=True, validate=validate.Range(min=0))
     MoTa = fields.Str(allow_none=True)
     HinhAnh = fields.Str(allow_none=True)
@@ -15,8 +15,8 @@ class SanPhamUpdateSchema(Schema):
     """Schema for updating a product"""
     TenSanPham = fields.Str(validate=validate.Length(min=1, max=255))
     MaDanhMuc = fields.Int()
-    GiaGoc = fields.Decimal(as_string=True)
-    GiaBan = fields.Decimal(as_string=True)
+    GiaGoc = fields.Decimal()
+    GiaBan = fields.Decimal()
     SoLuongTon = fields.Int(validate=validate.Range(min=0))
     MoTa = fields.Str(allow_none=True)
     HinhAnh = fields.Str(allow_none=True)
@@ -36,26 +36,41 @@ class DanhMucUpdateSchema(Schema):
 
 class NguoiDungCreateSchema(Schema):
     """Schema for creating a user"""
-    TenDangNhap = fields.Str(required=True, validate=validate.Length(min=3, max=50))
-    MatKhau = fields.Str(required=True, validate=validate.Length(min=6))
+    class Meta:
+        unknown = EXCLUDE
+    TenDangNhap = fields.Str(validate=validate.Length(min=3, max=50), allow_none=True)
+    MatKhau = fields.Str(required=True, validate=validate.Length(min=1))
     HoTen = fields.Str(required=True, validate=validate.Length(min=1, max=255))
     Email = fields.Email(required=True)
-    SoDienThoai = fields.Str(validate=validate.Length(max=20))
+    SDT = fields.Str(validate=validate.Length(max=20), allow_none=True)
     DiaChi = fields.Str(allow_none=True)
-    VaiTro = fields.Str(validate=validate.OneOf(['admin', 'user']), load_default='user')
+    VaiTro = fields.Str(validate=validate.OneOf(['admin', 'user', 'customer']), load_default='user')
+    Status = fields.Str(allow_none=True)
 
 class NguoiDungUpdateSchema(Schema):
     """Schema for updating a user"""
+    class Meta:
+        unknown = EXCLUDE
     HoTen = fields.Str(validate=validate.Length(min=1, max=255))
     Email = fields.Email()
-    SoDienThoai = fields.Str(validate=validate.Length(max=20))
+    SDT = fields.Str(validate=validate.Length(max=20), allow_none=True)
     DiaChi = fields.Str(allow_none=True)
-    VaiTro = fields.Str(validate=validate.OneOf(['admin', 'user']))
+    VaiTro = fields.Str(validate=validate.OneOf(['admin', 'user', 'customer']))
+    Status = fields.Str(allow_none=True)
 
 class LoginSchema(Schema):
     """Schema for login"""
     email = fields.Email(required=True)
-    password = fields.Str(required=True, validate=validate.Length(min=6))
+    password = fields.Str(required=True, validate=validate.Length(min=1))
+
+class RegisterSchema(Schema):
+    """Schema for register"""
+    class Meta:
+        unknown = EXCLUDE
+    email = fields.Email(required=True)
+    password = fields.Str(required=True, validate=validate.Length(min=1))
+    name = fields.Str(required=True, validate=validate.Length(min=1, max=255))
+    phone = fields.Str(validate=validate.Length(max=20), allow_none=True)
 
 class DonHangCreateSchema(Schema):
     """Schema for creating an order"""
@@ -64,6 +79,30 @@ class DonHangCreateSchema(Schema):
     TrangThai = fields.Str(validate=validate.OneOf(['pending', 'processing', 'completed', 'cancelled']), load_default='pending')
     DiaChiGiaoHang = fields.Str(required=True)
     GhiChu = fields.Str(allow_none=True)
+
+class BannerCreateSchema(Schema):
+    """Schema for creating a banner"""
+    class Meta:
+        unknown = EXCLUDE
+    MaDanhMuc = fields.Int(allow_none=True)
+    TieuDe = fields.Str(validate=validate.Length(max=255), allow_none=True)
+    MoTa = fields.Str(allow_none=True)
+    UrlAnh = fields.Str(required=True)
+    LinkRedirect = fields.Str(validate=validate.Length(max=500), allow_none=True)
+    TrangThai = fields.Int(validate=validate.OneOf([0, 1]), load_default=1)
+    ViTri = fields.Int(allow_none=True)
+
+class BannerUpdateSchema(Schema):
+    """Schema for updating a banner"""
+    class Meta:
+        unknown = EXCLUDE
+    MaDanhMuc = fields.Int(allow_none=True)
+    TieuDe = fields.Str(validate=validate.Length(max=255), allow_none=True)
+    MoTa = fields.Str(allow_none=True)
+    UrlAnh = fields.Str()
+    LinkRedirect = fields.Str(validate=validate.Length(max=500), allow_none=True)
+    TrangThai = fields.Int(validate=validate.OneOf([0, 1]))
+    ViTri = fields.Int(allow_none=True)
 
 def validate_schema(schema_class):
     """Decorator to validate request data against a schema"""
@@ -81,7 +120,7 @@ def validate_schema(schema_class):
                 request.validated_data = validated_data
                 return f(*args, **kwargs)
             except ValidationError as err:
-                return response_error(message="Validation error", status=400)
+                return response_error(message=err.messages, status=400)
 
         return decorated_function
     return decorator

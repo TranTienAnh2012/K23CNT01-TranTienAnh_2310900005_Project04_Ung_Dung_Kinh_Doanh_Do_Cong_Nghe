@@ -24,7 +24,13 @@ export default function TtaLoginPage() {
       const token = res.data?.data?.token || res.data?.token || res.data?.data?.access_token;
       if (!token) throw new Error('Không nhận được token từ server');
       login(token);
-      navigate('/admin');
+      const userRole = res.data?.data?.user?.vai_tro || '';
+      const roleLower = String(userRole).toLowerCase();
+      if (roleLower.includes('admin') || roleLower.includes('administrator')) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       const msg = err.response?.data?.message || 'Đăng nhập thất bại. Kiểm tra lại email/mật khẩu.';
       setError(msg);

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { userApi } from '../../../api/tta_api';
+import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function TtaUserList() {
+  const isDark = useAdminTheme();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,39 +28,44 @@ export default function TtaUserList() {
   if (loading) return <div className="p-8 text-slate-400">Đang tải người dùng...</div>;
 
   return (
-    <div className="p-8 min-h-[calc(100vh-64px)] bg-slate-950 font-['Inter'] flex flex-col">
+    <div className={`p-8 min-h-[calc(100vh-64px)] ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'} transition-colors duration-300 font-['Inter'] flex flex-col`}>
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="font-['Space_Grotesk'] text-4xl font-bold text-white tracking-tight mb-2">Quản Lý Người Dùng</h2>
-          <p className="text-slate-400 font-['Inter'] max-w-xl">Kiểm soát quyền truy cập và giám sát hoạt động của các tài khoản trên hệ thống.</p>
+          <h2 className={`font-['Space_Grotesk'] text-4xl font-bold ${isDark ? 'text-white' : 'text-slate-900'} tracking-tight mb-2`}>Quản Lý Người Dùng</h2>
+          <p className={`${isDark ? 'text-slate-400' : 'text-slate-500'} font-['Inter'] max-w-xl`}>Kiểm soát quyền truy cập và giám sát hoạt động của các tài khoản trên hệ thống.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-slate-800 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-900 transition-colors">
+          <Link to="/admin/user/them" className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-500 transition-all active:scale-95">
+            <span className="material-symbols-outlined text-lg">person_add</span>
+            THÊM MỚI
+          </Link>
+          <button className={`flex items-center gap-2 px-4 py-2 border ${isDark ? 'border-slate-800 text-slate-300 hover:bg-slate-900' : 'border-slate-200 text-slate-600 hover:bg-white'} rounded-lg text-sm font-medium transition-colors`}>
             <span className="material-symbols-outlined text-lg">filter_list</span>
             Bộ lọc
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 border border-slate-800 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-900 transition-colors">
-            <span class="material-symbols-outlined text-lg">download</span>
+          <button className={`flex items-center gap-2 px-4 py-2 border ${isDark ? 'border-slate-800 text-slate-300 hover:bg-slate-900' : 'border-slate-200 text-slate-600 hover:bg-white'} rounded-lg text-sm font-medium transition-colors`}>
+            <span className="material-symbols-outlined text-lg">download</span>
             Xuất CSV
           </button>
         </div>
       </div>
 
-      <div className="bg-slate-900/70 backdrop-blur-md rounded-2xl overflow-hidden shadow-2xl border border-white/5 flex-1">
+      <div className={`${isDark ? 'bg-slate-900/70 border-white/5 shadow-2xl shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md rounded-2xl overflow-hidden border flex-1`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-800 bg-slate-900/40">
+              <tr className={`border-b ${isDark ? 'border-slate-800 bg-slate-900/40' : 'border-slate-100 bg-slate-50/50'}`}>
                 <th className="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-500 font-bold">ID</th>
                 <th className="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-500 font-bold">Họ Tên</th>
                 <th className="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-500 font-bold">Email</th>
                 <th className="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-500 font-bold">Vai Trò</th>
                 <th className="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-500 font-bold">Ngày Đăng Ký</th>
+                <th className="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-500 font-bold text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/50">
               {users.map((u) => (
-                <tr key={u.MaNguoiDung} className="hover:bg-slate-900/30 transition-colors group">
+                <tr key={u.MaNguoiDung} className={`${isDark ? 'hover:bg-slate-900/30' : 'hover:bg-slate-50/80'} transition-colors group`}>
                   <td className="px-6 py-4 text-sm font-bold text-slate-400">
                     #{u.MaNguoiDung}
                   </td>
@@ -92,13 +100,23 @@ export default function TtaUserList() {
                   <td className="px-6 py-4 text-sm text-slate-400 font-medium">
                     {new Date(u.NgayDangKy).toLocaleDateString('vi-VN')}
                   </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link to={`/admin/user/edit/${u.MaNguoiDung}`} className="p-2 bg-slate-800/50 hover:bg-amber-500/20 text-slate-500 hover:text-amber-500 rounded-lg transition-all" title="Chỉnh sửa">
+                        <span className="material-symbols-outlined text-lg">edit</span>
+                      </Link>
+                      <Link to={`/admin/user/delete/${u.MaNguoiDung}`} className="p-2 bg-slate-800/50 hover:bg-rose-500/20 text-slate-500 hover:text-rose-500 rounded-lg transition-all" title="Xóa">
+                        <span className="material-symbols-outlined text-lg">delete</span>
+                      </Link>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
         
-        <div className="px-6 py-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/20">
+        <div className={`px-6 py-4 border-t ${isDark ? 'border-slate-800 bg-slate-900/20' : 'border-slate-100 bg-slate-50/20'} flex items-center justify-between`}>
           <p className="text-xs text-slate-500 font-medium">Hiển thị {users.length} người dùng</p>
           <div className="flex gap-2">
             <button className="p-2 border border-slate-800 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 transition-colors">
@@ -114,28 +132,28 @@ export default function TtaUserList() {
       </div>
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-slate-900/70 backdrop-blur-md p-6 rounded-xl flex items-center justify-between border border-white/5">
+        <div className={`${isDark ? 'bg-slate-900/70 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-xl flex items-center justify-between border shadow-2xl`}>
           <div>
-            <p className="text-[11px] uppercase tracking-widest text-slate-400 mb-1 font-bold">Phiên Đang Chạy</p>
-            <h3 className="text-3xl font-bold text-white font-['Space_Grotesk']">0</h3>
+            <p className={`text-[11px] uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-slate-500'} mb-1 font-bold`}>Phiên Đang Chạy</p>
+            <h3 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'} font-['Space_Grotesk']`}>0</h3>
           </div>
           <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
             <span className="material-symbols-outlined text-[28px]">bolt</span>
           </div>
         </div>
-        <div className="bg-slate-900/70 backdrop-blur-md p-6 rounded-xl flex items-center justify-between border border-white/5">
+        <div className={`${isDark ? 'bg-slate-900/70 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-xl flex items-center justify-between border shadow-2xl`}>
           <div>
-            <p className="text-[11px] uppercase tracking-widest text-slate-400 mb-1 font-bold">Tổng Khách Hàng</p>
-            <h3 className="text-3xl font-bold text-white font-['Space_Grotesk']">{users.length}</h3>
+            <p className={`text-[11px] uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-slate-500'} mb-1 font-bold`}>Tổng Khách Hàng</p>
+            <h3 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'} font-['Space_Grotesk']`}>{users.length}</h3>
           </div>
           <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
             <span className="material-symbols-outlined text-[28px]">group_add</span>
           </div>
         </div>
-        <div className="bg-slate-900/70 backdrop-blur-md p-6 rounded-xl flex items-center justify-between border border-white/5">
+        <div className={`${isDark ? 'bg-slate-900/70 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-xl flex items-center justify-between border shadow-2xl`}>
           <div>
-            <p className="text-[11px] uppercase tracking-widest text-slate-400 mb-1 font-bold">Cảnh Báo Bảo Mật</p>
-            <h3 className="text-3xl font-bold text-white font-['Space_Grotesk']">0</h3>
+            <p className={`text-[11px] uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-slate-500'} mb-1 font-bold`}>Cảnh Báo Bảo Mật</p>
+            <h3 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'} font-['Space_Grotesk']`}>0</h3>
           </div>
           <div className="w-12 h-12 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500">
             <span className="material-symbols-outlined text-[28px]">security</span>

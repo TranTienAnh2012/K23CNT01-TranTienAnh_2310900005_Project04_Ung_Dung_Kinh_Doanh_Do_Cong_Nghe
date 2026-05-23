@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { danhgiaApi } from '../../../api/tta_api';
+import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NnhDanhGiaList() {
+  const isDark = useAdminTheme();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,33 +41,33 @@ export default function NnhDanhGiaList() {
   );
 
   return (
-    <div className="p-8 max-w-[1280px] mx-auto font-['Inter'] bg-slate-950 min-h-[calc(100vh-64px)]">
+    <div className={`p-8 max-w-[1280px] mx-auto font-['Inter'] ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'} transition-colors duration-300 min-h-[calc(100vh-64px)]`}>
       <div className="mb-10">
         <nav className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-2 font-['Space_Grotesk']">
           <span>HỆ THỐNG</span>
           <span className="material-symbols-outlined text-[12px]">chevron_right</span>
           <span className="text-blue-500">ĐÁNH GIÁ KHÁCH HÀNG</span>
         </nav>
-        <h1 className="font-['Space_Grotesk'] text-4xl font-bold text-white tracking-tight">Quản lý Đánh giá</h1>
-        <p className="text-slate-500 mt-2 max-w-xl text-sm italic">Xem và quản lý các phản hồi từ khách hàng về sản phẩm của Zenith Ztore.</p>
+        <h1 className={`font-['Space_Grotesk'] text-4xl font-bold ${isDark ? 'text-white' : 'text-slate-900'} tracking-tight`}>Quản lý Đánh giá</h1>
+        <p className={`${isDark ? 'text-slate-500' : 'text-slate-600'} mt-2 max-w-xl text-sm italic`}>Xem và quản lý các phản hồi từ khách hàng về sản phẩm của Zenith Ztore.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {reviews.length === 0 ? (
-          <div className="col-span-full py-20 text-center bg-slate-900/40 rounded-3xl border border-white/5">
+          <div className={`col-span-full py-20 text-center ${isDark ? 'bg-slate-900/40 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} rounded-3xl border shadow-2xl`}>
             <span className="material-symbols-outlined text-5xl text-slate-700 mb-4">rate_review</span>
             <p className="text-slate-500 italic">Chưa có đánh giá nào từ khách hàng.</p>
           </div>
         ) : (
           reviews.map((item) => (
-            <div key={item.MaDanhGia} className="bg-slate-900/60 backdrop-blur-md p-6 rounded-3xl border border-white/5 hover:border-blue-500/30 transition-all group relative">
+            <div key={item.MaDanhGia} className={`${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-3xl border shadow-2xl hover:border-blue-500/30 transition-all group relative`}>
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-blue-500 font-bold text-lg border border-white/5">
                     {item.HoTen ? item.HoTen[0].toUpperCase() : '?'}
                   </div>
                   <div>
-                    <h4 className="text-white font-bold text-sm">{item.HoTen}</h4>
+                    <h4 className={`${isDark ? 'text-white' : 'text-slate-900'} font-bold text-sm`}>{item.HoTen}</h4>
                     <p className="text-[10px] text-slate-500 font-medium tracking-wider uppercase">{item.TenSanPham}</p>
                   </div>
                 </div>
@@ -85,11 +87,11 @@ export default function NnhDanhGiaList() {
                 ))}
               </div>
 
-              <p className="text-slate-300 text-sm leading-relaxed mb-4 italic">"{item.BinhLuan}"</p>
+              <p className={`${isDark ? 'text-slate-300' : 'text-slate-600'} text-sm leading-relaxed mb-4 italic`}>"{item.BinhLuan}"</p>
               
-              <div className="pt-4 border-t border-white/5 flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+              <div className={`pt-4 border-t ${isDark ? 'border-white/5' : 'border-slate-100'} flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase tracking-widest`}>
                 <span>{new Date(item.NgayDanhGia).toLocaleDateString('vi-VN')}</span>
-                <span className="px-2 py-0.5 bg-slate-800 rounded text-slate-400 border border-white/5">Hợp lệ</span>
+                <span className={`px-2 py-0.5 ${isDark ? 'bg-slate-800 text-slate-400 border-white/5' : 'bg-slate-100 text-slate-500 border-slate-200'} rounded border`}>Hợp lệ</span>
               </div>
             </div>
           ))

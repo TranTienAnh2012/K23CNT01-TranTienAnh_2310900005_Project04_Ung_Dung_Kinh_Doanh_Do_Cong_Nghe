@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { chitietApi } from '../../../api/tta_api';
+import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function TtaChiTietDonHangList() {
+  const isDark = useAdminTheme();
   const [data, setData] = useState({ items: [], total: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -29,6 +31,17 @@ export default function TtaChiTietDonHangList() {
     fetchDetails(search);
   };
 
+  const getImageUrl = (path) => {
+    if (!path) return 'https://placehold.co/400x400?text=No+Image';
+    if (path.startsWith('http')) return path;
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    // Nếu path không chứa static/ hoặc uploads/, có thể nó là legacy path
+    if (!cleanPath.includes('static/') && !cleanPath.includes('uploads/')) {
+        return `http://localhost:5000/static/uploads${cleanPath}`;
+    }
+    return `http://localhost:5000${cleanPath}`;
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
@@ -36,18 +49,18 @@ export default function TtaChiTietDonHangList() {
   if (loading) return <div className="p-8 text-slate-400">Đang tải chi tiết đơn hàng...</div>;
 
   return (
-    <div className="p-8 min-h-[calc(100vh-64px)] bg-slate-950 font-['Inter'] space-y-8">
+    <div className={`p-8 min-h-[calc(100vh-64px)] ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'} transition-colors duration-300 font-['Inter'] space-y-8`}>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
             <span className="text-xs font-bold text-blue-500 uppercase tracking-widest">Transaction View</span>
             <div className="px-2 py-0.5 rounded text-[10px] bg-blue-600 text-white font-bold uppercase">Live Data</div>
           </div>
-          <h3 className="font-['Space_Grotesk'] text-white text-4xl font-bold">Quản Lý Chi Tiết</h3>
-          <p className="text-slate-500 font-medium italic">Viewing all granular item breakdowns across the system.</p>
+          <h3 className={`font-['Space_Grotesk'] ${isDark ? 'text-white' : 'text-slate-900'} text-4xl font-bold`}>Quản Lý Chi Tiết</h3>
+          <p className={`${isDark ? 'text-slate-500' : 'text-slate-500'} font-medium italic`}>Viewing all granular item breakdowns across the system.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-6 py-3 bg-slate-900 border border-slate-700 rounded-xl font-bold text-xs hover:bg-slate-800 transition-all text-white active:scale-95">
+          <button className={`flex items-center gap-2 px-6 py-3 border ${isDark ? 'bg-slate-900 border-slate-700 text-white hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'} rounded-xl font-bold text-xs transition-all active:scale-95`}>
             <span className="material-symbols-outlined text-sm">print</span>
             XUẤT PDF
           </button>
@@ -59,35 +72,35 @@ export default function TtaChiTietDonHangList() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-white/5">
-          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Trạng Thái Đơn</p>
+        <div className={`${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-2xl border shadow-2xl`}>
+          <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'} font-bold uppercase tracking-widest mb-2`}>Trạng Thái Đơn</p>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]"></span>
-            <span className="text-white font-['Space_Grotesk'] text-xl font-bold">Đang Giao</span>
+            <span className={`${isDark ? 'text-white' : 'text-slate-900'} font-['Space_Grotesk'] text-xl font-bold`}>Đang Giao</span>
           </div>
         </div>
-        <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-white/5">
-          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Tổng Thanh Toán</p>
-          <span className="text-white font-['Space_Grotesk'] text-xl font-bold">{formatPrice(42500000)}</span>
+        <div className={`${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-2xl border shadow-2xl`}>
+          <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'} font-bold uppercase tracking-widest mb-2`}>Tổng Thanh Toán</p>
+          <span className={`${isDark ? 'text-white' : 'text-slate-900'} font-['Space_Grotesk'] text-xl font-bold`}>{formatPrice(42500000)}</span>
         </div>
-        <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-white/5">
-          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Phương Thức</p>
-          <div className="flex items-center gap-2 text-white font-['Space_Grotesk'] text-xl font-bold">
+        <div className={`${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-2xl border shadow-2xl`}>
+          <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'} font-bold uppercase tracking-widest mb-2`}>Phương Thức</p>
+          <div className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'} font-['Space_Grotesk'] text-xl font-bold`}>
             <span className="material-symbols-outlined text-blue-500">credit_card</span>
             Visa •••• 4242
           </div>
         </div>
-        <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-white/5">
-          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Khu Vực</p>
-          <span className="text-white font-['Space_Grotesk'] text-xl font-bold">TP. Hồ Chí Minh</span>
+        <div className={`${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-2xl border shadow-2xl`}>
+          <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'} font-bold uppercase tracking-widest mb-2`}>Khu Vực</p>
+          <span className={`${isDark ? 'text-white' : 'text-slate-900'} font-['Space_Grotesk'] text-xl font-bold`}>TP. Hồ Chí Minh</span>
         </div>
       </div>
 
-      <div className="bg-slate-900/60 backdrop-blur-md rounded-3xl overflow-hidden border border-slate-800 shadow-2xl">
+      <div className={`${isDark ? 'bg-slate-900/60 border-slate-800 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md rounded-3xl overflow-hidden border shadow-2xl`}>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-950/50 border-b border-slate-800">
+              <tr className={`${isDark ? 'bg-slate-950/50 border-slate-800' : 'bg-slate-50 border-slate-100'} border-b`}>
                 <th className="px-6 py-5 text-slate-500 uppercase tracking-widest text-[10px] font-bold">Mã CT</th>
                 <th className="px-6 py-5 text-slate-500 uppercase tracking-widest text-[10px] font-bold">ĐƠN HÀNG</th>
                 <th className="px-6 py-5 text-slate-500 uppercase tracking-widest text-[10px] font-bold">SẢN PHẨM</th>
@@ -100,36 +113,52 @@ export default function TtaChiTietDonHangList() {
             </thead>
             <tbody className="divide-y divide-slate-800/50">
               {data.items.map((item) => (
-                <tr key={item.MaChiTiet} className="hover:bg-white/[0.02] transition-colors group">
-                  <td className="px-6 py-6 font-mono text-xs text-blue-500 font-bold">#{item.MaChiTiet}</td>
-                  <td className="px-6 py-6 font-bold text-white text-sm">#{item.MaDonHang}</td>
+                <tr key={item.Id} className={`${isDark ? 'hover:bg-white/[0.02]' : 'hover:bg-slate-50/80'} transition-colors group`}>
+                  <td className="px-6 py-6 font-mono text-xs text-blue-500 font-bold">#{item.Id}</td>
+                  <td className="px-6 py-6">
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50 text-blue-600'} border border-blue-500/20`}>
+                      #{item.MaDonHang}
+                    </span>
+                  </td>
                   <td className="px-6 py-6">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-slate-800 flex-shrink-0 overflow-hidden border border-slate-700">
-                        <img src={item.HinhAnh} alt={item.TenSanPham} className="w-full h-full object-cover" />
+                      <div className={`w-12 h-12 rounded-lg ${isDark ? 'bg-slate-900 border-white/5' : 'bg-slate-100 border-slate-200'} flex-shrink-0 overflow-hidden border shadow-inner`}>
+                        <img 
+                          src={getImageUrl(item.HinhAnh)} 
+                          alt={item.TenSanPham} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.src = 'https://placehold.co/400x400?text=No+Image'; }}
+                        />
                       </div>
                       <div>
-                        <p className="text-white font-bold text-sm">{item.TenSanPham}</p>
-                        <p className="text-[10px] text-slate-500 uppercase font-medium">{item.BienThe || 'Original'}</p>
+                        <p className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.TenSanPham}</p>
+                        <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">SKU: {item.MaSanPham.toString().padStart(4, '0')}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-6">
                     <div className="flex flex-col">
-                      <span className="text-white font-bold text-sm">{item.HoTenNguoiNhan}</span>
-                      <span className="text-[10px] text-slate-500">{item.Email}</span>
+                      <span className={`font-bold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.HoTenNguoiNhan}</span>
+                      <span className="text-[10px] text-slate-500 font-medium">{item.Email || 'customer@example.com'}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-6 text-sm text-slate-400 font-medium">{new Date(item.NgayDatHang).toLocaleDateString('vi-VN')}</td>
-                  <td className="px-6 py-6 text-center font-bold text-white font-['Space_Grotesk']">{item.SoLuong.toString().padStart(2, '0')}</td>
-                  <td className="px-6 py-6 text-right font-bold text-white font-['Space_Grotesk']">{formatPrice(item.SoLuong * item.DonGia)}</td>
+                  <td className="px-6 py-6 text-sm text-slate-400 font-medium">
+                    {item.NgayDatHang ? new Date(item.NgayDatHang).toLocaleDateString('vi-VN') : '---'}
+                  </td>
+                  <td className="px-6 py-6 text-center font-bold font-['Space_Grotesk']">
+                    <span className={`text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.SoLuong.toString().padStart(2, '0')}</span>
+                    <span className="text-[10px] text-slate-500 block">units</span>
+                  </td>
+                  <td className="px-6 py-6 text-right font-black font-['Space_Grotesk'] text-emerald-400">
+                    {formatPrice(item.ThanhTien || (item.SoLuong * item.DonGia))}
+                  </td>
                   <td className="px-6 py-6 text-right">
-                    <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                      <Link to={`/admin/chi-tiet/view/${item.MaChiTiet}`} className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors">
-                        <span className="material-symbols-outlined text-sm">visibility</span>
+                    <div className="flex justify-end gap-2 opacity-100 sm:opacity-40 sm:group-hover:opacity-100 transition-opacity">
+                      <Link to={`/admin/chi-tiet/edit/${item.Id}`} className={`p-2 rounded-lg ${isDark ? 'bg-slate-800 hover:bg-blue-600/20 text-slate-400 hover:text-blue-400' : 'bg-slate-100 hover:bg-blue-50 text-slate-500 hover:text-blue-600'} transition-all`} title="Edit">
+                        <span className="material-symbols-outlined text-[18px]">edit</span>
                       </Link>
-                      <Link to={`/admin/chi-tiet/edit/${item.MaChiTiet}`} className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors">
-                        <span className="material-symbols-outlined text-sm">edit</span>
+                      <Link to={`/admin/chi-tiet/delete/${item.Id}`} className={`p-2 rounded-lg ${isDark ? 'bg-slate-800 hover:bg-rose-600/20 text-slate-400 hover:text-rose-400' : 'bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600'} transition-all`} title="Delete">
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
                       </Link>
                     </div>
                   </td>
@@ -138,7 +167,7 @@ export default function TtaChiTietDonHangList() {
             </tbody>
           </table>
         </div>
-        <div className="p-6 bg-slate-950/40 flex justify-between items-center border-t border-slate-800">
+        <div className={`p-6 ${isDark ? 'bg-slate-950/40 border-slate-800' : 'bg-slate-50/50 border-slate-100'} flex justify-between items-center border-t`}>
           <p className="text-sm text-slate-500 italic">Hiển thị <span className="text-white font-bold">{data.items.length}</span> danh mục hàng cho giao dịch này</p>
           <div className="flex gap-2">
             <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-slate-700 text-slate-500 opacity-50 cursor-not-allowed">
@@ -153,8 +182,8 @@ export default function TtaChiTietDonHangList() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
-        <div className="lg:col-span-2 bg-slate-900/60 backdrop-blur-md p-8 rounded-3xl border border-white/5 space-y-6">
-          <h4 className="font-['Space_Grotesk'] text-white text-xl font-bold">Thông Tin Giao Hàng</h4>
+        <div className={`lg:col-span-2 ${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-8 rounded-3xl border shadow-2xl space-y-6`}>
+          <h4 className={`font-['Space_Grotesk'] ${isDark ? 'text-white' : 'text-slate-900'} text-xl font-bold`}>Thông Tin Giao Hàng</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div>

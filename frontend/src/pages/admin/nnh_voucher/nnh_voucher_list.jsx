@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { voucherApi } from '../../../api/tta_api';
+import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NnhVoucherList() {
+  const isDark = useAdminTheme();
   const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,7 +42,7 @@ export default function NnhVoucherList() {
   );
 
   return (
-    <div className="p-8 max-w-[1280px] mx-auto font-['Inter'] bg-slate-950 min-h-[calc(100vh-64px)]">
+    <div className={`p-8 max-w-[1280px] mx-auto font-['Inter'] ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'} transition-colors duration-300 min-h-[calc(100vh-64px)]`}>
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
         <div>
           <nav className="flex items-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-2 font-['Space_Grotesk']">
@@ -48,8 +50,8 @@ export default function NnhVoucherList() {
             <span className="material-symbols-outlined text-[12px]">chevron_right</span>
             <span className="text-blue-500">VOUCHERS</span>
           </nav>
-          <h1 className="font-['Space_Grotesk'] text-4xl font-bold text-white tracking-tight">Quản lý Voucher</h1>
-          <p className="text-slate-500 mt-2 max-w-xl text-sm italic">Thiết lập các chương trình khuyến mãi và mã giảm giá cho khách hàng.</p>
+          <h1 className={`font-['Space_Grotesk'] text-4xl font-bold ${isDark ? 'text-white' : 'text-slate-900'} tracking-tight`}>Quản lý Voucher</h1>
+          <p className={`${isDark ? 'text-slate-500' : 'text-slate-600'} mt-2 max-w-xl text-sm italic`}>Thiết lập các chương trình khuyến mãi và mã giảm giá cho khách hàng.</p>
         </div>
         <div>
           <Link to="/admin/voucher/them" className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-xs flex items-center gap-2 shadow-lg shadow-blue-600/20 hover:translate-y-[-1px] transition-transform active:scale-95">
@@ -61,13 +63,13 @@ export default function NnhVoucherList() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {vouchers.length === 0 ? (
-          <div className="col-span-full py-20 text-center bg-slate-900/40 rounded-3xl border border-white/5">
+          <div className={`col-span-full py-20 text-center ${isDark ? 'bg-slate-900/40 border-white/5' : 'bg-white border-slate-200'} rounded-3xl border shadow-xl`}>
             <span className="material-symbols-outlined text-5xl text-slate-700 mb-4">confirmation_number</span>
             <p className="text-slate-500 italic">Hiện tại chưa có mã giảm giá nào được tạo.</p>
           </div>
         ) : (
           vouchers.map((item) => (
-            <div key={item.Id} className="bg-slate-900/60 backdrop-blur-md p-0 rounded-3xl border border-white/5 overflow-hidden group hover:border-blue-500/30 transition-all flex h-40">
+            <div key={item.Id} className={`${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-0 rounded-3xl border shadow-2xl overflow-hidden group hover:border-blue-500/30 transition-all flex h-40`}>
               {/* Left Side: Discount Display */}
               <div className="w-32 bg-blue-600 flex flex-col items-center justify-center text-white relative">
                 <div className="absolute top-0 bottom-0 -left-2 flex flex-col justify-around py-2">
@@ -85,7 +87,7 @@ export default function NnhVoucherList() {
               <div className="flex-1 p-5 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start mb-1">
-                    <h4 className="text-white font-bold text-sm truncate max-w-[150px]">{item.Name}</h4>
+                    <h4 className={`${isDark ? 'text-white' : 'text-slate-900'} font-bold text-sm truncate max-w-[150px]`}>{item.Name}</h4>
                     <span className={`text-[8px] px-2 py-0.5 rounded font-bold uppercase ${item.Status === 'active' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-rose-500/20 text-rose-500'}`}>
                       {item.Status}
                     </span>
@@ -101,7 +103,7 @@ export default function NnhVoucherList() {
                   </p>
                 </div>
 
-                <div className="flex justify-between items-center pt-3 border-t border-white/5">
+                <div className={`flex justify-between items-center pt-3 border-t ${isDark ? 'border-white/5' : 'border-slate-100'}`}>
                   <div className="flex flex-col">
                     <span className="text-[8px] text-slate-600 font-bold uppercase tracking-widest">EXPIRES</span>
                     <span className="text-[10px] text-slate-400 font-bold">{new Date(item.EndDate).toLocaleDateString('vi-VN')}</span>

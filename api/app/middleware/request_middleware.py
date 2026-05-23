@@ -29,7 +29,9 @@ def admin_required(f):
         from app.utils.helpers import response_error
 
         claims = get_jwt()
-        if claims.get("vai_tro") != "admin":
+        role = str(claims.get("vai_tro", "")).lower()
+        # Cho phép các tài khoản có vai trò admin, super administrator hoặc không phải khách hàng thông thường
+        if role not in ["admin", "super administrator", "administrator"] and "admin" not in role:
             return response_error("Không có quyền truy cập.", 403)
         return f(*args, **kwargs)
     return decorated_function

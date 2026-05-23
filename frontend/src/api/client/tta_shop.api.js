@@ -8,6 +8,10 @@ export const shopApi = {
   // Danh mục công khai
   getCategories: () => axios.get('/api/client/tta_danhmuc'),
 
+  // Banner công khai
+  getBanners: (params) => axios.get('/api/client/tta_banner', { params }),
+
   // Đặt hàng
   placeOrder: (data) => axios.post('/api/client/tta_donhang', data),
+  getOrders: () => axios.get('/api/client/tta_donhang'),
 };

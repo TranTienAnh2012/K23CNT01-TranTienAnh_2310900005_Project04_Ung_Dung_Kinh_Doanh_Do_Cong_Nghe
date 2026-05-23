@@ -7,6 +7,7 @@ export const userApi = {
   
   // Lấy thông tin chi tiết một người dùng
   getOne: (ma) => axios.get(`/api/tta_user/${ma}`),
+  getById: (ma) => axios.get(`/api/tta_user/${ma}`),
   
   // Tạo tài khoản mới
   create: (data) => axios.post('/api/tta_user', data),

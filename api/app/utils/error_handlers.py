@@ -44,6 +44,7 @@ def handle_500(error):
 def handle_validation_error(error):
     """Handle validation and other exceptions"""
     if isinstance(error, HTTPException):
+        print(f"!!! HTTP ERROR {error.code}: {error.description} !!!", file=sys.stderr)
         return jsonify({
             "status": "error",
             "message": error.description

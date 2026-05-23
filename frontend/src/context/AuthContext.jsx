@@ -3,6 +3,19 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 // Tạo Context để quản lý trạng thái đăng nhập trên toàn bộ ứng dụng
 const AuthContext = createContext(null);
 
+const parseJwt = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null); // Lưu thông tin người dùng hiện tại
   const [loading, setLoading] = useState(true); // Trạng thái đang kiểm tra token
@@ -11,8 +24,16 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Giả lập thông tin admin nếu tìm thấy token
-      setUser({ email: 'admin@gmail.com', role: 'admin' });
+      const payload = parseJwt(token);
+      if (payload) {
+        setUser({ 
+          id: payload.sub, 
+          email: payload.email || 'user@gmail.com', 
+          role: payload.vai_tro || 'user' 
+        });
+      } else {
+        setUser({ email: 'admin@gmail.com', role: 'admin' });
+      }
     }
     setLoading(false); // Hoàn tất kiểm tra
   }, []);
@@ -20,7 +41,16 @@ export const AuthProvider = ({ children }) => {
   // Hàm xử lý khi đăng nhập thành công
   const login = (token) => {
     localStorage.setItem('token', token); // Lưu token vào trình duyệt
-    setUser({ email: 'admin@gmail.com', role: 'admin' });
+    const payload = parseJwt(token);
+    if (payload) {
+      setUser({ 
+        id: payload.sub, 
+        email: payload.email || 'user@gmail.com', 
+        role: payload.vai_tro || 'user' 
+      });
+    } else {
+      setUser({ email: 'admin@gmail.com', role: 'admin' });
+    }
   };
 
   // Hàm xử lý khi đăng xuất
@@ -39,4 +69,3 @@ export const AuthProvider = ({ children }) => {
 
 // Hook tùy chỉnh để sử dụng AuthContext một cách thuận tiện
 export const useAuth = () => useContext(AuthContext);
-

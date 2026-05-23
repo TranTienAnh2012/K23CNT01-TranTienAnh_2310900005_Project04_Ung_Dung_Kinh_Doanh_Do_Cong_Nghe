@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { donhangApi } from '../../../api/tta_api';
+import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function TtaDonHangList() {
+  const isDark = useAdminTheme();
   const [data, setData] = useState({ orders: [], total: 0 });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -36,10 +38,10 @@ export default function TtaDonHangList() {
   if (loading) return <div className="p-8 text-slate-400">Đang tải dữ liệu đơn hàng...</div>;
 
   return (
-    <div className="p-8 min-h-[calc(100vh-64px)] bg-slate-950 font-['Inter']">
+    <div className={`p-8 min-h-[calc(100vh-64px)] ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'} transition-colors duration-300 font-['Inter']`}>
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
+        <div className={`${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-2xl border shadow-2xl relative overflow-hidden group`}>
           <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
             <span className="material-symbols-outlined text-9xl">local_mall</span>
           </div>
@@ -52,11 +54,11 @@ export default function TtaDonHangList() {
               +12%
             </span>
           </div>
-          <h3 className="text-slate-500 text-[11px] uppercase tracking-wider font-bold mb-1">Tổng đơn hàng</h3>
-          <p className="font-['Space_Grotesk'] text-white text-3xl font-bold">{data.total}</p>
+          <h3 className={`text-slate-500 text-[11px] uppercase tracking-wider font-bold mb-1`}>Tổng đơn hàng</h3>
+          <p className={`font-['Space_Grotesk'] ${isDark ? 'text-white' : 'text-slate-900'} text-3xl font-bold`}>{data.total}</p>
         </div>
 
-        <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
+        <div className={`${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-2xl border shadow-2xl relative overflow-hidden group`}>
           <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
             <span className="material-symbols-outlined text-9xl">payments</span>
           </div>
@@ -69,11 +71,11 @@ export default function TtaDonHangList() {
               +8.4%
             </span>
           </div>
-          <h3 className="text-slate-500 text-[11px] uppercase tracking-wider font-bold mb-1">Doanh thu ước tính</h3>
-          <p className="font-['Space_Grotesk'] text-white text-3xl font-bold">{formatPrice(data.orders.reduce((sum, o) => sum + (o.TongTien || 0), 0))}</p>
+          <h3 className={`text-slate-500 text-[11px] uppercase tracking-wider font-bold mb-1`}>Doanh thu ước tính</h3>
+          <p className={`font-['Space_Grotesk'] ${isDark ? 'text-white' : 'text-slate-900'} text-3xl font-bold`}>{formatPrice(data.orders.reduce((sum, o) => sum + (o.TongTien || 0), 0))}</p>
         </div>
 
-        <div className="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-white/5 relative overflow-hidden group">
+        <div className={`${isDark ? 'bg-slate-900/60 border-white/5 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md p-6 rounded-2xl border shadow-2xl relative overflow-hidden group`}>
           <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
             <span className="material-symbols-outlined text-9xl">conveyor_belt</span>
           </div>
@@ -83,22 +85,22 @@ export default function TtaDonHangList() {
             </div>
             <span className="text-xs font-medium text-slate-500 italic">Chờ xử lý</span>
           </div>
-          <h3 className="text-slate-500 text-[11px] uppercase tracking-wider font-bold mb-1">Vận đơn chờ giao</h3>
-          <p className="font-['Space_Grotesk'] text-white text-3xl font-bold">{data.orders.filter(o => o.TrangThai === 'pending' || o.TrangThai === 'Processing').length}</p>
+          <h3 className={`text-slate-500 text-[11px] uppercase tracking-wider font-bold mb-1`}>Vận đơn chờ giao</h3>
+          <p className={`font-['Space_Grotesk'] ${isDark ? 'text-white' : 'text-slate-900'} text-3xl font-bold`}>{data.orders.filter(o => o.TrangThai === 'pending' || o.TrangThai === 'Processing').length}</p>
         </div>
       </div>
 
-      <div className="bg-slate-900/60 backdrop-blur-md rounded-2xl overflow-hidden border border-slate-800 shadow-2xl">
-        <div className="px-8 py-6 border-b border-slate-800 flex flex-wrap justify-between items-center bg-slate-900/40 gap-4">
+      <div className={`${isDark ? 'bg-slate-900/60 border-slate-800 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md rounded-2xl overflow-hidden border shadow-2xl`}>
+        <div className={`px-8 py-6 border-b ${isDark ? 'border-slate-800 bg-slate-900/40' : 'border-slate-100 bg-slate-50/50'} flex flex-wrap justify-between items-center gap-4`}>
           <div>
-            <h2 className="font-['Space_Grotesk'] text-white text-2xl font-bold">Danh sách đơn hàng</h2>
+            <h2 className={`font-['Space_Grotesk'] ${isDark ? 'text-white' : 'text-slate-900'} text-2xl font-bold`}>Danh sách đơn hàng</h2>
             <p className="text-slate-500 text-sm italic">Cập nhật lúc: 14:30 Hôm nay</p>
           </div>
           <div className="flex gap-3">
             <form className="relative" onSubmit={handleSearch}>
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">search</span>
               <input 
-                className="bg-slate-950 border-slate-800 rounded-full pl-10 pr-4 py-2 text-xs text-slate-300 w-64 focus:ring-1 focus:ring-blue-600 outline-none transition-all" 
+                className={`${isDark ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'} border rounded-full pl-10 pr-4 py-2 text-xs w-64 focus:ring-1 focus:ring-blue-600 outline-none transition-all`} 
                 placeholder="Mã đơn, tên khách..." 
                 type="text"
                 value={search}
@@ -118,7 +120,7 @@ export default function TtaDonHangList() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-slate-950/60 text-slate-500 uppercase text-[10px] font-bold tracking-[0.2em]">
+            <thead className={`${isDark ? 'bg-slate-950/60' : 'bg-slate-50/80'} text-slate-500 uppercase text-[10px] font-bold tracking-[0.2em]`}>
               <tr>
                 <th className="px-8 py-4">Mã ĐH</th>
                 <th className="px-8 py-4">Khách hàng</th>
@@ -140,12 +142,12 @@ export default function TtaDonHangList() {
                         {order.HoTenNguoiNhan.split(' ').map(n => n[0]).join('').toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-sm font-semibold text-white">{order.HoTenNguoiNhan}</div>
+                        <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{order.HoTenNguoiNhan}</div>
                         <div className="text-[10px] text-slate-500">{order.Email || order.SoDienThoai}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-8 py-5 text-sm font-['Space_Grotesk'] font-bold text-white">{formatPrice(order.TongTien)}</td>
+                  <td className={`px-8 py-5 text-sm font-['Space_Grotesk'] font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatPrice(order.TongTien)}</td>
                   <td className="px-8 py-5 text-sm text-slate-400 font-medium">{new Date(order.NgayDatHang).toLocaleDateString('vi-VN')}</td>
                   <td className="px-8 py-5 text-center">
                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold border ${
@@ -172,7 +174,7 @@ export default function TtaDonHangList() {
           </table>
         </div>
         
-        <div className="px-8 py-6 border-t border-slate-800 flex justify-between items-center bg-slate-950/20">
+        <div className={`px-8 py-6 border-t ${isDark ? 'border-slate-800 bg-slate-950/20' : 'border-slate-100 bg-slate-50/40'} flex justify-between items-center`}>
           <span className="text-xs text-slate-500 font-medium">Hiển thị {data.orders.length} của {data.total} kết quả</span>
           <div className="flex gap-2">
             <button className="p-2 rounded-lg border border-slate-800 text-slate-400 hover:bg-slate-800 transition-colors">
@@ -190,7 +192,7 @@ export default function TtaDonHangList() {
       </div>
 
       {/* System Status Floating Bar */}
-      <div className="mt-12 p-4 bg-slate-900/60 backdrop-blur-md rounded-2xl flex items-center justify-between border border-slate-800/40">
+      <div className={`mt-12 p-4 ${isDark ? 'bg-slate-900/60 border-slate-800/40' : 'bg-white border-slate-200 shadow-lg'} backdrop-blur-md rounded-2xl flex items-center justify-between border transition-colors`}>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>

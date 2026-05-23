@@ -46,4 +46,7 @@ export const giatrithuoctinhApi = {
   
   // Xóa giá trị thông số
   delete: (id) => axios.delete(`/api/tta_giatrithuoctinh/${id}`),
+
+  // Lấy giá trị thông số theo sản phẩm
+  getBySanPham: (ma_sp) => axios.get(`/api/tta_giatrithuoctinh/product/${ma_sp}`),
 };

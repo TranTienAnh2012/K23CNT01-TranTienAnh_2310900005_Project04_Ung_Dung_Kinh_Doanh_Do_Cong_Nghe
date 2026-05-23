@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 
+# Tự động tìm và nạp tất cả biến số từ file .env vào hệ thống của Python
 load_dotenv()
 
 class Config:
@@ -9,11 +10,12 @@ class Config:
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", SECRET_KEY)
     PROPAGATE_EXCEPTIONS = True
 
-    # Database
+    # Cấu hình Database
+    # os.getenv() sẽ tìm và đọc các giá trị tương ứng từ file .env đã nạp ở trên
     DB_SERVER = os.getenv("DB_SERVER", "localhost")
     DB_NAME = os.getenv("DB_NAME", "G5_KD_DO_CONG_NGHE")
-    DB_USER = os.getenv("DB_USER")
-    DB_PASS = os.getenv("DB_PASS")
+    DB_USER = os.getenv("DB_USER") # VD: Lấy chữ 'TtaAdmin' từ file .env
+    DB_PASS = os.getenv("DB_PASS") # Lấy mật khẩu từ file .env
     DB_TRUSTED = "yes" if not DB_USER else "no"
 
     # JWT

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { danhmucApi } from '../../../api/tta_api';
+import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function TtaDanhMucList() {
+  const isDark = useAdminTheme();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,13 +28,13 @@ export default function TtaDanhMucList() {
   if (loading) return <div className="p-8 text-slate-400">Đang tải danh mục...</div>;
 
   return (
-    <div className="p-8 min-h-[calc(100vh-64px)] bg-slate-950 font-['Inter'] flex flex-col">
+    <div className={`p-8 min-h-[calc(100vh-64px)] ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'} transition-colors duration-300 font-['Inter'] flex flex-col`}>
       <div className="max-w-7xl mx-auto w-full">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
-            <h2 className="font-['Space_Grotesk'] text-4xl font-bold tracking-tight text-white mb-2">Quản Lý Danh Mục</h2>
-            <p className="text-slate-400 font-['Inter'] max-w-2xl">Tổ chức và phân cấp sản phẩm một cách chính xác. Cấu trúc danh mục cấp cao cho toàn bộ hệ thống Zenith Ztore.</p>
+            <h2 className={`font-['Space_Grotesk'] text-4xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'} mb-2`}>Quản Lý Danh Mục</h2>
+            <p className={`${isDark ? 'text-slate-400' : 'text-slate-500'} font-['Inter'] max-w-2xl`}>Tổ chức và phân cấp sản phẩm một cách chính xác. Cấu trúc danh mục cấp cao cho toàn bộ hệ thống Zenith Ztore.</p>
           </div>
           <Link to="/admin/danh-muc/them" className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-900/20 hover:bg-blue-500 active:scale-95 transition-all">
             <span className="material-symbols-outlined text-[20px]">add</span>
@@ -42,19 +44,19 @@ export default function TtaDanhMucList() {
 
         {/* Stats/Bento Area */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-          <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800/80 p-6 rounded-2xl">
+          <div className={`${isDark ? 'bg-slate-900/50 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'} backdrop-blur-md p-6 rounded-2xl border`}>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Tổng Danh Mục</span>
               <span className="material-symbols-outlined text-blue-500">category</span>
             </div>
-            <div className="text-4xl font-['Space_Grotesk'] font-bold text-white">{categories.length}</div>
+            <div className={`text-4xl font-['Space_Grotesk'] font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{categories.length}</div>
           </div>
-          <div className="bg-slate-900/50 backdrop-blur-md border border-slate-800/80 p-6 rounded-2xl">
+          <div className={`${isDark ? 'bg-slate-900/50 border-slate-800/80' : 'bg-white border-slate-200 shadow-sm'} backdrop-blur-md p-6 rounded-2xl border`}>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Đồng Bộ Dữ Liệu</span>
               <span className="material-symbols-outlined text-emerald-400">sync</span>
             </div>
-            <div className="text-4xl font-['Space_Grotesk'] font-bold text-white">100%</div>
+            <div className={`text-4xl font-['Space_Grotesk'] font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>100%</div>
           </div>
           <div className="col-span-1 md:col-span-2 bg-gradient-to-br from-blue-900/40 to-slate-900/80 border border-blue-900/30 p-6 rounded-2xl relative overflow-hidden backdrop-blur-md">
             <div className="relative z-10">
@@ -71,9 +73,9 @@ export default function TtaDanhMucList() {
         </div>
 
         {/* Category Table Card */}
-        <div className="bg-slate-900/70 backdrop-blur-md border border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
-          <div className="p-6 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
-            <h3 className="font-['Space_Grotesk'] text-xl font-bold text-white flex items-center gap-2">
+        <div className={`${isDark ? 'bg-slate-900/70 border-slate-800 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md rounded-2xl overflow-hidden border shadow-2xl`}>
+          <div className={`p-6 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'} flex flex-wrap items-center justify-between gap-4`}>
+            <h3 className={`font-['Space_Grotesk'] text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
               <span className="material-symbols-outlined text-slate-400">list_alt</span>
               Cây Danh Mục
             </h3>
@@ -88,7 +90,7 @@ export default function TtaDanhMucList() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-950/50">
+                <tr className={`${isDark ? 'bg-slate-950/50 border-slate-800' : 'bg-slate-50/50 border-slate-100'}`}>
                   <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">ID</th>
                   <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Tên Danh Mục</th>
                   <th className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Mô Tả</th>
@@ -97,17 +99,17 @@ export default function TtaDanhMucList() {
               </thead>
               <tbody className="divide-y divide-slate-800/50">
                 {categories.map((dm) => (
-                  <tr key={dm.MaDanhMuc} className="hover:bg-blue-900/10 transition-colors group">
+                  <tr key={dm.MaDanhMuc} className={`${isDark ? 'hover:bg-blue-900/10' : 'hover:bg-blue-50/50'} transition-colors group`}>
                     <td className="px-6 py-5">
-                      <span className="px-2.5 py-1 rounded bg-slate-800 text-slate-400 text-xs font-bold uppercase tracking-wider">#{dm.MaDanhMuc}</span>
+                      <span className={`px-2.5 py-1 rounded ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-600'} text-xs font-bold uppercase tracking-wider`}>#{dm.MaDanhMuc}</span>
                     </td>
                     <td className="px-6 py-5">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center border border-slate-800 group-hover:border-blue-500/50 transition-colors">
+                        <div className={`w-10 h-10 rounded-xl ${isDark ? 'bg-slate-950 border-slate-800 group-hover:border-blue-500/50' : 'bg-white border-slate-200 group-hover:border-blue-300'} flex items-center justify-center border transition-colors`}>
                           <span className="material-symbols-outlined text-blue-500">folder_open</span>
                         </div>
                         <div>
-                          <p className="font-bold text-white text-sm">{dm.TenDanhMuc}</p>
+                          <p className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'} text-sm`}>{dm.TenDanhMuc}</p>
                           <p className="text-[10px] text-slate-500 mt-0.5">Mã code: CAT-{dm.MaDanhMuc.toString().padStart(3, '0')}</p>
                         </div>
                       </div>
@@ -137,7 +139,7 @@ export default function TtaDanhMucList() {
           </div>
           
           {/* Pagination */}
-          <div className="p-6 border-t border-slate-800 flex items-center justify-between bg-slate-900/40">
+          <div className={`p-6 border-t ${isDark ? 'border-slate-800 bg-slate-900/40' : 'border-slate-100 bg-slate-50/40'} flex items-center justify-between`}>
             <p className="text-xs text-slate-500 font-medium">Hiển thị toàn bộ {categories.length} danh mục</p>
             <div className="flex items-center gap-1">
               <button className="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-800 text-slate-500 transition-colors">
@@ -153,11 +155,11 @@ export default function TtaDanhMucList() {
         </div>
         
         {/* Contextual Insight Footer */}
-        <div className="mt-8 p-6 bg-blue-900/10 border border-blue-500/20 rounded-2xl flex items-start gap-4 backdrop-blur-md">
+        <div className={`mt-8 p-6 ${isDark ? 'bg-blue-900/10 border-blue-500/20' : 'bg-blue-50 border-blue-200'} rounded-2xl flex items-start gap-4 backdrop-blur-md border`}>
           <span className="material-symbols-outlined text-blue-500">info</span>
           <div>
-            <h5 className="text-sm font-bold text-white mb-1">Mẹo Quản Trị</h5>
-            <p className="text-sm text-slate-400 leading-relaxed">Sự thay đổi tên danh mục sẽ ảnh hưởng toàn cầu tới các sản phẩm liên kết. Hành động này được lập chỉ mục mỗi 15 phút để tối ưu SEO. Việc "Xóa" danh mục có thể cần cấu hình lại các sản phẩm mồ côi (không có danh mục).</p>
+            <h5 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'} mb-1`}>Mẹo Quản Trị</h5>
+            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'} leading-relaxed`}>Sự thay đổi tên danh mục sẽ ảnh hưởng toàn cầu tới các sản phẩm liên kết. Hành động này được lập chỉ mục mỗi 15 phút để tối ưu SEO. Việc "Xóa" danh mục có thể cần cấu hình lại các sản phẩm mồ côi (không có danh mục).</p>
           </div>
         </div>
       </div>
