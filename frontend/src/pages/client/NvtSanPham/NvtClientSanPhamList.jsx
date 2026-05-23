@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { shopApi } from '../../../api/client/tta_shop.api';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function NvtClientSanPhamList({ 
   products = [], 
@@ -7,6 +9,8 @@ export default function NvtClientSanPhamList({
   selectedCategory = '', 
   setSelectedCategory 
 }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [visibleCount, setVisibleCount] = useState(10);
   // Hàm hỗ trợ chuẩn hóa đường dẫn hình ảnh sản phẩm
   const getImageUrl = (path) => {
@@ -31,9 +35,28 @@ export default function NvtClientSanPhamList({
     : products;
 
   // Xử lý sự kiện khi người dùng bấm nút "Thêm vào giỏ hàng"
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     const name = product.TenSanPham || product.G5_TenSP || 'Sản phẩm';
-    alert(`Đã thêm "${name}" vào giỏ hàng thành công!`);
+    const id = product.MaSanPham || product.G5_MaSP;
+
+    if (!user) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await shopApi.addToCart({
+        MaSanPham: id,
+        SoLuong: 1
+      });
+      alert(`Đã thêm "${name}" vào giỏ hàng thành công!`);
+      // Bắn sự kiện cập nhật để header update badge
+      window.dispatchEvent(new Event('cart-updated'));
+    } catch (err) {
+      console.error("Lỗi thêm vào giỏ hàng:", err);
+      alert("Không thể thêm vào giỏ hàng: " + (err.response?.data?.message || err.message));
+    }
   };
 
   return (

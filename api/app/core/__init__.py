@@ -174,9 +174,16 @@ def register_resources(api):
     from app.modules.client.tta_danhmuc.tta_danhmuc_resource import ClientDanhMucListResource
     from app.modules.client.tta_banner.tta_banner_resource import ClientBannerListResource
     from app.modules.client.tta_donhang.tta_donhang_resource import ClientDonHangListResource
+    from app.modules.client.tta_giohang.tta_giohang_resource import ClientGioHangListResource, ClientGioHangResource
+    from app.modules.client.tta_danhgia.tta_danhgia_resource import ClientReviewListResource, ClientReviewCheckResource, ClientReviewCreateResource
 
     api.add_resource(ClientSanPhamListResource, '/api/client/tta_sanpham')
     api.add_resource(ClientSanPhamResource, '/api/client/tta_sanpham/<int:ma>')
     api.add_resource(ClientDanhMucListResource, '/api/client/tta_danhmuc')
     api.add_resource(ClientBannerListResource, '/api/client/tta_banner')
     api.add_resource(ClientDonHangListResource, '/api/client/tta_donhang')
+    api.add_resource(ClientGioHangListResource, '/api/client/tta_giohang')
+    api.add_resource(ClientGioHangResource, '/api/client/tta_giohang/<int:id>')
+    api.add_resource(ClientReviewListResource, '/api/client/tta_danhgia/<int:ma_sp>')
+    api.add_resource(ClientReviewCheckResource, '/api/client/tta_danhgia/check/<int:ma_sp>')
+    api.add_resource(ClientReviewCreateResource, '/api/client/tta_danhgia')

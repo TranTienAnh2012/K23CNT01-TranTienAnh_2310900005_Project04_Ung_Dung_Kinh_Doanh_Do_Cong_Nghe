@@ -81,7 +81,7 @@ export default function NnhDanhGiaList() {
 
               <div className="flex gap-1 mb-3">
                 {[...Array(5)].map((_, i) => (
-                  <span key={i} className={`material-symbols-outlined text-sm ${i < item.SoSao ? 'text-amber-400' : 'text-slate-700'}`} style={{ fontVariationSettings: i < item.SoSao ? "'FILL' 1" : "''" }}>
+                  <span key={i} className={`material-symbols-outlined text-sm ${i < item.SoSao ? 'text-amber-400 filled' : 'text-slate-700'}`}>
                     star
                   </span>
                 ))}

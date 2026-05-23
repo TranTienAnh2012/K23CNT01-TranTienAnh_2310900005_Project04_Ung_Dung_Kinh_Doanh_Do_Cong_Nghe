@@ -1,14 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { shopApi } from '../../../api/client/tta_shop.api';
+import { useAuth } from '../../../context/AuthContext';
+import NvtClientDanhGia from '../NvtDanhGia/NvtClientDanhGia';
 
 export default function NvtClientSanPhamChiTiet() {
   const { ma } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState('desc'); // 'desc' hoặc 'specs'
+  const [activeTab, setActiveTab] = useState('desc'); // 'desc', 'specs' hoặc 'reviews'
+  const [avgRating, setAvgRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
+
+  const fetchAverageRating = async () => {
+    try {
+      const res = await shopApi.getProductReviews(ma);
+      if (res.data?.data) {
+        setAvgRating(res.data.data.average_stars);
+        setTotalReviews(res.data.data.total);
+      }
+    } catch (err) {
+      console.error("Lỗi lấy số sao đánh giá trung bình:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (ma) {
+      fetchAverageRating();
+    }
+  }, [ma]);
+
+  // Lắng nghe sự kiện gửi đánh giá thành công để cập nhật lại số sao
+  useEffect(() => {
+    const handleReviewSubmitted = () => {
+      fetchAverageRating();
+    };
+    window.addEventListener('review-submitted', handleReviewSubmitted);
+    return () => {
+      window.removeEventListener('review-submitted', handleReviewSubmitted);
+    };
+  }, [ma]);
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -74,9 +108,25 @@ export default function NvtClientSanPhamChiTiet() {
   };
 
   // Xử lý nút Thêm vào giỏ hàng
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
-    alert(`Đã thêm ${quantity} sản phẩm "${product.TenSanPham}" vào giỏ hàng thành công!`);
+    if (!user) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      navigate(`/login?redirect=/san-pham/${product.MaSanPham}`);
+      return;
+    }
+    try {
+      await shopApi.addToCart({
+        MaSanPham: product.MaSanPham,
+        SoLuong: quantity
+      });
+      alert(`Đã thêm ${quantity} sản phẩm "${product.TenSanPham}" vào giỏ hàng thành công!`);
+      // Bắn sự kiện cập nhật để header update badge
+      window.dispatchEvent(new Event('cart-updated'));
+    } catch (err) {
+      console.error("Lỗi thêm vào giỏ hàng:", err);
+      alert("Không thể thêm vào giỏ hàng: " + (err.response?.data?.message || err.message));
+    }
   };
 
   // Xử lý nút Mua ngay (Chuyển đến trang thanh toán)
@@ -151,11 +201,24 @@ export default function NvtClientSanPhamChiTiet() {
         {/* BÊN PHẢI: BẢNG ĐIỀU KHIỂN CHI TIẾT SẢN PHẨM */}
         <div className="space-y-6 flex flex-col justify-between h-full">
           <div className="space-y-4">
-            {/* NHÃN THƯƠNG HIỆU VÀ TRẠNG THÁI */}
-            <div className="flex items-center justify-between">
-              <span className="px-3 py-1 bg-purple-50 text-purple-700 font-bold text-xs rounded-md border border-purple-100/60 uppercase tracking-wider">
-                {product.ThuongHieu || 'Chính hãng'}
-              </span>
+            {/* NHÃN THƯƠNG HIỆU, ĐÁNH GIÁ TRUNG BÌNH VÀ TRẠNG THÁI */}
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 bg-purple-50 text-purple-700 font-bold text-xs rounded-md border border-purple-100/60 uppercase tracking-wider">
+                  {product.ThuongHieu || 'Chính hãng'}
+                </span>
+                
+                {totalReviews > 0 ? (
+                  <div className="flex items-center gap-1 text-amber-400 bg-amber-50/50 px-2.5 py-1 rounded-lg border border-amber-100/60 text-xs font-bold flex">
+                    <span className="material-symbols-outlined text-sm filled">star</span>
+                    <span>{avgRating}</span>
+                    <span className="text-slate-400 font-medium">({totalReviews} đánh giá)</span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-slate-400 font-semibold italic">Chưa có đánh giá</span>
+                )}
+              </div>
+              
               <span className={`inline-flex items-center gap-1.5 text-xs font-bold ${stock > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
                 <span className={`w-2 h-2 rounded-full ${stock > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
                 {stock > 0 ? `Còn hàng (${stock} sản phẩm)` : 'Tạm hết hàng'}
@@ -272,17 +335,28 @@ export default function NvtClientSanPhamChiTiet() {
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-purple-600 rounded-full" />
             )}
           </button>
+          <button 
+            onClick={() => setActiveTab('reviews')}
+            className={`pb-3 font-bold text-sm transition-all relative ${activeTab === 'reviews' ? 'text-purple-700 font-["Space_Grotesk"]' : 'text-slate-400 hover:text-slate-600'}`}
+          >
+            Đánh giá ({totalReviews})
+            {activeTab === 'reviews' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-purple-600 rounded-full" />
+            )}
+          </button>
         </div>
 
         {/* NỘI DUNG TABS */}
-        {activeTab === 'desc' ? (
+        {activeTab === 'desc' && (
           <div className="prose max-w-none text-slate-600 text-sm leading-relaxed space-y-4">
             <p>{product.MoTa || 'Sản phẩm chưa có mô tả chi tiết từ nhà sản xuất. Vui lòng liên hệ bộ phận hỗ trợ khách hàng để biết thêm thông số đầy đủ.'}</p>
             {product.MoTa && product.MoTa.length > 50 && (
               <p className="pt-2 text-xs text-slate-400 italic">Cam kết hàng chính hãng 100%, hỗ trợ xuất hóa đơn VAT và giao hàng hỏa tốc trong vòng 2 giờ tại các thành phố lớn.</p>
             )}
           </div>
-        ) : (
+        )}
+        
+        {activeTab === 'specs' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div className="flex justify-between py-2.5 px-4 bg-slate-50 rounded-xl">
               <span className="text-slate-500 font-medium">Mã phân phối:</span>
@@ -315,6 +389,10 @@ export default function NvtClientSanPhamChiTiet() {
               </div>
             ))}
           </div>
+        )}
+
+        {activeTab === 'reviews' && (
+          <NvtClientDanhGia maSanPham={ma} />
         )}
       </div>
     </div>

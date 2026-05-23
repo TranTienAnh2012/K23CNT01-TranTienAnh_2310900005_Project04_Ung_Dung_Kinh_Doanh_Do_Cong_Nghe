@@ -1,12 +1,44 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { shopApi } from '../../api/client/tta_shop.api';
 
 export default function NnhClientHeader({ categories = [], selectedCategory = '', onSelectCategory }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const dropdownRef = useRef(null);
+
+  // Lấy số lượng giỏ hàng của user
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      if (!user) {
+        setCartCount(0);
+        return;
+      }
+      try {
+        const res = await shopApi.getCart();
+        if (res.data?.data) {
+          setCartCount(res.data.data.length);
+        }
+      } catch (err) {
+        console.error("Lỗi lấy giỏ hàng:", err);
+      }
+    };
+
+    fetchCartCount();
+
+    // Lắng nghe sự kiện update giỏ hàng để cập nhật badge ngay lập tức
+    const handleCartUpdated = () => {
+      fetchCartCount();
+    };
+    window.addEventListener('cart-updated', handleCartUpdated);
+
+    return () => {
+      window.removeEventListener('cart-updated', handleCartUpdated);
+    };
+  }, [user]);
 
   // Đóng dropdown khi click ra ngoài
   useEffect(() => {
@@ -78,15 +110,17 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
         {/* CÁC NÚT TÁC VỤ (GIỎ HÀNG / ĐĂNG NHẬP / AVATAR) */}
         <div className="flex items-center gap-3 shrink-0">
           {/* GIỎ HÀNG - luôn hiển thị trên thanh header, bên trái avatar */}
-          <div className="flex items-center gap-2 text-purple-950 hover:text-purple-600 transition-colors cursor-pointer group relative">
+          <Link to="/gio-hang" className="flex items-center gap-2 text-purple-950 hover:text-purple-600 transition-colors cursor-pointer group relative">
             <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-700 group-hover:bg-purple-100 transition-colors relative">
               <span className="material-symbols-outlined text-lg">shopping_cart</span>
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-sm animate-pulse">
-                2
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-sm animate-pulse">
+                  {cartCount}
+                </span>
+              )}
             </div>
             <span className="text-sm font-semibold hidden md:block"></span>
-          </div>
+          </Link>
           {user ? (
             /* AVATAR DROPDOWN KHI ĐÃ ĐĂNG NHẬP */
             <div className="relative" ref={dropdownRef}>

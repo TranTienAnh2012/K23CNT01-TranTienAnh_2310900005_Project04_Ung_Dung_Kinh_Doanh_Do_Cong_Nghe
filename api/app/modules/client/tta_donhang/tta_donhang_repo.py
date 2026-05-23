@@ -1,6 +1,6 @@
-from sqlalchemy import select, insert, update
+from sqlalchemy import select, insert, update, delete
 from app.db.connection import engine
-from app.models.schema import donhang, chitietdonhang, sanpham
+from app.models.schema import donhang, chitietdonhang, sanpham, giohangtam
 
 def place_order(user_id, data):
     hoten = data.get('HoTenNguoiNhan') or data.get('HoTen') or ''
@@ -51,6 +51,13 @@ def place_order(user_id, data):
                     G5_SoLuongTon=sanpham.c.G5_SoLuongTon - qty
                 )
                 conn.execute(stmt_stock)
+
+                # Xóa khỏi giỏ hàng tạm
+                stmt_del_cart = delete(giohangtam).where(
+                    giohangtam.c.G5_MaNguoiDung == user_id,
+                    giohangtam.c.G5_MaSanPham == ma_sp
+                )
+                conn.execute(stmt_del_cart)
                 
         return order_id
 
