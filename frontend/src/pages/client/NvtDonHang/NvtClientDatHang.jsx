@@ -35,6 +35,11 @@ export default function NvtClientDatHang() {
     PhuongThucThanhToan: 'COD'
   });
 
+  const priceSale = product ? (product.GiaBan || product.Gia || 15000000) : 0;
+  const totalPrice = isFromCart
+    ? cartItems.reduce((sum, item) => sum + item.GiaBan * item.SoLuong, 0)
+    : priceSale * quantity;
+
   const getImageUrl = (path) => {
     if (!path) return 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=600&auto=format&fit=crop';
     if (path.startsWith('http')) return path;
@@ -183,11 +188,6 @@ export default function NvtClientDatHang() {
       </div>
     );
   }
-
-  const priceSale = product ? (product.GiaBan || product.Gia || 15000000) : 0;
-  const totalPrice = isFromCart
-    ? cartItems.reduce((sum, item) => sum + item.GiaBan * item.SoLuong, 0)
-    : priceSale * quantity;
 
   const handleQuantityChange = (val) => {
     const newQty = quantity + val;
