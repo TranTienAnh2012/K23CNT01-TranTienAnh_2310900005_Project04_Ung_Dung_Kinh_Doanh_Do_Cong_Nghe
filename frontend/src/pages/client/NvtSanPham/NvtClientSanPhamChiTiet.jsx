@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { shopApi } from '../../../api/client/tta_shop.api';
 import { useAuth } from '../../../context/AuthContext';
 import NvtClientDanhGia from '../NvtDanhGia/NvtClientDanhGia';
@@ -7,6 +7,7 @@ import NvtClientDanhGia from '../NvtDanhGia/NvtClientDanhGia';
 export default function NvtClientSanPhamChiTiet() {
   const { ma } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,6 +15,14 @@ export default function NvtClientSanPhamChiTiet() {
   const [activeTab, setActiveTab] = useState('desc'); // 'desc', 'specs' hoặc 'reviews'
   const [avgRating, setAvgRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab === 'review' || tab === 'reviews') {
+      setActiveTab('reviews');
+    }
+  }, [location]);
 
   const fetchAverageRating = async () => {
     try {
