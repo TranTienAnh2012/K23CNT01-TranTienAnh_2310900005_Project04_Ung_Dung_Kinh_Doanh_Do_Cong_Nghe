@@ -14,6 +14,8 @@ export const shopApi = {
   // Đặt hàng
   placeOrder: (data) => axios.post('/api/client/tta_donhang', data),
   getOrders: () => axios.get('/api/client/tta_donhang'),
+  getOrder: (ma) => axios.get(`/api/client/tta_donhang/${ma}`),
+  cancelOrder: (ma) => axios.put(`/api/client/tta_donhang/cancel/${ma}`),
 
   // Giỏ hàng
   getCart: () => axios.get('/api/client/tta_giohang'),

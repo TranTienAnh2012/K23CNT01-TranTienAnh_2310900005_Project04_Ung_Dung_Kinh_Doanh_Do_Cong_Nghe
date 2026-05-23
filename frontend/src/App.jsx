@@ -14,6 +14,7 @@ import NvtClientHome from './pages/client/NvtClientHome';
 import NvtClientSanPhamChiTiet from './pages/client/NvtSanPham/NvtClientSanPhamChiTiet';
 import NvtClientDatHang from './pages/client/NvtDonHang/NvtClientDatHang';
 import NvtClientLichSuDonHang from './pages/client/NvtDonHang/NvtClientLichSuDonHang';
+import NvtClientChiTietDonHang from './pages/client/NvtDonHang/NvtClientChiTietDonHang';
 import NvtClientTrangCaNhan from './pages/client/NvtTrangCaNhan/NvtClientTrangCaNhan';
 import NvtClientGioHang from './pages/client/NvtGioHang/NvtClientGioHang';
 
@@ -104,6 +105,7 @@ export default function App() {
             <Route path="san-pham/:ma" element={<NvtClientSanPhamChiTiet />} />
             <Route path="dat-hang/:ma" element={<NvtClientDatHang />} />
             <Route path="lich-su-don-hang" element={<NvtClientLichSuDonHang />} />
+            <Route path="lich-su-don-hang/:id" element={<NvtClientChiTietDonHang />} />
             <Route path="trang-ca-nhan" element={<NvtClientTrangCaNhan />} />
             <Route path="gio-hang" element={<NvtClientGioHang />} />
           </Route>

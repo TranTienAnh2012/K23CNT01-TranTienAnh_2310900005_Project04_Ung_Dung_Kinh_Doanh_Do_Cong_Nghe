@@ -29,3 +29,28 @@ class ClientDonHangListResource(Resource):
             logger.error(f"[place_order] Error: {str(e)}")
             return response_error(f"Lỗi đặt hàng: {str(e)}", 500)
 
+class ClientDonHangResource(Resource):
+    @jwt_required()
+    def get(self, ma):
+        user_id = get_jwt_identity()
+        try:
+            order = service.get_order_by_id(user_id, ma)
+            if order:
+                return response_success(data=order, message="Lấy chi tiết đơn hàng thành công.")
+            return response_error("Không tìm thấy đơn hàng.", 404)
+        except Exception as e:
+            return response_error(f"Lỗi lấy chi tiết đơn hàng: {str(e)}", 500)
+
+class ClientDonHangCancelResource(Resource):
+    @jwt_required()
+    def put(self, ma):
+        user_id = get_jwt_identity()
+        try:
+            success = service.cancel_order(user_id, ma)
+            if success:
+                return response_success(message="Hủy đơn hàng thành công.")
+            return response_error("Không thể hủy đơn hàng này. Chỉ có thể hủy đơn hàng ở trạng thái Chờ xác nhận.", 400)
+        except Exception as e:
+            return response_error(f"Lỗi hủy đơn hàng: {str(e)}", 500)
+
+
