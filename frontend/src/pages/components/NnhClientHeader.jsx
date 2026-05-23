@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { shopApi } from '../../api/client/tta_shop.api';
 
 export default function NnhClientHeader({ categories = [], selectedCategory = '', onSelectCategory }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const dropdownRef = useRef(null);
@@ -22,16 +25,27 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      const threshold = isHomePage ? 450 : 100;
       
-      // Chỉ ẩn khi cuộn xuống quá 50px
-      if (currentScrollY > 50) {
-        if (currentScrollY > lastScrollY.current) {
-          setIsNavVisible(false); // Cuộn xuống -> Ẩn thanh nav
-        } else {
-          setIsNavVisible(true);  // Cuộn lên -> Hiện thanh nav
-        }
+      if (currentScrollY <= threshold) {
+        setIsNavVisible(prev => {
+          if (!prev) return true;
+          return prev;
+        });
       } else {
-        setIsNavVisible(true);    // Ở đầu trang -> Luôn hiện thanh nav
+        const diff = currentScrollY - lastScrollY.current;
+        // Chỉ đổi trạng thái khi cuộn 1 khoảng đáng kể (tránh khựng/nháy giật)
+        if (diff > 8) {
+          setIsNavVisible(prev => {
+            if (prev) return false;
+            return prev;
+          });
+        } else if (diff < -8) {
+          setIsNavVisible(prev => {
+            if (!prev) return true;
+            return prev;
+          });
+        }
       }
       
       lastScrollY.current = currentScrollY;
@@ -39,7 +53,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isHomePage]);
 
   // Xử lý tìm kiếm theo từ khóa
   const handleSearchSubmit = (e) => {
@@ -110,7 +124,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   return (
     <header className="w-full bg-white font-['Inter'] select-none border-b border-purple-100/50 sticky top-0 z-50 shadow-sm">
       {/* THANH THÔNG BÁO TRÊN CÙNG (TOP BAR) */}
-      <div className={`w-full bg-[#fdfcff] border-b border-purple-50 px-4 md:px-12 flex justify-between items-center text-xs text-purple-950/70 font-medium transition-all duration-300 ease-in-out overflow-hidden ${isNavVisible ? 'max-h-10 py-2 opacity-100' : 'max-h-0 py-0 opacity-0 pointer-events-none'}`}>
+      <div className={`w-full bg-[#fdfcff] border-b border-purple-50 px-4 md:px-12 flex justify-between items-center text-xs text-purple-950/70 font-medium transition-all duration-300 ease-in-out overflow-hidden ${isNavVisible ? 'max-h-[36px] py-2 opacity-100' : 'max-h-0 py-0 opacity-0 pointer-events-none'}`}>
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-purple-600 text-sm">local_shipping</span>
           <span>Miễn phí giao hàng cho đơn từ 500k</span>
@@ -241,7 +255,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
       </div>
 
       {/* THANH ĐIỀU HƯỚNG DANH MUC (NAVIGATION TABS) */}
-      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isNavVisible ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isNavVisible ? 'max-h-[50px] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
         <div className="max-w-[1320px] mx-auto px-4 md:px-8 flex items-center gap-1 md:gap-2 overflow-x-auto scrollbar-none border-t border-purple-50/50 pt-1">
           {navTabs.map((cat) => {
             const isActive = selectedCategory.toLowerCase() === cat.id.toLowerCase();
