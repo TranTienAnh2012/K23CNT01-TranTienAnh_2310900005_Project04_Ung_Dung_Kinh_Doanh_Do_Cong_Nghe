@@ -3,6 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { shopApi } from '../../../api/client/tta_shop.api';
 import { useAuth } from '../../../context/AuthContext';
 
+// Hàm loại bỏ dấu tiếng Việt để tìm kiếm không dấu chính xác hơn
+const removeDiacritics = (str) => {
+  if (!str) return '';
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D');
+};
+
 export default function NvtClientSanPhamList({ 
   products = [], 
   loading = false, 
@@ -24,13 +34,20 @@ export default function NvtClientSanPhamList({
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
 
-  // Lọc sản phẩm theo danh mục đang được người dùng chọn (Hỗ trợ cả key thực tế từ CSDL và key fallback)
+  // Lọc sản phẩm theo từ khóa/danh mục đang được người dùng chọn (hỗ trợ tìm kiếm thông minh tách từ, không dấu)
   const filteredProducts = selectedCategory
     ? products.filter((p) => {
         const catName = p.TenDanhMuc || p.G5_TenDanhMuc || '';
         const prodName = p.TenSanPham || p.G5_TenSP || '';
-        return catName.toLowerCase().includes(selectedCategory.toLowerCase()) || 
-               prodName.toLowerCase().includes(selectedCategory.toLowerCase());
+        
+        // Chuẩn hóa chuỗi nguồn (tổ hợp danh mục + tên sản phẩm)
+        const targetString = removeDiacritics(catName + ' ' + prodName).toLowerCase();
+        
+        // Tách các từ trong từ khóa tìm kiếm
+        const searchTerms = removeDiacritics(selectedCategory).toLowerCase().split(/\s+/).filter(Boolean);
+        
+        // Tất cả các từ khóa con đều phải xuất hiện trong chuỗi nguồn
+        return searchTerms.every(term => targetString.includes(term));
       })
     : products;
 
