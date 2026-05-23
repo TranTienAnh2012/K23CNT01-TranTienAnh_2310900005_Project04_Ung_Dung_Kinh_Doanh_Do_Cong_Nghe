@@ -32,4 +32,14 @@ export const shopApi = {
   getPublicVouchers: () => axios.get('/api/client/tta_voucher/public'),
   claimVoucher: (data) => axios.post('/api/client/tta_voucher/claim', data),
   getMyVouchers: () => axios.get('/api/client/tta_voucher/my-vouchers'),
+
+  // Hồ sơ cá nhân / Profile
+  getProfile: () => axios.get('/api/client/profile'),
+  updateProfile: (data) => axios.put('/api/client/profile', data),
+  changePassword: (data) => axios.put('/api/client/profile/change-password', data),
+  uploadAvatar: (formData) => axios.post('/api/client/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }),
 };
