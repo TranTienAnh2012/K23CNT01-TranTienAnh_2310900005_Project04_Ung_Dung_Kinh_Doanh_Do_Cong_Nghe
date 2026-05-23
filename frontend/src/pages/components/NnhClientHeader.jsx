@@ -10,11 +10,36 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   const [cartCount, setCartCount] = useState(0);
   const dropdownRef = useRef(null);
   const [searchVal, setSearchVal] = useState(selectedCategory);
+  const [isNavVisible, setIsNavVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
   // Đồng bộ searchVal khi category thay đổi bên ngoài
   useEffect(() => {
     setSearchVal(selectedCategory);
   }, [selectedCategory]);
+
+  // Lắng nghe sự kiện cuộn trang để ẩn/hiện thanh danh mục & top bar
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Chỉ ẩn khi cuộn xuống quá 50px
+      if (currentScrollY > 50) {
+        if (currentScrollY > lastScrollY.current) {
+          setIsNavVisible(false); // Cuộn xuống -> Ẩn thanh nav
+        } else {
+          setIsNavVisible(true);  // Cuộn lên -> Hiện thanh nav
+        }
+      } else {
+        setIsNavVisible(true);    // Ở đầu trang -> Luôn hiện thanh nav
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Xử lý tìm kiếm theo từ khóa
   const handleSearchSubmit = (e) => {
@@ -85,7 +110,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   return (
     <header className="w-full bg-white font-['Inter'] select-none border-b border-purple-100/50 sticky top-0 z-50 shadow-sm">
       {/* THANH THÔNG BÁO TRÊN CÙNG (TOP BAR) */}
-      <div className="w-full bg-[#fdfcff] border-b border-purple-50 py-2 px-4 md:px-12 flex justify-between items-center text-xs text-purple-950/70 font-medium">
+      <div className={`w-full bg-[#fdfcff] border-b border-purple-50 px-4 md:px-12 flex justify-between items-center text-xs text-purple-950/70 font-medium transition-all duration-300 ease-in-out overflow-hidden ${isNavVisible ? 'max-h-10 py-2 opacity-100' : 'max-h-0 py-0 opacity-0 pointer-events-none'}`}>
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-purple-600 text-sm">local_shipping</span>
           <span>Miễn phí giao hàng cho đơn từ 500k</span>
@@ -216,30 +241,32 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
       </div>
 
       {/* THANH ĐIỀU HƯỚNG DANH MUC (NAVIGATION TABS) */}
-      <div className="max-w-[1320px] mx-auto px-4 md:px-8 flex items-center gap-1 md:gap-2 overflow-x-auto scrollbar-none border-t border-purple-50/50 pt-1">
-        {navTabs.map((cat) => {
-          const isActive = selectedCategory.toLowerCase() === cat.id.toLowerCase();
-          return (
-            <button
-              key={cat.name}
-              onClick={() => {
-                if (onSelectCategory) {
-                  onSelectCategory(cat.id);
-                }
-              }}
-              className={`px-4 py-3 text-sm font-semibold whitespace-nowrap transition-all relative ${isActive
-                ? 'text-purple-700 font-bold'
-                : 'text-purple-950/70 hover:text-purple-950'
-                }`}
-            >
-              {cat.name}
-              {/* ĐƯỜNG GẠCH CHÂN ĐÁNH DẤU TAB ĐANG HOẠT ĐỘNG */}
-              {isActive && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600 rounded-t-full layout-id-tab-indicator" />
-              )}
-            </button>
-          );
-        })}
+      <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isNavVisible ? 'max-h-16 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+        <div className="max-w-[1320px] mx-auto px-4 md:px-8 flex items-center gap-1 md:gap-2 overflow-x-auto scrollbar-none border-t border-purple-50/50 pt-1">
+          {navTabs.map((cat) => {
+            const isActive = selectedCategory.toLowerCase() === cat.id.toLowerCase();
+            return (
+              <button
+                key={cat.name}
+                onClick={() => {
+                  if (onSelectCategory) {
+                    onSelectCategory(cat.id);
+                  }
+                }}
+                className={`px-4 py-3 text-sm font-semibold whitespace-nowrap transition-all relative ${isActive
+                  ? 'text-purple-700 font-bold'
+                  : 'text-purple-950/70 hover:text-purple-950'
+                  }`}
+              >
+                {cat.name}
+                {/* ĐƯỜNG GẠCH CHÂN ĐÁNH DẤU TAB ĐANG HOẠT ĐỘNG */}
+                {isActive && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600 rounded-t-full layout-id-tab-indicator" />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </header>
   );
