@@ -9,6 +9,21 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const dropdownRef = useRef(null);
+  const [searchVal, setSearchVal] = useState(selectedCategory);
+
+  // Đồng bộ searchVal khi category thay đổi bên ngoài
+  useEffect(() => {
+    setSearchVal(selectedCategory);
+  }, [selectedCategory]);
+
+  // Xử lý tìm kiếm theo từ khóa
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (onSelectCategory) {
+      onSelectCategory(searchVal);
+    }
+    navigate('/');
+  };
 
   // Lấy số lượng giỏ hàng của user
   useEffect(() => {
@@ -94,18 +109,20 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
         </Link>
 
         {/* THANH TÌM KIẾM TRUNG TÂM */}
-        <div className="flex-1 max-w-xl hidden sm:block">
+        <form onSubmit={handleSearchSubmit} className="flex-1 max-w-xl hidden sm:block">
           <div className="relative flex items-center w-full h-11 bg-purple-50/60 hover:bg-purple-50 border border-purple-100/80 rounded-full px-4 transition-all focus-within:bg-white focus-within:border-purple-400 focus-within:shadow-md">
             <input
               type="text"
               placeholder="Bạn cần tìm sản phẩm gì?"
-              className="w-full bg-transparent border-none outline-none text-sm text-purple-950 placeholder-purple-400/80 pr-12"
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:outline-none focus-visible:ring-0 text-sm text-purple-950 placeholder-purple-400/80 pr-12"
             />
-            <button className="absolute right-1.5 w-8 h-8 rounded-full bg-purple-100 hover:bg-purple-600 hover:text-white text-purple-700 flex items-center justify-center transition-colors">
+            <button type="submit" className="absolute right-1.5 w-8 h-8 rounded-full bg-purple-100 hover:bg-purple-600 hover:text-white text-purple-700 flex items-center justify-center transition-colors">
               <span className="material-symbols-outlined text-base">search</span>
             </button>
           </div>
-        </div>
+        </form>
 
         {/* CÁC NÚT TÁC VỤ (GIỎ HÀNG / ĐĂNG NHẬP / AVATAR) */}
         <div className="flex items-center gap-3 shrink-0">
