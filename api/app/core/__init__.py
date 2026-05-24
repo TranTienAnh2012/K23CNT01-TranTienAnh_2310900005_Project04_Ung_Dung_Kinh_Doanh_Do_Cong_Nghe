@@ -33,6 +33,9 @@ def create_app(config_name=None):
     def health():
         return {"status": "ok", "message": "Backend standardized structure with Flask-RESTful and SQLAlchemy Core is fully operational!"}
 
+    from app.utils.tta_payment_cron import start_payment_cron
+    start_payment_cron(app)
+
     return app
 
 def register_middleware(app):

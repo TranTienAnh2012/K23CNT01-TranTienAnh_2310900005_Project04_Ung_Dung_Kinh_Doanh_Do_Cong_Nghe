@@ -22,6 +22,11 @@ export default function NvtClientDatHang() {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [discount, setDiscount] = useState(0);
 
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [placedOrderId, setPlacedOrderId] = useState(null);
+  const [finalTotal, setFinalTotal] = useState(0);
+  const [paymentDetected, setPaymentDetected] = useState(false);
+
   const cartItems = location.state?.items || [];
   const isFromCart = ma === 'cart' || ma === 'gio-hang';
 
@@ -118,6 +123,30 @@ export default function NvtClientDatHang() {
     }
   }, [selectedVoucher, totalPrice]);
 
+  // Theo dõi và kiểm tra trạng thái thanh toán online tự động
+  useEffect(() => {
+    if (!showPaymentModal || !placedOrderId || paymentDetected) return;
+
+    let intervalId = setInterval(async () => {
+      try {
+        const res = await shopApi.getOrder(placedOrderId);
+        if (res.data?.data?.TrangThaiThanhToan === 'Paid') {
+          setPaymentDetected(true);
+          clearInterval(intervalId);
+          setTimeout(() => {
+            setShowPaymentModal(false);
+            alert("Thanh toán thành công! Cảm ơn bạn đã mua hàng tại Zenith Store.");
+            navigate('/lich-su-don-hang');
+          }, 3000);
+        }
+      } catch (err) {
+        console.error("Lỗi kiểm tra trạng thái thanh toán:", err);
+      }
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [showPaymentModal, placedOrderId, paymentDetected]);
+
   // Tự động điền email của người dùng đã đăng nhập nếu có
   useEffect(() => {
     if (user && user.email) {
@@ -212,16 +241,17 @@ export default function NvtClientDatHang() {
     }
 
     setSubmitting(true);
+    const orderTotalAmount = totalPrice - discount;
     try {
       const orderPayload = {
         HoTenNguoiNhan: formData.HoTenNguoiNhan,
         SoDienThoaiNguoiNhan: formData.SoDienThoaiNguoiNhan,
         DiaChiNguoiNhan: formData.DiaChiNguoiNhan,
         EmailNguoiNhan: formData.EmailNguoiNhan,
-        TongTien: totalPrice - discount,
+        TongTien: orderTotalAmount,
         GhiChu: formData.GhiChu,
         PhuongThucThanhToan: formData.PhuongThucThanhToan,
-        TrangThaiThanhToan: formData.PhuongThucThanhToan === 'Bank Transfer' ? 'Paid' : 'Unpaid',
+        TrangThaiThanhToan: 'Unpaid',
         VoucherId: selectedVoucher ? selectedVoucher.VoucherId : null,
         items: isFromCart
           ? cartItems.map(item => ({
@@ -237,9 +267,19 @@ export default function NvtClientDatHang() {
       };
 
       const res = await shopApi.placeOrder(orderPayload);
-      alert("Đặt hàng thành công! Cảm ơn bạn đã mua hàng tại Zenith Store.");
+      const newOrderId = res.data?.data?.id;
+
       window.dispatchEvent(new Event('cart-updated')); // Cập nhật lại badge giỏ hàng
-      navigate('/lich-su-don-hang'); // Quay về trang lịch sử đơn hàng
+
+      if (formData.PhuongThucThanhToan === 'Bank Transfer') {
+        setPlacedOrderId(newOrderId);
+        setFinalTotal(orderTotalAmount);
+        setPaymentDetected(false);
+        setShowPaymentModal(true);
+      } else {
+        alert("Đặt hàng thành công! Cảm ơn bạn đã mua hàng tại Zenith Store.");
+        navigate('/lich-su-don-hang'); // Quay về trang lịch sử đơn hàng
+      }
     } catch (err) {
       console.error("Lỗi đặt hàng:", err);
       alert("Đặt hàng thất bại: " + (err.response?.data?.message || err.message));
@@ -371,9 +411,8 @@ export default function NvtClientDatHang() {
           {formData.PhuongThucThanhToan === 'Bank Transfer' && (
             <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col md:flex-row items-center gap-6 mt-4">
               <div className="w-32 h-32 bg-white border border-slate-200 rounded-xl p-2 flex items-center justify-center shrink-0 shadow-sm">
-                {/* QR code demo */}
                 <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=ZenithStoreTransfer_${ma}`} 
+                  src={`https://img.vietqr.io/image/MB-0345862097-vietqr60s.png?amount=${totalPrice - discount}&addInfo=DH_Zenith&accountName=TRAN%20TIEN%20ANH`} 
                   alt="QR Code thanh toan" 
                   className="w-full h-full object-contain"
                 />
@@ -381,10 +420,10 @@ export default function NvtClientDatHang() {
               <div className="space-y-1 text-center md:text-left">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Thông tin tài khoản</p>
                 <p className="text-sm font-bold text-slate-800">NGÂN HÀNG QUÂN ĐỘI (MB BANK)</p>
-                <p className="text-sm font-semibold text-slate-600">Số tài khoản: <span className="font-bold text-purple-600">2310900005</span></p>
+                <p className="text-sm font-semibold text-slate-600">Số tài khoản: <span className="font-bold text-purple-600">0345862097</span></p>
                 <p className="text-sm font-semibold text-slate-600">Chủ tài khoản: <span className="font-bold text-slate-800">TRAN TIEN ANH</span></p>
                 <p className="text-xs text-rose-500 font-medium italic mt-2">
-                  * Vui lòng thanh toán và chụp lại bill giao dịch trước khi hoàn tất đặt hàng.
+                  * Vui lòng thanh toán trực tiếp qua mã QR trên. Hệ thống sẽ tự động quét giao dịch và kích hoạt đơn hàng sau khi chuyển khoản thành công.
                 </p>
               </div>
             </div>
@@ -593,6 +632,82 @@ export default function NvtClientDatHang() {
           </div>
         </div>
       </div>
+
+      {/* MODAL THANH TOÁN ONLINE (MB BANK VIETQR) */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-purple-100 flex flex-col items-center gap-6 relative overflow-hidden animate-[fadeIn_0.3s_ease-out]">
+            {/* Gradient glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl -z-10" />
+
+            <div className="text-center">
+              <h3 className="text-xl font-extrabold text-slate-800 font-['Space_Grotesk']">Thanh Toán Chuyển Khoản</h3>
+              <p className="text-xs text-slate-400 font-semibold mt-1">Đơn hàng #{placedOrderId}</p>
+            </div>
+
+            {/* QR Code */}
+            <div className="w-52 h-52 bg-white border border-purple-100 rounded-2xl p-2.5 flex items-center justify-center shadow-lg shadow-purple-900/5 relative">
+              {paymentDetected && (
+                <div className="absolute inset-0 bg-emerald-500/90 flex flex-col items-center justify-center text-white rounded-2xl p-4 gap-2 animate-[scaleIn_0.3s_ease-out]">
+                  <span className="material-symbols-outlined text-5xl animate-bounce">check_circle</span>
+                  <p className="font-extrabold text-sm text-center">Đã nhận được thanh toán!</p>
+                  <p className="text-[10px] text-emerald-100 text-center">Đang hoàn tất đơn hàng...</p>
+                </div>
+              )}
+              <img
+                src={`https://img.vietqr.io/image/MB-0345862097-vietqr60s.png?amount=${finalTotal}&addInfo=DH${placedOrderId}&accountName=TRAN%20TIEN%20ANH`}
+                alt="VietQR MB Bank"
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            {/* Account Details */}
+            <div className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-2 text-xs font-semibold text-slate-600">
+              <div className="flex justify-between">
+                <span>Ngân hàng</span>
+                <span className="font-extrabold text-slate-800">MB BANK</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Chủ tài khoản</span>
+                <span className="font-extrabold text-slate-800">TRAN TIEN ANH</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Số tài khoản</span>
+                <span className="font-extrabold text-purple-600">0345862097</span>
+              </div>
+              <div className="flex justify-between border-t border-slate-200/60 pt-2">
+                <span>Số tiền</span>
+                <span className="font-extrabold text-slate-900 text-sm">{formatPrice(finalTotal)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Nội dung chuyển khoản</span>
+                <span className="font-black text-rose-600 uppercase text-sm tracking-wider">DH{placedOrderId}</span>
+              </div>
+            </div>
+
+            {/* Polling Indicator */}
+            {!paymentDetected && (
+              <div className="flex items-center gap-2 text-xs font-bold text-purple-600 bg-purple-50 px-4 py-2.5 rounded-full border border-purple-100 animate-pulse">
+                <div className="w-2.5 h-2.5 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                <span>Đang chờ giao dịch (Tự động cập nhật)...</span>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2 w-full mt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  navigate('/lich-su-don-hang');
+                }}
+                className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-purple-200 hover:scale-[1.01] active:scale-95 text-center cursor-pointer"
+              >
+                {paymentDetected ? "Xem Lịch Sử Đơn Hàng" : "Thanh Toán Sau (Xem Đơn Hàng)"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
