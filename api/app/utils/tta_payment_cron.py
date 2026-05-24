@@ -25,9 +25,11 @@ def check_bank_transactions_loop(app):
                 data = json.loads(html)
                 
             if not data.get("status"):
+                print("[Payment Cron] checkgd.vn API returned status: False")
                 continue
                 
             transactions = data.get("transactions", [])
+            print(f"[Payment Cron] Fetched {len(transactions)} transactions. Latest Tx date: {transactions[0].get('transaction_date') if transactions else 'N/A'}")
             if not transactions:
                 continue
                 
