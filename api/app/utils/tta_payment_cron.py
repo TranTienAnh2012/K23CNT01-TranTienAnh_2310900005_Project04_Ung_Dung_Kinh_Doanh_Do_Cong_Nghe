@@ -9,9 +9,11 @@ from app.db.connection import engine
 from app.models.schema import donhang
 
 def check_bank_transactions_loop(app):
-    url = "https://checkgd.vn/api/v1/bank-transactions?api_key=pk_24a14f93dfc10042f4c6ac27726d95f9575f53b2091dfed9&bank=MB&type=IN&page=1&limit=20"
+    api_key = os.getenv("CHECKGD_API_KEY", "pk_24a14f93dfc10042f4c6ac27726d95f9575f53b2091dfed9")
+    bank = os.getenv("CHECKGD_BANK", "MB")
+    url = f"https://checkgd.vn/api/v1/bank-transactions?api_key={api_key}&bank={bank}&type=IN&page=1&limit=20"
     
-    print("[Payment Cron] Background bank transaction check loop started.")
+    print(f"[Payment Cron] Background bank transaction check loop started (Bank: {bank}).")
     
     while True:
         try:
@@ -62,7 +64,8 @@ def check_bank_transactions_loop(app):
                     order_total = float(order_dict['G5_TongTien'])
                     
                     # Chỉ xử lý đơn hàng chưa thanh toán và đang ở trạng thái chờ
-                    if payment_status != 'Paid' and order_status in ['pending', 'Chờ xử lý', 'Chờ xác nhận']:
+                    status_lower = order_status.lower() if order_status else ""
+                    if payment_status != 'Paid' and status_lower in ['pending', 'chờ xử lý', 'chờ xác nhận']:
                         # Kiểm tra xem số tiền chuyển khoản có khớp hoặc lớn hơn tổng tiền đơn hàng không
                         if amount >= order_total:
                             # Cập nhật trạng thái thanh toán và chuyển trạng thái đơn hàng sang Đã xác nhận (Processing)
