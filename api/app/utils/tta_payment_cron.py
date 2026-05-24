@@ -9,8 +9,13 @@ from app.db.connection import engine
 from app.models.schema import donhang
 
 def check_bank_transactions_loop(app):
-    api_key = os.getenv("CHECKGD_API_KEY", "pk_24a14f93dfc10042f4c6ac27726d95f9575f53b2091dfed9")
+    api_key = os.getenv("CHECKGD_API_KEY")
     bank = os.getenv("CHECKGD_BANK", "MB")
+    
+    if not api_key:
+        print("[Payment Cron] ERROR: CHECKGD_API_KEY is not configured in .env!")
+        return
+        
     url = f"https://checkgd.vn/api/v1/bank-transactions?api_key={api_key}&bank={bank}&type=IN&page=1&limit=20"
     
     print(f"[Payment Cron] Background bank transaction check loop started (Bank: {bank}).")
