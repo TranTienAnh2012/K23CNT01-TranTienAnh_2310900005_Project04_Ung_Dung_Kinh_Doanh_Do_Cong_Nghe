@@ -1,0 +1,1 @@
+# Client rental module

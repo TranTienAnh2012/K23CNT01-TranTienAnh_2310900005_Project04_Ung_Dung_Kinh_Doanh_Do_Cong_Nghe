@@ -42,4 +42,17 @@ export const shopApi = {
       'Content-Type': 'multipart/form-data'
     }
   }),
+
+  // Dịch vụ cho thuê (Rental client APIs)
+  getSanPhamThue: () => axios.get('/api/client/tta_sanpham_thue'),
+  getDonHangThue: () => axios.get('/api/client/tta_donhang_thue'),
+  createDonHangThue: (data) => axios.post('/api/client/tta_donhang_thue', data),
+  cancelDonHangThue: (id) => axios.put(`/api/client/tta_donhang_thue/cancel/${id}`),
+
+  // Dịch vụ tư vấn (Consulting client APIs)
+  getDichVuTuVan: () => axios.get('/api/client/tta_dichvu_tuvan'),
+  getStaffList: () => axios.get('/api/client/tta_staff'),
+  getLichTuVan: () => axios.get('/api/client/tta_lich_tuvan'),
+  bookLichTuVan: (data) => axios.post('/api/client/tta_lich_tuvan', data),
+  cancelLichTuVan: (data) => axios.put('/api/client/tta_lich_tuvan/cancel', data),
 };

@@ -23,6 +23,8 @@ user = Table(
     Column('G5_IsDeleted', Integer, default=0),
     Column('G5_DeletedAt', DateTime),
     Column('G5_DeletedBy', Integer),
+    Column('G5_TenDangNhap', Unicode(100)),
+    Column('G5_GioiTinh', Unicode(20)),
 )
 
 # Table G5_danhmuc
@@ -208,10 +210,16 @@ donhang_thue = Table(
     Column('G5_TienCoc', Numeric(18, 2)),
     Column('G5_TrangThaiThanhToan', Unicode(50)),
     Column('G5_NgayTraThucTe', DateTime),
+    Column('G5_HoTenNguoiNhan', Unicode(255)),
+    Column('G5_SoDienThoaiNguoiNhan', String(20)),
+    Column('G5_DiaChiNguoiNhan', Unicode(255)),
+    Column('G5_EmailNguoiNhan', String(255)),
+    Column('G5_GhiChu', UnicodeText),
     Column('G5_IsDeleted', Integer, default=0),
     Column('G5_DeletedAt', DateTime),
     Column('G5_DeletedBy', Integer),
 )
+
 
 # Table G5_chitiet_donhang_thue
 chitiet_donhang_thue = Table(

@@ -29,6 +29,16 @@ export default function AdminLayout() {
     return saved ? JSON.parse(saved) : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; // Mặc định hiển thị tất cả
   });
 
+  const [languages, setLanguages] = useState({});
+  const [currentLang, setCurrentLang] = useState('vi');
+
+  useEffect(() => {
+    if (window.NQT_LANGUAGES) {
+      setLanguages(window.NQT_LANGUAGES);
+    }
+    setCurrentLang(localStorage.getItem('website_lang') || 'vi');
+  }, []);
+
   // Áp dụng Theme
   useEffect(() => {
     const root = window.document.documentElement;
@@ -202,6 +212,50 @@ export default function AdminLayout() {
             <button className="hover:text-blue-400 transition-colors">
               <span className="material-symbols-outlined">mail</span>
             </button>
+
+            {/* LỰA CHỌN NGÔN NGỮ */}
+            <div className={`flex items-center gap-2 border rounded-full px-2.5 py-0.5 select-none ${theme === 'light' ? 'border-slate-300 bg-slate-100' : 'border-slate-750 bg-slate-800/80'}`}>
+              <button 
+                type="button"
+                onClick={() => window.changeLanguage?.('vi')}
+                className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'vi' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+                title="Tiếng Việt"
+              >
+                🇻🇳
+              </button>
+              <button 
+                type="button"
+                onClick={() => window.changeLanguage?.('en')}
+                className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'en' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+                title="English"
+              >
+                🇺🇸
+              </button>
+              <button 
+                type="button"
+                onClick={() => window.changeLanguage?.('zh-CN')}
+                className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'zh-CN' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+                title="简体中文"
+              >
+                🇨🇳
+              </button>
+              <button 
+                type="button"
+                onClick={() => window.changeLanguage?.('ja')}
+                className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'ja' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+                title="日本語"
+              >
+                🇯🇵
+              </button>
+              <button 
+                type="button"
+                onClick={() => window.changeLanguage?.('ko')}
+                className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'ko' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+                title="한국어"
+              >
+                🇰🇷
+              </button>
+            </div>
           </div>
           
           <div className="flex items-center gap-3 border-l border-slate-800 pl-6">

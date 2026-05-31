@@ -26,7 +26,7 @@ export default function TtaLoginPage() {
       login(token);
       const userRole = res.data?.data?.user?.vai_tro || '';
       const roleLower = String(userRole).toLowerCase();
-      if (roleLower.includes('admin') || roleLower.includes('administrator')) {
+      if (roleLower.includes('admin') || roleLower.includes('administrator') || roleLower === 'nhanvien') {
         navigate('/admin');
       } else {
         navigate('/');

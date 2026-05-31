@@ -24,7 +24,11 @@ def get_all(params=None):
                 "Email": row_dict['G5_Email'],
                 "SDT": row_dict['G5_SDT'],
                 "VaiTro": row_dict['G5_VaiTro'],
-                "NgayDangKy": row_dict['G5_NgayDangKy'].isoformat() if row_dict['G5_NgayDangKy'] else None
+                "NgayDangKy": row_dict['G5_NgayDangKy'].isoformat() if row_dict['G5_NgayDangKy'] else None,
+                "TenDangNhap": row_dict.get('G5_TenDangNhap'),
+                "GioiTinh": row_dict.get('G5_GioiTinh'),
+                "NgaySinh": row_dict['G5_NgaySinh'].isoformat() if row_dict.get('G5_NgaySinh') else None,
+                "AvatarUrl": row_dict.get('G5_AvatarUrl')
             })
         return {"items": items, "total": len(items)}
 
@@ -40,7 +44,11 @@ def get_by_id(ma):
                 "Email": row_dict['G5_Email'],
                 "SDT": row_dict['G5_SDT'],
                 "VaiTro": row_dict['G5_VaiTro'],
-                "NgayDangKy": row_dict['G5_NgayDangKy'].isoformat() if row_dict['G5_NgayDangKy'] else None
+                "NgayDangKy": row_dict['G5_NgayDangKy'].isoformat() if row_dict['G5_NgayDangKy'] else None,
+                "TenDangNhap": row_dict.get('G5_TenDangNhap'),
+                "GioiTinh": row_dict.get('G5_GioiTinh'),
+                "NgaySinh": row_dict['G5_NgaySinh'].isoformat() if row_dict.get('G5_NgaySinh') else None,
+                "AvatarUrl": row_dict.get('G5_AvatarUrl')
             }
         return None
 
@@ -55,7 +63,9 @@ def create(data):
         G5_Email=data['Email'],
         G5_MatKhau=data['MatKhau'],
         G5_SDT=data.get('SDT'),
-        G5_VaiTro=data.get('VaiTro', 'user')
+        G5_VaiTro=data.get('VaiTro', 'user'),
+        G5_TenDangNhap=data.get('TenDangNhap'),
+        G5_GioiTinh=data.get('GioiTinh')
     )
     with engine.connect() as conn:
         conn.execute(stmt)
@@ -67,6 +77,21 @@ def update_user(ma, data):
     if 'HoTen' in data: update_values['G5_HoTen'] = data['HoTen']
     if 'SDT' in data: update_values['G5_SDT'] = data['SDT']
     if 'VaiTro' in data: update_values['G5_VaiTro'] = data['VaiTro']
+    if 'TenDangNhap' in data: update_values['G5_TenDangNhap'] = data['TenDangNhap']
+    if 'GioiTinh' in data: update_values['G5_GioiTinh'] = data['GioiTinh']
+    if 'NgaySinh' in data:
+        if data['NgaySinh']:
+            from datetime import datetime
+            try:
+                update_values['G5_NgaySinh'] = datetime.strptime(data['NgaySinh'], "%Y-%m-%d").date()
+            except ValueError:
+                try:
+                    update_values['G5_NgaySinh'] = datetime.fromisoformat(data['NgaySinh'].replace('Z', '+00:00')).date()
+                except Exception:
+                    raise Exception("Ngày sinh không đúng định dạng YYYY-MM-DD")
+        else:
+            update_values['G5_NgaySinh'] = None
+    if 'AvatarUrl' in data: update_values['G5_AvatarUrl'] = data['AvatarUrl']
     
     if not update_values:
         return

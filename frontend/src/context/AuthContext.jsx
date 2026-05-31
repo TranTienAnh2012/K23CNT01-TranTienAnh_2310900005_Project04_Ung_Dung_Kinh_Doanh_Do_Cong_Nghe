@@ -29,10 +29,12 @@ export const AuthProvider = ({ children }) => {
         setUser({ 
           id: payload.sub, 
           email: payload.email || 'user@gmail.com', 
-          role: payload.vai_tro || 'user' 
+          role: payload.vai_tro || 'user',
+          name: payload.name || '',
+          avatarUrl: payload.avatar_url || ''
         });
       } else {
-        setUser({ email: 'admin@gmail.com', role: 'admin' });
+        setUser({ email: 'admin@gmail.com', role: 'admin', name: 'Admin', avatarUrl: '' });
       }
     }
     setLoading(false); // Hoàn tất kiểm tra
@@ -46,10 +48,12 @@ export const AuthProvider = ({ children }) => {
       setUser({ 
         id: payload.sub, 
         email: payload.email || 'user@gmail.com', 
-        role: payload.vai_tro || 'user' 
+        role: payload.vai_tro || 'user',
+        name: payload.name || '',
+        avatarUrl: payload.avatar_url || ''
       });
     } else {
-      setUser({ email: 'admin@gmail.com', role: 'admin' });
+      setUser({ email: 'admin@gmail.com', role: 'admin', name: 'Admin', avatarUrl: '' });
     }
   };
 
@@ -59,9 +63,17 @@ export const AuthProvider = ({ children }) => {
     setUser(null); // Xóa thông tin người dùng
   };
 
+  // Hàm cập nhật nóng thông tin user
+  const updateUser = (data) => {
+    setUser(prev => {
+      if (!prev) return null;
+      return { ...prev, ...data };
+    });
+  };
+
   return (
     // Cung cấp dữ liệu user và các hàm login/logout cho các component con
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, updateUser }}>
       {!loading && children} 
     </AuthContext.Provider>
   );

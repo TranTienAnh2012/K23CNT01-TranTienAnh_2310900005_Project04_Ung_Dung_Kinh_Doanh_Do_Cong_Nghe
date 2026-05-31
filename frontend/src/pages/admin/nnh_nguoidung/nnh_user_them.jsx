@@ -10,7 +10,7 @@ export default function TtaUserThem() {
     HoTen: '',
     Email: '',
     MatKhau: '',
-    VaiTro: 'customer',
+    VaiTro: 'khachhang',
     Status: 'active'
   });
   const [loading, setLoading] = useState(false);
@@ -90,7 +90,8 @@ export default function TtaUserThem() {
                   onChange={(e) => setFormData({...formData, VaiTro: e.target.value})}
                   className={`w-full px-6 py-4 rounded-2xl border transition-all font-bold text-sm outline-none focus:ring-2 focus:ring-blue-500/20 ${isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-100 text-slate-900'}`}
                 >
-                  <option value="customer">Khách hàng</option>
+                  <option value="khachhang">Khách hàng</option>
+                  <option value="nhanvien">Nhân viên</option>
                   <option value="admin">Quản trị viên</option>
                 </select>
               </div>

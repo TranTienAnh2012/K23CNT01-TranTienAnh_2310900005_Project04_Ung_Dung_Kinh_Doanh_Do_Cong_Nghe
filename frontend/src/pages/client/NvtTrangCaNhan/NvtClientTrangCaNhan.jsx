@@ -4,7 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { shopApi } from '../../../api/tta_api';
 
 export default function NvtClientTrangCaNhan() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -21,7 +21,8 @@ export default function NvtClientTrangCaNhan() {
     SDT: '',
     NgaySinh: '',
     AvatarUrl: '',
-    Gender: 'Male'
+    Gender: 'Male',
+    TenDangNhap: ''
   });
 
   // Password State
@@ -62,7 +63,12 @@ export default function NvtClientTrangCaNhan() {
           SDT: p.SDT || '',
           NgaySinh: p.NgaySinh || '',
           AvatarUrl: p.AvatarUrl || '',
-          Gender: localStorage.getItem(`gender_${user.id}`) || 'Male'
+          Gender: p.GioiTinh || p.Gender || 'Male',
+          TenDangNhap: p.TenDangNhap || ''
+        });
+        updateUser({
+          name: p.HoTen,
+          avatarUrl: p.AvatarUrl
         });
       }
     } catch (err) {
@@ -73,10 +79,10 @@ export default function NvtClientTrangCaNhan() {
   };
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
     fetchProfile();
     fetchOrders();
-  }, [user]);
+  }, [user?.id]);
 
   if (!user) {
     return (
@@ -133,11 +139,12 @@ export default function NvtClientTrangCaNhan() {
     e.preventDefault();
     setSavingProfile(true);
     try {
-      localStorage.setItem(`gender_${user.id}`, profileData.Gender);
       await shopApi.updateProfile({
         HoTen: profileData.HoTen,
         SDT: profileData.SDT,
-        NgaySinh: profileData.NgaySinh
+        NgaySinh: profileData.NgaySinh,
+        TenDangNhap: profileData.TenDangNhap,
+        GioiTinh: profileData.Gender
       });
       alert("Cập nhật hồ sơ thành công!");
       fetchProfile();
@@ -344,10 +351,15 @@ export default function NvtClientTrangCaNhan() {
                   <div className="flex-1 space-y-5">
                     {/* Tên đăng nhập */}
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-                      <span className="w-32 text-xs font-bold text-slate-400 sm:text-right">Tên đăng nhập</span>
-                      <span className="text-xs font-extrabold text-slate-800 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100 flex-1">
-                        {profileData.Email?.split('@')[0]}
-                      </span>
+                      <label className="w-32 text-xs font-bold text-slate-500 sm:text-right">Tên đăng nhập</label>
+                      <input 
+                        type="text" 
+                        value={profileData.TenDangNhap}
+                        onChange={(e) => setProfileData(prev => ({ ...prev, TenDangNhap: e.target.value }))}
+                        className="flex-1 px-3 py-2.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:border-purple-500 focus:outline-none transition-colors"
+                        placeholder="Nhập tên đăng nhập"
+                        required
+                      />
                     </div>
 
                     {/* Tên đầy đủ */}

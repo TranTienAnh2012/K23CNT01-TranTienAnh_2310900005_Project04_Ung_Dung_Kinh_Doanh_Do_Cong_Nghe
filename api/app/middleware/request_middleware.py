@@ -36,6 +36,22 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def staff_required(f):
+    """Decorator to require staff (nhanvien) or admin role"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        from flask_jwt_extended import get_jwt
+        from app.utils.helpers import response_error
+
+        claims = get_jwt()
+        role = str(claims.get("vai_tro", "")).lower()
+        # Cho phép các tài khoản có vai trò nhanvien hoặc admin/super administrator
+        allowed_roles = ["nhanvien", "admin", "super administrator", "administrator"]
+        if role not in allowed_roles and "admin" not in role:
+            return response_error("Không có quyền truy cập.", 403)
+        return f(*args, **kwargs)
+    return decorated_function
+
 def rate_limit_middleware():
     """Simple rate limiting middleware"""
     from collections import defaultdict

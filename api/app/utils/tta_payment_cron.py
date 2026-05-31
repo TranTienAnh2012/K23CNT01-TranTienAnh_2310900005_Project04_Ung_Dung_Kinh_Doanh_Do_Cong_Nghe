@@ -9,30 +9,31 @@ from app.db.connection import engine
 from app.models.schema import donhang
 
 def check_bank_transactions_loop(app):
+    api_url = os.getenv("CHECKGD_API_URL")
     api_key = os.getenv("CHECKGD_API_KEY")
     bank = os.getenv("CHECKGD_BANK", "MB")
     
-    if not api_key:
-        print("[Payment Cron] ERROR: CHECKGD_API_KEY is not configured in .env!")
+    if not api_url or not api_key:
+        print("[Payment Cron] ERROR: CHECKGD_API_URL or CHECKGD_API_KEY is not configured in .env!")
         return
         
-    url = f"https://checkgd.vn/api/v1/bank-transactions?api_key={api_key}&bank={bank}&type=IN&page=1&limit=20"
+    url = f"{api_url}?api_key={api_key}&bank={bank}&type=IN&page=1&limit=20"
     
     print(f"[Payment Cron] Background bank transaction check loop started (Bank: {bank}).")
     
     while True:
         try:
-            # Nghỉ 15 giây trước mỗi chu kỳ quét
-            time.sleep(15)
+            # Nghỉ 3 giây trước mỗi chu kỳ quét
+            time.sleep(3)
             
-            # Gọi API checkgd.vn
+            # Gọi API giao dịch
             req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req, timeout=10) as response:
+            with urllib.request.urlopen(req, timeout=3) as response:
                 html = response.read().decode('utf-8')
                 data = json.loads(html)
                 
             if not data.get("status"):
-                print("[Payment Cron] checkgd.vn API returned status: False")
+                print("[Payment Cron] Sync API returned status: False")
                 continue
                 
             transactions = data.get("transactions", [])

@@ -16,6 +16,16 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   const [isNavVisible, setIsNavVisible] = useState(true);
   const lastScrollY = useRef(0);
 
+  const [languages, setLanguages] = useState({});
+  const [currentLang, setCurrentLang] = useState('vi');
+
+  useEffect(() => {
+    if (window.NQT_LANGUAGES) {
+      setLanguages(window.NQT_LANGUAGES);
+    }
+    setCurrentLang(localStorage.getItem('website_lang') || 'vi');
+  }, []);
+
   // Đồng bộ searchVal khi category thay đổi bên ngoài
   useEffect(() => {
     setSearchVal(selectedCategory);
@@ -25,7 +35,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       setIsNavVisible(prev => {
         if (prev) {
           // Trạng thái Đang Hiện: Ẩn đi khi cuộn xuống vượt quá ngưỡng trên
@@ -42,7 +52,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
         }
         return prev;
       });
-      
+
       lastScrollY.current = currentScrollY;
     };
 
@@ -119,7 +129,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
   return (
     <header className="w-full bg-white font-['Inter'] select-none border-b border-purple-100/50 sticky top-0 z-50 shadow-sm">
       {/* THANH THÔNG BÁO TRÊN CÙNG (TOP BAR) */}
-      <div 
+      <div
         style={{ transition: 'max-height 0.2s ease-in-out, opacity 0.15s ease-in-out, padding 0.2s ease-in-out' }}
         className={`w-full bg-[#fdfcff] border-b border-purple-50 px-4 md:px-12 flex justify-between items-center text-xs text-purple-950/70 font-medium overflow-hidden ${isNavVisible ? 'max-h-[36px] py-2 opacity-100' : 'max-h-0 py-0 opacity-0 pointer-events-none'}`}
       >
@@ -127,9 +137,54 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
           <span className="material-symbols-outlined text-purple-600 text-sm">local_shipping</span>
           <span>Miễn phí giao hàng cho đơn từ 500k</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-purple-600 text-sm">verified_user</span>
-          <span>Bảo hành chính hãng 12 tháng</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-purple-600 text-sm">verified_user</span>
+            <span>Bảo hành chính hãng 12 tháng</span>
+          </div>
+
+          <div className="flex items-center gap-2 border border-purple-100/40 bg-purple-50/30 rounded-full px-2.5 py-0.5 select-none">
+            <button
+              type="button"
+              onClick={() => window.changeLanguage?.('vi')}
+              className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'vi' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+              title="Tiếng Việt"
+            >
+              🇻🇳
+            </button>
+            <button
+              type="button"
+              onClick={() => window.changeLanguage?.('en')}
+              className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'en' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+              title="English"
+            >
+              🇺🇸
+            </button>
+            <button
+              type="button"
+              onClick={() => window.changeLanguage?.('zh-CN')}
+              className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'zh-CN' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+              title="简体中文"
+            >
+              🇨🇳
+            </button>
+            <button
+              type="button"
+              onClick={() => window.changeLanguage?.('ja')}
+              className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'ja' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+              title="日本語"
+            >
+              🇯🇵
+            </button>
+            <button
+              type="button"
+              onClick={() => window.changeLanguage?.('ko')}
+              className={`text-base transition-all hover:scale-120 cursor-pointer ${currentLang === 'ko' ? 'scale-110 filter-none opacity-100 font-bold' : 'opacity-55 grayscale hover:opacity-100 hover:grayscale-0'}`}
+              title="한국어"
+            >
+              🇰🇷
+            </button>
+          </div>
         </div>
       </div>
 
@@ -181,10 +236,18 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
               <button
                 id="user-avatar-btn"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-white font-black text-sm shadow-md hover:scale-105 active:scale-95 transition-all ring-2 ring-purple-200 ring-offset-1"
+                className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-white font-black text-sm shadow-md hover:scale-105 active:scale-95 transition-all ring-2 ring-purple-200 ring-offset-1 overflow-hidden"
                 title={user.email}
               >
-                {user.email?.[0]?.toUpperCase() || 'U'}
+                {user.avatarUrl ? (
+                  <img 
+                    src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:5000${user.avatarUrl}`} 
+                    alt="avatar" 
+                    className="w-full h-full object-cover" 
+                  />
+                ) : (
+                  user.email?.[0]?.toUpperCase() || 'U'
+                )}
               </button>
 
               {/* DROPDOWN MENU */}
@@ -193,11 +256,19 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
                   {/* Header dropdown */}
                   <div className="px-4 py-3.5 bg-gradient-to-br from-purple-50 to-violet-50 border-b border-purple-100/60">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-white font-black text-sm shadow-md">
-                        {user.email?.[0]?.toUpperCase() || 'U'}
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-white font-black text-sm shadow-md overflow-hidden">
+                        {user.avatarUrl ? (
+                          <img 
+                            src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:5000${user.avatarUrl}`} 
+                            alt="avatar" 
+                            className="w-full h-full object-cover" 
+                          />
+                        ) : (
+                          user.email?.[0]?.toUpperCase() || 'U'
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-xs font-black text-slate-800 truncate">{user.email}</p>
+                        <p className="text-xs font-black text-slate-800 truncate">{user.name || user.email}</p>
                         <p className="text-[10px] text-slate-400 font-medium">Tài khoản Zenith Store</p>
                       </div>
                     </div>
@@ -205,6 +276,17 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
 
                   {/* Menu items */}
                   <div className="p-2 space-y-0.5">
+                    {(user.role === 'admin' || user.role === 'nhanvien') && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-750 transition-colors group border-b border-purple-50 pb-2 mb-1"
+                      >
+                        <span className="material-symbols-outlined text-base text-purple-600 group-hover:scale-105 transition-transform">dashboard</span>
+                        <span className="text-sm font-bold text-purple-700">Trang quản lý</span>
+                      </Link>
+                    )}
+
                     <Link
                       to="/trang-ca-nhan"
                       onClick={() => setDropdownOpen(false)}
@@ -230,6 +312,24 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
                     >
                       <span className="material-symbols-outlined text-base text-slate-400 group-hover:text-purple-600">confirmation_number</span>
                       <span className="text-sm font-semibold">Ví voucher</span>
+                    </Link>
+
+                    <Link
+                      to="/thue-thiet-bi"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-700 transition-colors group border-t border-purple-50/50 pt-2.5"
+                    >
+                      <span className="material-symbols-outlined text-base text-slate-400 group-hover:text-purple-600">event_available</span>
+                      <span className="text-sm font-semibold">Thuê thiết bị</span>
+                    </Link>
+
+                    <Link
+                      to="/tu-van"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-700 transition-colors group"
+                    >
+                      <span className="material-symbols-outlined text-base text-slate-400 group-hover:text-purple-600">support_agent</span>
+                      <span className="text-sm font-semibold">Dịch vụ tư vấn</span>
                     </Link>
                   </div>
 
@@ -260,7 +360,7 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
       </div>
 
       {/* THANH ĐIỀU HƯỚNG DANH MUC (NAVIGATION TABS) */}
-      <div 
+      <div
         style={{ transition: 'max-height 0.2s ease-in-out, opacity 0.15s ease-in-out' }}
         className={`overflow-hidden ${isNavVisible ? 'max-h-[50px] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}
       >
@@ -288,6 +388,34 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
               </button>
             );
           })}
+
+          {/* Link to Thuê thiết bị */}
+          {/* <Link
+            to="/thue-thiet-bi"
+            className={`px-4 py-3 text-sm font-semibold whitespace-nowrap transition-all relative ${location.pathname === '/thue-thiet-bi'
+              ? 'text-purple-700 font-bold'
+              : 'text-purple-950/70 hover:text-purple-950'
+              }`}
+          >
+            Thuê thiết bị
+            {location.pathname === '/thue-thiet-bi' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600 rounded-t-full layout-id-tab-indicator" />
+            )}
+          </Link>
+
+          {/* Link to Dịch vụ tư vấn */}
+          {/* <Link
+            to="/tu-van"
+            className={`px-4 py-3 text-sm font-semibold whitespace-nowrap transition-all relative ${location.pathname === '/tu-van'
+              ? 'text-purple-700 font-bold'
+              : 'text-purple-950/70 hover:text-purple-950'
+              }`}
+          >
+            Dịch vụ tư vấn
+            {location.pathname === '/tu-van' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600 rounded-t-full layout-id-tab-indicator" />
+            )}
+          </Link> */}
         </div>
       </div>
     </header>

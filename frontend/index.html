@@ -104,6 +104,63 @@
     .material-symbols-outlined.filled {
         font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
+    /* Ẩn hoàn toàn thanh công cụ Google Translate và bóng bóng dịch */
+    .goog-te-banner-frame,
+    .goog-te-banner-frame.skiptranslate,
+    iframe.goog-te-banner-frame,
+    iframe.goog-te-banner-frame.skiptranslate,
+    #goog-gt-tt,
+    .goog-te-balloon-frame,
+    .goog-te-gadget,
+    .goog-te-banner,
+    .skiptranslate:not(.lang-dropdown-popover):not(.lang-dropdown-popover *) {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0px !important;
+        width: 0px !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    body, html {
+        top: 0px !important;
+        margin-top: 0px !important;
+        position: static !important;
+    }
+    /* Sửa lỗi font chữ khi Google Translate chèn thẻ <font> */
+    font {
+        font-family: 'Inter', sans-serif !important;
+        font-size: inherit !important;
+        color: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+        letter-spacing: inherit !important;
+        vertical-align: inherit !important;
+    }
+    h1 font, h2 font, h3 font, h4 font, h5 font, h6 font, 
+    [class*="logo"] font, 
+    [class*="Space_Grotesk"] font, 
+    [class*="headline"] font,
+    .font-headline-xl font,
+    .font-headline-lg font,
+    .font-headline-md font {
+        font-family: 'Space Grotesk', sans-serif !important;
+    }
+    /* Đảm bảo thẻ font bên trong icon không bị đè font-family */
+    .material-symbols-outlined font,
+    .material-icons font {
+        font-family: 'Material Symbols Outlined', 'Material Icons' !important;
+    }
+
+    /* Khử highlight nền của Google Translate khi hover hoặc kích hoạt dịch */
+    .goog-text-highlight,
+    .goog-text-highlight *,
+    [class*="goog-text-highlight"],
+    [class*="goog-te-highlight"] {
+        background-color: transparent !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
     body {
         background-color: #f7f9fb;
         color: #191c1e;

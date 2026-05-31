@@ -13,7 +13,9 @@ def authenticate_user(email, password):
         identity=str(user['G5_MaNguoiDung']),  # JWT-Extended 4.x yêu cầu identity là string
         additional_claims={
             "email": user['G5_Email'],
-            "vai_tro": user['G5_VaiTro']
+            "vai_tro": user['G5_VaiTro'],
+            "name": user.get('G5_HoTen'),
+            "avatar_url": user.get('G5_AvatarUrl')
         }
     )
     
@@ -23,7 +25,8 @@ def authenticate_user(email, password):
             "id": user['G5_MaNguoiDung'],
             "email": user['G5_Email'],
             "name": user['G5_HoTen'],
-            "vai_tro": user['G5_VaiTro']
+            "vai_tro": user['G5_VaiTro'],
+            "avatar_url": user.get('G5_AvatarUrl')
         }
     }
 
@@ -37,7 +40,9 @@ def register_user(email, password, name, phone=None):
         identity=str(user['G5_MaNguoiDung']),
         additional_claims={
             "email": user['G5_Email'],
-            "vai_tro": user['G5_VaiTro']
+            "vai_tro": user['G5_VaiTro'],
+            "name": user.get('G5_HoTen'),
+            "avatar_url": user.get('G5_AvatarUrl')
         }
     )
 
@@ -47,6 +52,7 @@ def register_user(email, password, name, phone=None):
             "id": user['G5_MaNguoiDung'],
             "email": user['G5_Email'],
             "name": user['G5_HoTen'],
-            "vai_tro": user['G5_VaiTro']
+            "vai_tro": user['G5_VaiTro'],
+            "avatar_url": user.get('G5_AvatarUrl')
         }
     }, None

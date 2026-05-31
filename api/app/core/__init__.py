@@ -181,6 +181,17 @@ def register_resources(api):
     from app.modules.client.tta_danhgia.tta_danhgia_resource import ClientReviewListResource, ClientReviewCheckResource, ClientReviewCreateResource
     from app.modules.client.tta_voucher.tta_voucher_resource import ClientVoucherPublicResource, ClientVoucherClaimResource, ClientVoucherMyResource
     from app.modules.client.tta_profile.tta_profile_resource import ClientProfileResource, ClientChangePasswordResource, ClientUploadResource
+    from app.modules.client.tta_thue.tta_thue_resource import (
+        ClientSanPhamThueListResource,
+        ClientDonHangThueListResource,
+        ClientDonHangThueCancelResource
+    )
+    from app.modules.client.tta_tuvan.tta_tuvan_resource import (
+        ClientDichVuTuVanListResource,
+        ClientStaffListResource,
+        ClientLichTuVanListResource,
+        ClientLichTuVanCancelResource
+    )
 
     api.add_resource(ClientSanPhamListResource, '/api/client/tta_sanpham')
     api.add_resource(ClientSanPhamResource, '/api/client/tta_sanpham/<int:ma>')
@@ -200,3 +211,62 @@ def register_resources(api):
     api.add_resource(ClientProfileResource, '/api/client/profile')
     api.add_resource(ClientChangePasswordResource, '/api/client/profile/change-password')
     api.add_resource(ClientUploadResource, '/api/client/upload')
+    api.add_resource(ClientSanPhamThueListResource, '/api/client/tta_sanpham_thue')
+    api.add_resource(ClientDonHangThueListResource, '/api/client/tta_donhang_thue')
+    api.add_resource(ClientDonHangThueCancelResource, '/api/client/tta_donhang_thue/cancel/<int:id>')
+    api.add_resource(ClientDichVuTuVanListResource, '/api/client/tta_dichvu_tuvan')
+    api.add_resource(ClientStaffListResource, '/api/client/tta_staff')
+    api.add_resource(ClientLichTuVanListResource, '/api/client/tta_lich_tuvan')
+    api.add_resource(ClientLichTuVanCancelResource, '/api/client/tta_lich_tuvan/cancel')
+
+
+    # Nhanvien (Staff) resources
+    from app.modules.Nhanvien.nvk_sanpham_thue.nvk_sanpham_thue_resource import (
+        SanPhamThueListResource as StaffSanPhamThueListResource,
+        SanPhamThueResource as StaffSanPhamThueResource
+    )
+    api.add_resource(StaffSanPhamThueListResource, '/api/nvk_sanpham_thue', endpoint='staff_sanpham_thue_list')
+    api.add_resource(StaffSanPhamThueResource, '/api/nvk_sanpham_thue/<int:id>', endpoint='staff_sanpham_thue_detail')
+
+    from app.modules.Nhanvien.nvk_donhang_thue.nvk_donhang_thue_resource import (
+        DonHangThueListResource as StaffDonHangThueListResource,
+        DonHangThueResource as StaffDonHangThueResource
+    )
+    api.add_resource(StaffDonHangThueListResource, '/api/nvk_donhang_thue', endpoint='staff_donhang_thue_list')
+    api.add_resource(StaffDonHangThueResource, '/api/nvk_donhang_thue/<int:id>', endpoint='staff_donhang_thue_detail')
+
+    from app.modules.Nhanvien.nvk_chitiet_donhang_thue.nvk_chitiet_donhang_thue_resource import (
+        ChiTietDonHangThueListResource as StaffChiTietDonHangThueListResource,
+        ChiTietDonHangThueResource as StaffChiTietDonHangThueResource
+    )
+    api.add_resource(StaffChiTietDonHangThueListResource, '/api/nvk_chitiet_donhang_thue', endpoint='staff_chitiet_donhang_thue_list')
+    api.add_resource(StaffChiTietDonHangThueResource, '/api/nvk_chitiet_donhang_thue/<int:id>', endpoint='staff_chitiet_donhang_thue_detail')
+
+    from app.modules.Nhanvien.nvk_lich_su_thue.nvk_lich_su_thue_resource import (
+        LichSuThueListResource as StaffLichSuThueListResource,
+        LichSuThueResource as StaffLichSuThueResource
+    )
+    api.add_resource(StaffLichSuThueListResource, '/api/nvk_lich_su_thue', endpoint='staff_lich_su_thue_list')
+    api.add_resource(StaffLichSuThueResource, '/api/nvk_lich_su_thue/<int:id>', endpoint='staff_lich_su_thue_detail')
+
+    from app.modules.Nhanvien.nvk_dichvu_tuvan.nvk_dichvu_tuvan_resource import (
+        DichVuTuVanListResource as StaffDichVuTuVanListResource,
+        DichVuTuVanResource as StaffDichVuTuVanResource
+    )
+    api.add_resource(StaffDichVuTuVanListResource, '/api/nvk_dichvu_tuvan', endpoint='staff_dichvu_tuvan_list')
+    api.add_resource(StaffDichVuTuVanResource, '/api/nvk_dichvu_tuvan/<int:id>', endpoint='staff_dichvu_tuvan_detail')
+
+    from app.modules.Nhanvien.nvk_lich_tuvan.nvk_lich_tuvan_resource import (
+        LichTuVanListResource as StaffLichTuVanListResource,
+        LichTuVanResource as StaffLichTuVanResource
+    )
+    api.add_resource(StaffLichTuVanListResource, '/api/nvk_lich_tuvan', endpoint='staff_lich_tuvan_list')
+    api.add_resource(StaffLichTuVanResource, '/api/nvk_lich_tuvan/<int:id>', endpoint='staff_lich_tuvan_detail')
+
+    from app.modules.Nhanvien.nvk_nhanvien.nvk_nhanvien_resource import (
+        LichTuVanNhanVienListResource as StaffLichTuVanNhanVienListResource,
+        LichTuVanNhanVienResource as StaffLichTuVanNhanVienResource
+    )
+    api.add_resource(StaffLichTuVanNhanVienListResource, '/api/nvk_nhanvien', endpoint='staff_lich_tuvan_nhanvien_list')
+    api.add_resource(StaffLichTuVanNhanVienResource, '/api/nvk_nhanvien/<int:id>', endpoint='staff_lich_tuvan_nhanvien_detail')
+
