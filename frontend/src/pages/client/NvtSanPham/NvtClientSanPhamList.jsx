@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { shopApi } from '../../../api/client/tta_shop.api';
+import { useAuth } from '../../../context/AuthContext';
+
+// Hàm loại bỏ dấu tiếng Việt để tìm kiếm không dấu chính xác hơn
+const removeDiacritics = (str) => {
+  if (!str) return '';
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D');
+};
 
 export default function NvtClientSanPhamList({ 
   products = [], 
@@ -7,6 +19,8 @@ export default function NvtClientSanPhamList({
   selectedCategory = '', 
   setSelectedCategory 
 }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [visibleCount, setVisibleCount] = useState(10);
   // Hàm hỗ trợ chuẩn hóa đường dẫn hình ảnh sản phẩm
   const getImageUrl = (path) => {
@@ -20,20 +34,46 @@ export default function NvtClientSanPhamList({
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
 
-  // Lọc sản phẩm theo danh mục đang được người dùng chọn (Hỗ trợ cả key thực tế từ CSDL và key fallback)
+  // Lọc sản phẩm theo từ khóa/danh mục đang được người dùng chọn (hỗ trợ tìm kiếm thông minh tách từ, không dấu)
   const filteredProducts = selectedCategory
     ? products.filter((p) => {
         const catName = p.TenDanhMuc || p.G5_TenDanhMuc || '';
         const prodName = p.TenSanPham || p.G5_TenSP || '';
-        return catName.toLowerCase().includes(selectedCategory.toLowerCase()) || 
-               prodName.toLowerCase().includes(selectedCategory.toLowerCase());
+        
+        // Chuẩn hóa chuỗi nguồn (tổ hợp danh mục + tên sản phẩm)
+        const targetString = removeDiacritics(catName + ' ' + prodName).toLowerCase();
+        
+        // Tách các từ trong từ khóa tìm kiếm
+        const searchTerms = removeDiacritics(selectedCategory).toLowerCase().split(/\s+/).filter(Boolean);
+        
+        // Tất cả các từ khóa con đều phải xuất hiện trong chuỗi nguồn
+        return searchTerms.every(term => targetString.includes(term));
       })
     : products;
 
   // Xử lý sự kiện khi người dùng bấm nút "Thêm vào giỏ hàng"
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     const name = product.TenSanPham || product.G5_TenSP || 'Sản phẩm';
-    alert(`Đã thêm "${name}" vào giỏ hàng thành công!`);
+    const id = product.MaSanPham || product.G5_MaSP;
+
+    if (!user) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.");
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await shopApi.addToCart({
+        MaSanPham: id,
+        SoLuong: 1
+      });
+      alert(`Đã thêm "${name}" vào giỏ hàng thành công!`);
+      // Bắn sự kiện cập nhật để header update badge
+      window.dispatchEvent(new Event('cart-updated'));
+    } catch (err) {
+      console.error("Lỗi thêm vào giỏ hàng:", err);
+      alert("Không thể thêm vào giỏ hàng: " + (err.response?.data?.message || err.message));
+    }
   };
 
   return (

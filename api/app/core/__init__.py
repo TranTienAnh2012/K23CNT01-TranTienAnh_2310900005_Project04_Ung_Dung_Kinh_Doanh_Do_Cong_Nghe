@@ -122,29 +122,29 @@ def register_resources(api):
     api.add_resource(VoucherResource, '/api/tta_voucher/<int:id>')
 
 
-    # Thue resources
-    from app.modules.admin.tta_sanpham_thue.tta_sanpham_thue_resource import SanPhamThueListResource, SanPhamThueResource
+    # Thue resources (Nhanvien managed)
+    from app.modules.Nhanvien.nvk_sanpham_thue.nvk_sanpham_thue_resource import SanPhamThueListResource, SanPhamThueResource
     api.add_resource(SanPhamThueListResource, '/api/tta_sanpham_thue')
     api.add_resource(SanPhamThueResource, '/api/tta_sanpham_thue/<int:id>')
-    from app.modules.admin.tta_donhang_thue.tta_donhang_thue_resource import DonHangThueListResource, DonHangThueResource
+    from app.modules.Nhanvien.nvk_donhang_thue.nvk_donhang_thue_resource import DonHangThueListResource, DonHangThueResource
     api.add_resource(DonHangThueListResource, '/api/tta_donhang_thue')
     api.add_resource(DonHangThueResource, '/api/tta_donhang_thue/<int:id>')
-    from app.modules.admin.tta_chitiet_donhang_thue.tta_chitiet_donhang_thue_resource import ChiTietDonHangThueListResource, ChiTietDonHangThueResource
+    from app.modules.Nhanvien.nvk_chitiet_donhang_thue.nvk_chitiet_donhang_thue_resource import ChiTietDonHangThueListResource, ChiTietDonHangThueResource
     api.add_resource(ChiTietDonHangThueListResource, '/api/tta_chitiet_donhang_thue')
     api.add_resource(ChiTietDonHangThueResource, '/api/tta_chitiet_donhang_thue/<int:id>')
-    from app.modules.admin.tta_lich_su_thue.tta_lich_su_thue_resource import LichSuThueListResource, LichSuThueResource
+    from app.modules.Nhanvien.nvk_lich_su_thue.nvk_lich_su_thue_resource import LichSuThueListResource, LichSuThueResource
     api.add_resource(LichSuThueListResource, '/api/tta_lich_su_thue')
     api.add_resource(LichSuThueResource, '/api/tta_lich_su_thue/<int:id>')
 
 
-    # Rest modules resources
-    from app.modules.admin.tta_dichvu_tuvan.tta_dichvu_tuvan_resource import DichVuTuVanListResource, DichVuTuVanResource
+    # Rest modules resources (Nhanvien managed)
+    from app.modules.Nhanvien.nvk_dichvu_tuvan.nvk_dichvu_tuvan_resource import DichVuTuVanListResource, DichVuTuVanResource
     api.add_resource(DichVuTuVanListResource, '/api/tta_dichvu_tuvan')
     api.add_resource(DichVuTuVanResource, '/api/tta_dichvu_tuvan/<int:id>')
-    from app.modules.admin.tta_lich_tuvan.tta_lich_tuvan_resource import LichTuVanListResource, LichTuVanResource
+    from app.modules.Nhanvien.nvk_lich_tuvan.nvk_lich_tuvan_resource import LichTuVanListResource, LichTuVanResource
     api.add_resource(LichTuVanListResource, '/api/tta_lich_tuvan')
     api.add_resource(LichTuVanResource, '/api/tta_lich_tuvan/<int:id>')
-    from app.modules.admin.tta_lich_tuvan_nhanvien.tta_lich_tuvan_nhanvien_resource import LichTuVanNhanVienListResource, LichTuVanNhanVienResource
+    from app.modules.Nhanvien.nvk_nhanvien.nvk_nhanvien_resource import LichTuVanNhanVienListResource, LichTuVanNhanVienResource
     api.add_resource(LichTuVanNhanVienListResource, '/api/tta_lich_tuvan_nhanvien')
     api.add_resource(LichTuVanNhanVienResource, '/api/tta_lich_tuvan_nhanvien/<int:id>')
     from app.modules.admin.tta_sanpham_hinhanh.tta_sanpham_hinhanh_resource import SanPhamHinhAnhListResource, SanPhamHinhAnhResource
@@ -173,10 +173,35 @@ def register_resources(api):
     from app.modules.client.tta_sanpham.tta_sanpham_resource import ClientSanPhamListResource, ClientSanPhamResource
     from app.modules.client.tta_danhmuc.tta_danhmuc_resource import ClientDanhMucListResource
     from app.modules.client.tta_banner.tta_banner_resource import ClientBannerListResource
-    from app.modules.client.tta_donhang.tta_donhang_resource import ClientDonHangListResource
+    from app.modules.client.tta_donhang.tta_donhang_resource import ClientDonHangListResource, ClientDonHangResource, ClientDonHangCancelResource
+    from app.modules.client.tta_giohang.tta_giohang_resource import ClientGioHangListResource, ClientGioHangResource
+    from app.modules.client.tta_danhgia.tta_danhgia_resource import ClientReviewListResource, ClientReviewCheckResource, ClientReviewCreateResource
 
     api.add_resource(ClientSanPhamListResource, '/api/client/tta_sanpham')
     api.add_resource(ClientSanPhamResource, '/api/client/tta_sanpham/<int:ma>')
     api.add_resource(ClientDanhMucListResource, '/api/client/tta_danhmuc')
     api.add_resource(ClientBannerListResource, '/api/client/tta_banner')
     api.add_resource(ClientDonHangListResource, '/api/client/tta_donhang')
+    api.add_resource(ClientDonHangResource, '/api/client/tta_donhang/<int:ma>')
+    api.add_resource(ClientDonHangCancelResource, '/api/client/tta_donhang/cancel/<int:ma>')
+    api.add_resource(ClientGioHangListResource, '/api/client/tta_giohang')
+    api.add_resource(ClientGioHangResource, '/api/client/tta_giohang/<int:id>')
+    api.add_resource(ClientReviewListResource, '/api/client/tta_danhgia/<int:ma_sp>')
+    api.add_resource(ClientReviewCheckResource, '/api/client/tta_danhgia/check/<int:ma_sp>')
+    api.add_resource(ClientReviewCreateResource, '/api/client/tta_danhgia')
+
+    # Client tuvan resources
+    from app.modules.client.nvk_tuvan.nvk_client_tuvan_resource import (
+        NvkClientDichVuTuVanResource, NvkClientStaffListResource, NvkClientLichTuVanResource
+    )
+    api.add_resource(NvkClientDichVuTuVanResource, '/api/client/tta_dichvu_tuvan')
+    api.add_resource(NvkClientStaffListResource, '/api/client/tta_users_nhanvien')
+    api.add_resource(NvkClientLichTuVanResource, '/api/client/tta_lich_tuvan')
+
+    # Client rental resources
+    from app.modules.client.nvk_thue.nvk_client_thue_resource import (
+        NvkClientSanPhamThueListResource, NvkClientDonHangThueListResource, NvkClientDonHangThueCancelResource
+    )
+    api.add_resource(NvkClientSanPhamThueListResource, '/api/client/tta_sanpham_thue')
+    api.add_resource(NvkClientDonHangThueListResource, '/api/client/tta_donhang_thue')
+    api.add_resource(NvkClientDonHangThueCancelResource, '/api/client/tta_donhang_thue/cancel/<int:id>')

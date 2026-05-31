@@ -34,7 +34,6 @@ const navGroups = [
     items: [
       { to: '/admin/dichvu-tuvan', icon: 'support_agent', label: 'Dịch vụ tư vấn' },
       { to: '/admin/lich-tuvan', icon: 'calendar_month', label: 'Lịch tư vấn' },
-      { to: '/admin/lich-nhanvien', icon: 'event_note', label: 'Lịch nhân viên' },
     ]
   },
   {
@@ -49,7 +48,7 @@ const navGroups = [
 
 export default function NnhAdminSidebar() {
   const isDark = useAdminTheme();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -71,28 +70,38 @@ export default function NnhAdminSidebar() {
         </div>
         
         <nav className="space-y-6">
-          {navGroups.map((group, groupIdx) => (
-            <div key={groupIdx}>
+          {navGroups
+            .filter(group => {
+              if (user?.role === 'nhanvien') {
+                return group.title === 'THUÊ SẢN PHẨM' || group.title === 'DỊCH VỤ & TƯ VẤN';
+              }
+              return true;
+            })
+            .map((group, groupIdx) => (
+              <div key={groupIdx}>
               <div className="text-[10px] font-bold text-slate-500 mb-2 px-4 tracking-widest uppercase">
                 {group.title}
               </div>
               <div className="space-y-1">
-                {group.items.map((item) => (
-                  <NavLink 
-                    key={item.to} 
-                    to={item.to} 
-                    className={({ isActive }) => 
-                      `flex items-center gap-3 px-4 py-2.5 font-semibold transition-all duration-200 ${
-                        isActive 
-                          ? 'bg-blue-600/10 text-blue-400 border-r-2 border-blue-500' 
-                          : `${isDark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}`
-                      }`
-                    }
-                  >
-                    <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
-                    <span>{item.label}</span>
-                  </NavLink>
-                ))}
+                {group.items
+                  .filter(item => !(item.to === '/admin/user' && user?.role !== 'admin'))
+                  .map((item) => (
+                    <NavLink 
+                      key={item.to} 
+                      to={item.to} 
+                      className={({ isActive }) => 
+                        `flex items-center gap-3 px-4 py-2.5 font-semibold transition-all duration-200 ${
+                          isActive 
+                            ? 'bg-blue-600/10 text-blue-400 border-r-2 border-blue-500' 
+                            : `${isDark ? 'text-slate-400 hover:text-slate-200 hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'}`
+                        }`
+                      }
+                    >
+                      <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
+                      <span>{item.label}</span>
+                    </NavLink>
+                  ))
+                }
               </div>
             </div>
           ))}

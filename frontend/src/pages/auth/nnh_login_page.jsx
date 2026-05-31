@@ -28,6 +28,8 @@ export default function TtaLoginPage() {
       const roleLower = String(userRole).toLowerCase();
       if (roleLower.includes('admin') || roleLower.includes('administrator')) {
         navigate('/admin');
+      } else if (roleLower.includes('nhanvien')) {
+        navigate('/admin/sanpham-thue');
       } else {
         navigate('/');
       }

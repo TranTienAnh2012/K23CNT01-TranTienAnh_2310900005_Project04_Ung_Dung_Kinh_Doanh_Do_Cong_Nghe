@@ -44,7 +44,7 @@ class NguoiDungCreateSchema(Schema):
     Email = fields.Email(required=True)
     SDT = fields.Str(validate=validate.Length(max=20), allow_none=True)
     DiaChi = fields.Str(allow_none=True)
-    VaiTro = fields.Str(validate=validate.OneOf(['admin', 'user', 'customer']), load_default='user')
+    VaiTro = fields.Str(validate=validate.OneOf(['admin', 'user', 'customer', 'nhanvien']), load_default='user')
     Status = fields.Str(allow_none=True)
 
 class NguoiDungUpdateSchema(Schema):
@@ -55,7 +55,7 @@ class NguoiDungUpdateSchema(Schema):
     Email = fields.Email()
     SDT = fields.Str(validate=validate.Length(max=20), allow_none=True)
     DiaChi = fields.Str(allow_none=True)
-    VaiTro = fields.Str(validate=validate.OneOf(['admin', 'user', 'customer']))
+    VaiTro = fields.Str(validate=validate.OneOf(['admin', 'user', 'customer', 'nhanvien']))
     Status = fields.Str(allow_none=True)
 
 class LoginSchema(Schema):

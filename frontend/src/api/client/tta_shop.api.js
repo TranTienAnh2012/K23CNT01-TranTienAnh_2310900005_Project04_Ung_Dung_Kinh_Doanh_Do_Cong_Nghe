@@ -14,4 +14,30 @@ export const shopApi = {
   // Đặt hàng
   placeOrder: (data) => axios.post('/api/client/tta_donhang', data),
   getOrders: () => axios.get('/api/client/tta_donhang'),
+  getOrder: (ma) => axios.get(`/api/client/tta_donhang/${ma}`),
+  cancelOrder: (ma) => axios.put(`/api/client/tta_donhang/cancel/${ma}`),
+
+  // Giỏ hàng
+  getCart: () => axios.get('/api/client/tta_giohang'),
+  addToCart: (data) => axios.post('/api/client/tta_giohang', data),
+  updateCartItem: (id, data) => axios.put(`/api/client/tta_giohang/${id}`, data),
+  deleteCartItem: (id) => axios.delete(`/api/client/tta_giohang/${id}`),
+
+  // Đánh giá
+  getProductReviews: (ma_sp) => axios.get(`/api/client/tta_danhgia/${ma_sp}`),
+  checkCanReview: (ma_sp) => axios.get(`/api/client/tta_danhgia/check/${ma_sp}`),
+  submitReview: (data) => axios.post('/api/client/tta_danhgia', data),
+
+  // Tư vấn
+  getDichVuTuVan: () => axios.get('/api/client/tta_dichvu_tuvan'),
+  getStaffList: () => axios.get('/api/client/tta_users_nhanvien'),
+  getLichTuVan: () => axios.get('/api/client/tta_lich_tuvan'),
+  bookLichTuVan: (data) => axios.post('/api/client/tta_lich_tuvan', data),
+  cancelLichTuVan: (data) => axios.put('/api/client/tta_lich_tuvan', data),
+
+  // Cho thuê
+  getSanPhamThue: () => axios.get('/api/client/tta_sanpham_thue'),
+  getDonHangThue: () => axios.get('/api/client/tta_donhang_thue'),
+  createDonHangThue: (data) => axios.post('/api/client/tta_donhang_thue', data),
+  cancelDonHangThue: (id) => axios.put(`/api/client/tta_donhang_thue/cancel/${id}`),
 };

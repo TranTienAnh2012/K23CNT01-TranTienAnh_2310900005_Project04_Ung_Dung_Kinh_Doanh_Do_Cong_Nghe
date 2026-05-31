@@ -1,12 +1,59 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { shopApi } from '../../api/client/tta_shop.api';
 
 export default function NnhClientHeader({ categories = [], selectedCategory = '', onSelectCategory }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const dropdownRef = useRef(null);
+  const [searchVal, setSearchVal] = useState(selectedCategory);
+
+  // Đồng bộ searchVal khi category thay đổi bên ngoài
+  useEffect(() => {
+    setSearchVal(selectedCategory);
+  }, [selectedCategory]);
+
+  // Xử lý tìm kiếm theo từ khóa
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (onSelectCategory) {
+      onSelectCategory(searchVal);
+    }
+    navigate('/');
+  };
+
+  // Lấy số lượng giỏ hàng của user
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      if (!user) {
+        setCartCount(0);
+        return;
+      }
+      try {
+        const res = await shopApi.getCart();
+        if (res.data?.data) {
+          setCartCount(res.data.data.length);
+        }
+      } catch (err) {
+        console.error("Lỗi lấy giỏ hàng:", err);
+      }
+    };
+
+    fetchCartCount();
+
+    // Lắng nghe sự kiện update giỏ hàng để cập nhật badge ngay lập tức
+    const handleCartUpdated = () => {
+      fetchCartCount();
+    };
+    window.addEventListener('cart-updated', handleCartUpdated);
+
+    return () => {
+      window.removeEventListener('cart-updated', handleCartUpdated);
+    };
+  }, [user]);
 
   // Đóng dropdown khi click ra ngoài
   useEffect(() => {
@@ -62,31 +109,35 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
         </Link>
 
         {/* THANH TÌM KIẾM TRUNG TÂM */}
-        <div className="flex-1 max-w-xl hidden sm:block">
+        <form onSubmit={handleSearchSubmit} className="flex-1 max-w-xl hidden sm:block">
           <div className="relative flex items-center w-full h-11 bg-purple-50/60 hover:bg-purple-50 border border-purple-100/80 rounded-full px-4 transition-all focus-within:bg-white focus-within:border-purple-400 focus-within:shadow-md">
             <input
               type="text"
               placeholder="Bạn cần tìm sản phẩm gì?"
-              className="w-full bg-transparent border-none outline-none text-sm text-purple-950 placeholder-purple-400/80 pr-12"
+              value={searchVal}
+              onChange={(e) => setSearchVal(e.target.value)}
+              className="w-full bg-transparent border-none outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:outline-none focus-visible:ring-0 text-sm text-purple-950 placeholder-purple-400/80 pr-12"
             />
-            <button className="absolute right-1.5 w-8 h-8 rounded-full bg-purple-100 hover:bg-purple-600 hover:text-white text-purple-700 flex items-center justify-center transition-colors">
+            <button type="submit" className="absolute right-1.5 w-8 h-8 rounded-full bg-purple-100 hover:bg-purple-600 hover:text-white text-purple-700 flex items-center justify-center transition-colors">
               <span className="material-symbols-outlined text-base">search</span>
             </button>
           </div>
-        </div>
+        </form>
 
         {/* CÁC NÚT TÁC VỤ (GIỎ HÀNG / ĐĂNG NHẬP / AVATAR) */}
         <div className="flex items-center gap-3 shrink-0">
           {/* GIỎ HÀNG - luôn hiển thị trên thanh header, bên trái avatar */}
-          <div className="flex items-center gap-2 text-purple-950 hover:text-purple-600 transition-colors cursor-pointer group relative">
+          <Link to="/gio-hang" className="flex items-center gap-2 text-purple-950 hover:text-purple-600 transition-colors cursor-pointer group relative">
             <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-700 group-hover:bg-purple-100 transition-colors relative">
               <span className="material-symbols-outlined text-lg">shopping_cart</span>
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-sm animate-pulse">
-                2
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-purple-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-sm animate-pulse">
+                  {cartCount}
+                </span>
+              )}
             </div>
             <span className="text-sm font-semibold hidden md:block"></span>
-          </div>
+          </Link>
           {user ? (
             /* AVATAR DROPDOWN KHI ĐÃ ĐĂNG NHẬP */
             <div className="relative" ref={dropdownRef}>
@@ -133,6 +184,24 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
                     >
                       <span className="material-symbols-outlined text-base text-slate-400 group-hover:text-purple-600">receipt_long</span>
                       <span className="text-sm font-semibold">Lịch sử đơn hàng</span>
+                    </Link>
+
+                    <Link
+                      to="/lich-tuvan"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-700 transition-colors group"
+                    >
+                      <span className="material-symbols-outlined text-base text-slate-400 group-hover:text-purple-600">support_agent</span>
+                      <span className="text-sm font-semibold">Dịch vụ tư vấn</span>
+                    </Link>
+
+                    <Link
+                      to="/dich-vu-cho-thue"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-purple-50 text-slate-700 hover:text-purple-700 transition-colors group"
+                    >
+                      <span className="material-symbols-outlined text-base text-slate-400 group-hover:text-purple-600">event_available</span>
+                      <span className="text-sm font-semibold">Dịch vụ cho thuê</span>
                     </Link>
 
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import NnhAdminSidebar from '../pages/admin/components/NnhAdminSidebar';
+import { useAuth } from '../context/AuthContext';
 
 const pageTitles = {
   '/admin/dashboard': { title: 'Tổng quan', sub: 'Hệ sinh thái đang hoạt động ổn định' },
@@ -17,6 +18,7 @@ const pageTitles = {
 };
 
 export default function AdminLayout() {
+  const { user } = useAuth();
   const location = useLocation();
   const currentPath = location.pathname;
   const pageInfo = pageTitles[currentPath] || { title: 'Hệ thống Quản trị', sub: 'Zenith Ztore Admin' };
@@ -206,10 +208,16 @@ export default function AdminLayout() {
           
           <div className="flex items-center gap-3 border-l border-slate-800 pl-6">
             <div className="text-right">
-              <p className={`text-xs font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'} leading-none`}>Admin G5</p>
-              <p className="text-[10px] text-slate-500">Super Administrator</p>
+              <p className={`text-xs font-bold ${theme === 'light' ? 'text-slate-900' : 'text-white'} leading-none`}>
+                {user?.email || 'Admin G5'}
+              </p>
+              <p className="text-[10px] text-slate-500">
+                {user?.role === 'admin' ? 'Quản trị viên' : user?.role === 'nhanvien' ? 'Nhân viên' : 'Người dùng'}
+              </p>
             </div>
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">G5</div>
+            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+              {(user?.email || 'G5').charAt(0).toUpperCase()}
+            </div>
           </div>
         </div>
       </header>

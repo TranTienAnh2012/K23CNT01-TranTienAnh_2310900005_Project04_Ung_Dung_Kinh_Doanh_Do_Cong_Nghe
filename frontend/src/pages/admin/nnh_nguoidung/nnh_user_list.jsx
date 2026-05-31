@@ -92,9 +92,11 @@ export default function TtaUserList() {
                     <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${
                       u.VaiTro === 'admin' 
                         ? 'bg-blue-600/10 text-blue-400 border-blue-600/20' 
-                        : 'bg-slate-800 text-slate-400 border-slate-700'
+                        : u.VaiTro === 'nhanvien'
+                          ? 'bg-emerald-600/10 text-emerald-400 border-emerald-600/20'
+                          : 'bg-slate-800 text-slate-400 border-slate-700'
                     }`}>
-                      {u.VaiTro === 'admin' ? 'Quản trị viên' : 'Khách hàng'}
+                      {u.VaiTro === 'admin' ? 'Quản trị viên' : u.VaiTro === 'nhanvien' ? 'Nhân viên' : 'Khách hàng'}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-400 font-medium">

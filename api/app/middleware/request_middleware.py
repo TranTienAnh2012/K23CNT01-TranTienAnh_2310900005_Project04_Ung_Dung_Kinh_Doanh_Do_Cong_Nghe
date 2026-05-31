@@ -30,8 +30,21 @@ def admin_required(f):
 
         claims = get_jwt()
         role = str(claims.get("vai_tro", "")).lower()
-        # Cho phép các tài khoản có vai trò admin, super administrator hoặc không phải khách hàng thông thường
         if role not in ["admin", "super administrator", "administrator"] and "admin" not in role:
+            return response_error("Không có quyền truy cập.", 403)
+        return f(*args, **kwargs)
+    return decorated_function
+
+def staff_required(f):
+    """Decorator to require admin or nhanvien role"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        from flask_jwt_extended import get_jwt
+        from app.utils.helpers import response_error
+
+        claims = get_jwt()
+        role = str(claims.get("vai_tro", "")).lower()
+        if role not in ["admin", "super administrator", "administrator", "nhanvien"] and "admin" not in role:
             return response_error("Không có quyền truy cập.", 403)
         return f(*args, **kwargs)
     return decorated_function

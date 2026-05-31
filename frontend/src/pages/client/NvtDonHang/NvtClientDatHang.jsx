@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { shopApi } from '../../../api/tta_api';
 import { useAuth } from '../../../context/AuthContext';
+import AddressSelector from '../../components/AddressSelector';
 
 export default function NvtClientDatHang() {
   const { ma } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const location = useLocation();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,6 +18,9 @@ export default function NvtClientDatHang() {
     const qty = parseInt(searchParams.get('qty'));
     return !isNaN(qty) && qty > 0 ? qty : 1;
   });
+
+  const cartItems = location.state?.items || [];
+  const isFromCart = ma === 'cart' || ma === 'gio-hang';
 
   // Form states
   const [formData, setFormData] = useState({
@@ -38,6 +43,10 @@ export default function NvtClientDatHang() {
   };
 
   useEffect(() => {
+    if (isFromCart) {
+      setLoading(false);
+      return;
+    }
     const fetchProduct = async () => {
       setLoading(true);
       try {
@@ -52,7 +61,7 @@ export default function NvtClientDatHang() {
       }
     };
     fetchProduct();
-  }, [ma]);
+  }, [ma, isFromCart]);
 
   // Tự động điền email của người dùng đã đăng nhập nếu có
   useEffect(() => {
@@ -103,7 +112,7 @@ export default function NvtClientDatHang() {
     );
   }
 
-  if (!product) {
+  if (!isFromCart && !product) {
     return (
       <div className="max-w-md mx-auto my-16 p-8 bg-white border border-rose-100 rounded-3xl shadow-xl text-center space-y-6">
         <div className="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto">
@@ -125,8 +134,10 @@ export default function NvtClientDatHang() {
     );
   }
 
-  const priceSale = product.GiaBan || product.Gia || 15000000;
-  const totalPrice = priceSale * quantity;
+  const priceSale = product ? (product.GiaBan || product.Gia || 15000000) : 0;
+  const totalPrice = isFromCart
+    ? cartItems.reduce((sum, item) => sum + item.GiaBan * item.SoLuong, 0)
+    : priceSale * quantity;
 
   const handleQuantityChange = (val) => {
     const newQty = quantity + val;
@@ -161,17 +172,23 @@ export default function NvtClientDatHang() {
         GhiChu: formData.GhiChu,
         PhuongThucThanhToan: formData.PhuongThucThanhToan,
         TrangThaiThanhToan: formData.PhuongThucThanhToan === 'Bank Transfer' ? 'Paid' : 'Unpaid',
-        items: [
-          {
-            MaSanPham: product.MaSanPham,
-            SoLuong: quantity
-          }
-        ]
+        items: isFromCart
+          ? cartItems.map(item => ({
+              MaSanPham: item.MaSanPham,
+              SoLuong: item.SoLuong
+            }))
+          : [
+              {
+                MaSanPham: product.MaSanPham,
+                SoLuong: quantity
+              }
+            ]
       };
 
       const res = await shopApi.placeOrder(orderPayload);
       alert("Đặt hàng thành công! Cảm ơn bạn đã mua hàng tại Zenith Store.");
-      navigate('/'); // Quay về trang chủ
+      window.dispatchEvent(new Event('cart-updated')); // Cập nhật lại badge giỏ hàng
+      navigate('/lich-su-don-hang'); // Quay về trang lịch sử đơn hàng
     } catch (err) {
       console.error("Lỗi đặt hàng:", err);
       alert("Đặt hàng thất bại: " + (err.response?.data?.message || err.message));
@@ -241,14 +258,10 @@ export default function NvtClientDatHang() {
 
           <div className="space-y-2">
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">Địa chỉ giao hàng <span className="text-rose-500">*</span></label>
-            <input 
-              required
-              type="text" 
-              name="DiaChiNguoiNhan"
-              value={formData.DiaChiNguoiNhan}
-              onChange={handleInputChange}
-              placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành Phố"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all bg-slate-50/50"
+            <AddressSelector 
+              onChange={(val) => setFormData(prev => ({ ...prev, DiaChiNguoiNhan: val }))}
+              placeholder="Số nhà, ngõ, tên đường..."
+              required={true}
             />
           </div>
 
@@ -350,65 +363,100 @@ export default function NvtClientDatHang() {
             Tóm Tắt Đơn Hàng
           </h2>
 
-          <div className="flex gap-4 items-start">
-            <div className="w-24 h-24 rounded-2xl bg-slate-50 border border-slate-100 p-2 overflow-hidden flex items-center justify-center shrink-0">
-              <img 
-                src={getImageUrl(product.HinhAnh)} 
-                alt={product.TenSanPham} 
-                className="w-full h-full object-contain"
-              />
+          {isFromCart ? (
+            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+              {cartItems.map((item, idx) => (
+                <div key={item.Id || idx} className="flex gap-4 items-start border-b border-slate-50 pb-3 last:border-b-0 last:pb-0">
+                  <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-100 p-1.5 overflow-hidden flex items-center justify-center shrink-0">
+                    <img 
+                      src={getImageUrl(item.HinhAnh)} 
+                      alt={item.TenSanPham} 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-xs text-slate-800 line-clamp-2 leading-snug">
+                      {item.TenSanPham}
+                    </h3>
+                    <p className="text-[10px] text-slate-400 font-semibold">
+                      {formatPrice(item.GiaBan)} x {item.SoLuong}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="space-y-1.5 flex-1 min-w-0">
-              <span className="inline-block px-2.5 py-0.5 rounded bg-purple-50 text-purple-600 text-[10px] font-bold">
-                {product.TenDanhMuc || "Thiết bị công nghệ"}
-              </span>
-              <h3 className="font-bold text-sm text-slate-800 line-clamp-2 leading-snug">
-                {product.TenSanPham}
-              </h3>
-              <p className="text-slate-400 text-xs font-semibold">Thương hiệu: {product.ThuongHieu || 'Zenith'}</p>
-              
-              {product.SoLuongTon !== undefined && (
-                <p className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                  Còn lại {product.SoLuongTon} sản phẩm trong kho
-                </p>
-              )}
+          ) : (
+            <div className="flex gap-4 items-start">
+              <div className="w-24 h-24 rounded-2xl bg-slate-50 border border-slate-100 p-2 overflow-hidden flex items-center justify-center shrink-0">
+                <img 
+                  src={getImageUrl(product.HinhAnh)} 
+                  alt={product.TenSanPham} 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="space-y-1.5 flex-1 min-w-0">
+                <span className="inline-block px-2.5 py-0.5 rounded bg-purple-50 text-purple-600 text-[10px] font-bold">
+                  {product.TenDanhMuc || "Thiết bị công nghệ"}
+                </span>
+                <h3 className="font-bold text-sm text-slate-800 line-clamp-2 leading-snug">
+                  {product.TenSanPham}
+                </h3>
+                <p className="text-slate-400 text-xs font-semibold">Thương hiệu: {product.ThuongHieu || 'Zenith'}</p>
+                
+                {product.SoLuongTon !== undefined && (
+                  <p className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    Còn lại {product.SoLuongTon} sản phẩm trong kho
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="flex items-center justify-between py-4 border-y border-slate-50">
-            <div>
-              <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Số lượng mua</p>
-              <p className="text-[10px] text-slate-400 italic">Chọn số lượng đặt hàng</p>
+          {!isFromCart && (
+            <div className="flex items-center justify-between py-4 border-y border-slate-50">
+              <div>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Số lượng mua</p>
+                <p className="text-[10px] text-slate-400 italic">Chọn số lượng đặt hàng</p>
+              </div>
+              <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <button 
+                  type="button"
+                  onClick={() => handleQuantityChange(-1)}
+                  className="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors font-bold text-sm"
+                >
+                  -
+                </button>
+                <span className="w-10 text-center font-bold text-sm text-slate-800">{quantity}</span>
+                <button 
+                  type="button"
+                  onClick={() => handleQuantityChange(1)}
+                  className="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors font-bold text-sm"
+                >
+                  +
+                </button>
+              </div>
             </div>
-            <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-              <button 
-                type="button"
-                onClick={() => handleQuantityChange(-1)}
-                className="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors font-bold text-sm"
-              >
-                -
-              </button>
-              <span className="w-10 text-center font-bold text-sm text-slate-800">{quantity}</span>
-              <button 
-                type="button"
-                onClick={() => handleQuantityChange(1)}
-                className="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors font-bold text-sm"
-              >
-                +
-              </button>
-            </div>
-          </div>
+          )}
 
           <div className="space-y-3 pt-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-500">Giá bán sản phẩm</span>
-              <span className="font-semibold text-slate-800">{formatPrice(priceSale)}</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-500">Số lượng mua</span>
-              <span className="font-semibold text-slate-800">x {quantity}</span>
-            </div>
+            {!isFromCart ? (
+              <>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-500">Giá bán sản phẩm</span>
+                  <span className="font-semibold text-slate-800">{formatPrice(priceSale)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-slate-500">Số lượng mua</span>
+                  <span className="font-semibold text-slate-800">x {quantity}</span>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-500">Số lượng sản phẩm</span>
+                <span className="font-semibold text-slate-800">{cartItems.reduce((sum, item) => sum + item.SoLuong, 0)} sản phẩm</span>
+              </div>
+            )}
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-500">Phí giao hàng</span>
               <span className="text-emerald-600 font-bold">Miễn phí</span>
