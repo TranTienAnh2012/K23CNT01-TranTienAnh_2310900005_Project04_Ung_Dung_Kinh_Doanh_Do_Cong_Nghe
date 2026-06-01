@@ -131,15 +131,15 @@ export default function NvtClientChiTietDonHang() {
 
     const steps = [
       { label: 'Đơn Đã Đặt', icon: 'receipt', date: formatDate(order.NgayDatHang) },
-      { label: 'Đã Thanh Toán', icon: 'payments', date: isPaid ? formatDate(order.NgayDatHang, 0, 2) : 'Chưa thanh toán' },
+      { label: 'Đã Xác Nhận', icon: 'check_circle', date: ['Processing', 'Đã xác nhận', 'Shipping', 'Đang giao', 'Đang giao hàng', 'Completed', 'Hoàn thành', 'Đã hoàn thành'].includes(status) ? formatDate(order.NgayDatHang, 0, 10) : 'Chờ xác nhận' },
       { label: 'Đang Giao', icon: 'local_shipping', date: ['Shipping', 'Đang giao', 'Đang giao hàng', 'Completed', 'Hoàn thành', 'Đã hoàn thành'].includes(status) ? formatDate(order.NgayDatHang, 1, 15) : 'Chờ vận chuyển' },
-      { label: 'Đã Nhận', icon: 'package_2', date: ['Completed', 'Hoàn thành', 'Đã hoàn thành'].includes(status) ? formatDate(order.NgayDatHang, 3, 45) : 'Chờ giao hàng' },
+      { label: 'Đã Giao', icon: 'package_2', date: ['Completed', 'Hoàn thành', 'Đã hoàn thành'].includes(status) ? formatDate(order.NgayDatHang, 3, 45) : 'Chờ giao hàng' },
       { label: 'Đánh Giá', icon: 'star', date: ['Completed', 'Hoàn thành', 'Đã hoàn thành'].includes(status) ? 'Đang chờ đánh giá' : 'Đơn chưa hoàn thành' }
     ];
 
     let activeIndex = 0;
     if (['Pending', 'Chờ xử lý', 'Chờ xác nhận'].includes(status)) {
-      activeIndex = isPaid ? 1 : 0;
+      activeIndex = 0;
     } else if (['Processing', 'Đã xác nhận'].includes(status)) {
       activeIndex = 1;
     } else if (['Shipping', 'Đang giao', 'Đang giao hàng'].includes(status)) {
