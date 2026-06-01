@@ -35,6 +35,33 @@ export default function TtaDonHangList() {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
   };
 
+  const getStatusInfo = (status) => {
+    const s = status ? status.toLowerCase() : '';
+    switch (s) {
+      case 'pending':
+      case 'chờ xử lý':
+      case 'chờ xác nhận':
+        return { label: 'Chờ xác nhận', cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' };
+      case 'processing':
+      case 'đã xác nhận':
+        return { label: 'Đã xác nhận', cls: 'bg-blue-500/10 text-blue-400 border-blue-500/20' };
+      case 'shipping':
+      case 'đang giao':
+      case 'đang giao hàng':
+        return { label: 'Đang giao', cls: 'bg-purple-500/10 text-purple-400 border-purple-500/20' };
+      case 'completed':
+      case 'hoàn thành':
+      case 'đã hoàn thành':
+        return { label: 'Hoàn thành', cls: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' };
+      case 'cancelled':
+      case 'đã hủy':
+      case 'đã hủy đơn':
+        return { label: 'Đã hủy', cls: 'bg-rose-500/10 text-rose-400 border-rose-500/20' };
+      default:
+        return { label: status || 'Chờ xác nhận', cls: 'bg-slate-500/10 text-slate-400 border-slate-500/20' };
+    }
+  };
+
   if (loading) return <div className="p-8 text-slate-400">Đang tải dữ liệu đơn hàng...</div>;
 
   return (
@@ -86,7 +113,7 @@ export default function TtaDonHangList() {
             <span className="text-xs font-medium text-slate-500 italic">Chờ xử lý</span>
           </div>
           <h3 className={`text-slate-500 text-[11px] uppercase tracking-wider font-bold mb-1`}>Vận đơn chờ giao</h3>
-          <p className={`font-['Space_Grotesk'] ${isDark ? 'text-white' : 'text-slate-900'} text-3xl font-bold`}>{data.orders.filter(o => o.TrangThai === 'pending' || o.TrangThai === 'Processing').length}</p>
+          <p className={`font-['Space_Grotesk'] ${isDark ? 'text-white' : 'text-slate-900'} text-3xl font-bold`}>{data.orders.filter(o => ['pending', 'processing', 'chờ xử lý', 'chờ xác nhận', 'đã xác nhận', 'shipping', 'đang giao', 'đang giao hàng'].includes(o.TrangThai?.toLowerCase())).length}</p>
         </div>
       </div>
 
@@ -150,13 +177,14 @@ export default function TtaDonHangList() {
                   <td className={`px-8 py-5 text-sm font-['Space_Grotesk'] font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{formatPrice(order.TongTien)}</td>
                   <td className="px-8 py-5 text-sm text-slate-400 font-medium">{new Date(order.NgayDatHang).toLocaleDateString('vi-VN')}</td>
                   <td className="px-8 py-5 text-center">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold border ${
-                      order.TrangThai === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                      order.TrangThai === 'Processing' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                      'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                    }`}>
-                      {order.TrangThai}
-                    </span>
+                    {(() => {
+                      const info = getStatusInfo(order.TrangThai);
+                      return (
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold border ${info.cls}`}>
+                          {info.label}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="px-8 py-5 text-right">
                     <div className="flex justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">

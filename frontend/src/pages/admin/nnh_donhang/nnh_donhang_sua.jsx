@@ -62,14 +62,41 @@ export default function TtaDonHangSua() {
 
   if (!order) return <div className="p-8 text-center text-rose-500 font-bold">Lỗi: Không tìm thấy đơn hàng #{ma}</div>;
 
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case 'Hoàn thành': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
-      case 'Đã hủy': return 'bg-rose-500/10 text-rose-500 border-rose-500/20';
-      case 'Đang giao': return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-      case 'Đã xác nhận': return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-      default: return 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+  const getStatusInfo = (status) => {
+    const s = status ? status.toLowerCase() : '';
+    switch (s) {
+      case 'pending':
+      case 'chờ xử lý':
+      case 'chờ xác nhận':
+        return { label: 'Chờ xác nhận', cls: 'bg-amber-500/10 text-amber-500 border-amber-500/20' };
+      case 'processing':
+      case 'đã xác nhận':
+        return { label: 'Đã xác nhận', cls: 'bg-blue-500/10 text-blue-500 border-blue-500/20' };
+      case 'shipping':
+      case 'đang giao':
+      case 'đang giao hàng':
+        return { label: 'Đang giao', cls: 'bg-purple-500/10 text-purple-500 border-purple-500/20' };
+      case 'completed':
+      case 'hoàn thành':
+      case 'đã hoàn thành':
+        return { label: 'Hoàn thành', cls: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' };
+      case 'cancelled':
+      case 'đã hủy':
+      case 'đã hủy đơn':
+        return { label: 'Đã hủy', cls: 'bg-rose-500/10 text-rose-500 border-rose-500/20' };
+      default:
+        return { label: status || 'Chờ xác nhận', cls: 'bg-slate-500/10 text-slate-500 border-slate-500/20' };
     }
+  };
+
+  const normalizeStatus = (status) => {
+    const s = status ? status.toLowerCase() : '';
+    if (['pending', 'chờ xử lý', 'chờ xác nhận'].includes(s)) return 'Chờ xác nhận';
+    if (['processing', 'đã xác nhận'].includes(s)) return 'Đã xác nhận';
+    if (['shipping', 'đang giao', 'đang giao hàng'].includes(s)) return 'Đang giao';
+    if (['completed', 'hoàn thành', 'đã hoàn thành'].includes(s)) return 'Hoàn thành';
+    if (['cancelled', 'đã hủy', 'đã hủy đơn'].includes(s)) return 'Đã hủy';
+    return status;
   };
 
   return (
@@ -85,8 +112,8 @@ export default function TtaDonHangSua() {
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <h2 className={`font-['Space_Grotesk'] text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Đơn hàng #{order.MaDonHang}</h2>
-                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase border tracking-widest ${getStatusStyle(order.TrangThai)}`}>
-                  {order.TrangThai}
+                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase border tracking-widest ${getStatusInfo(order.TrangThai).cls}`}>
+                  {getStatusInfo(order.TrangThai).label}
                 </span>
               </div>
               <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'} font-medium`}>Ngày đặt: {new Date(order.NgayDatHang).toLocaleString('vi-VN')}</p>
@@ -225,16 +252,16 @@ export default function TtaDonHangSua() {
                     <button 
                       key={st.val}
                       onClick={() => handleUpdateStatus(st.val)}
-                      disabled={updating || order.TrangThai === st.val}
+                      disabled={updating || normalizeStatus(order.TrangThai) === st.val}
                       className={`w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-left ${
-                        order.TrangThai === st.val 
+                        normalizeStatus(order.TrangThai) === st.val 
                         ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-900/20' 
                         : `${isDark ? 'bg-slate-950/50 border-slate-800 text-slate-400 hover:border-slate-600' : 'bg-slate-50 border-slate-100 text-slate-600 hover:border-slate-300'}`
                       } disabled:cursor-not-allowed`}
                     >
-                      <span className={`material-symbols-outlined ${order.TrangThai === st.val ? 'text-white' : 'text-slate-500'}`}>{st.icon}</span>
+                      <span className={`material-symbols-outlined ${normalizeStatus(order.TrangThai) === st.val ? 'text-white' : 'text-slate-500'}`}>{st.icon}</span>
                       <span className="text-xs font-bold flex-1">{st.label}</span>
-                      {order.TrangThai === st.val && <span className="material-symbols-outlined text-sm">done_all</span>}
+                      {normalizeStatus(order.TrangThai) === st.val && <span className="material-symbols-outlined text-sm">done_all</span>}
                     </button>
                   ))}
                </div>
