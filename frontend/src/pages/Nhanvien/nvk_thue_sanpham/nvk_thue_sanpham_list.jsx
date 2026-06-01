@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { sanphamThueApi } from '../../../api/admin/tta_thue.api';
+import { sanphamThueApi } from '../../../api/nhanvien/tta_thue.api';
 import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NvkThueSanPhamList() {

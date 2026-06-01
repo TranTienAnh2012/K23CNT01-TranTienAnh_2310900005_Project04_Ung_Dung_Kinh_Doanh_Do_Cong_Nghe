@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { chitietThueApi } from '../../../api/admin/tta_thue.api';
+import { chitietThueApi } from '../../../api/nhanvien/tta_thue.api';
 import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NvkThueChiTietThem() {

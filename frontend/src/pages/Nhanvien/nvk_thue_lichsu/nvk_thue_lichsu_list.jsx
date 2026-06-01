@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { lichsuThueApi } from '../../../api/admin/tta_thue.api';
+import { lichsuThueApi } from '../../../api/nhanvien/tta_thue.api';
 import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NvkThueLichSuList() {

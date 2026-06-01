@@ -3,12 +3,31 @@ from flask_cors import CORS
 from flask_restful import Api
 from app.core.config import get_config
 from app.db.connection import engine
+from flask.json.provider import DefaultJSONProvider
+from decimal import Decimal
+
+class CustomJSONProvider(DefaultJSONProvider):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return super().default(obj)
 
 def create_app(config_name=None):
     app = Flask(__name__, static_folder='../../static', static_url_path='/static')
+    app.json_provider_class = CustomJSONProvider
+    app.json = CustomJSONProvider(app)
 
     # Initialize Flask-RESTful
     api = Api(app, catch_all_404s=True)
+
+    from flask import make_response
+    from flask.json import dumps
+
+    @api.representation('application/json')
+    def output_json(data, code, headers=None):
+        resp = make_response(dumps(data), code)
+        resp.headers.extend(headers or {})
+        return resp
 
     # Load configuration
     config = get_config(config_name)

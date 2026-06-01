@@ -43,18 +43,32 @@ export default function NnhLichNhanVienList() {
         <table className="min-w-full">
           <thead className={isDark ? 'bg-slate-800/50' : 'bg-gray-50'}>
             <tr>
-                <th className={`px-4 py-3 border-b text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300 border-slate-700' : 'text-slate-600 border-slate-200'}`}>ID</th>
-                <th className={`px-4 py-3 border-b text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300 border-slate-700' : 'text-slate-600 border-slate-200'}`}>Mã Lịch</th>
-                <th className={`px-4 py-3 border-b text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300 border-slate-700' : 'text-slate-600 border-slate-200'}`}>Nhân Viên</th>
+              <th className={`px-4 py-3 border-b text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300 border-slate-700' : 'text-slate-600 border-slate-200'}`}>ID</th>
+              <th className={`px-4 py-3 border-b text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300 border-slate-700' : 'text-slate-600 border-slate-200'}`}>Lịch tư vấn</th>
+              <th className={`px-4 py-3 border-b text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300 border-slate-700' : 'text-slate-600 border-slate-200'}`}>Khách hàng</th>
+              <th className={`px-4 py-3 border-b text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300 border-slate-700' : 'text-slate-600 border-slate-200'}`}>Nhân viên tư vấn</th>
+              <th className={`px-4 py-3 border-b text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300 border-slate-700' : 'text-slate-600 border-slate-200'}`}>Thời gian</th>
               <th className={`px-4 py-3 border-b text-right text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-300 border-slate-700' : 'text-slate-600 border-slate-200'}`}>Thao tác</th>
             </tr>
           </thead>
           <tbody>
             {data.map((item) => (
               <tr key={item.G5_Id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/50' : 'hover:bg-gray-50'}`}>
-                <td className={`px-4 py-3 border-b ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>{item.G5_Id}</td>
-                <td className={`px-4 py-3 border-b ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>{item.G5_MaLich}</td>
-                <td className={`px-4 py-3 border-b ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>{item.G5_MaNhanVien}</td>
+                <td className={`px-4 py-3 border-b ${isDark ? 'border-slate-700' : 'border-slate-200'} text-sm font-bold text-slate-500`}>#{item.G5_Id}</td>
+                <td className={`px-4 py-3 border-b ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
+                  <div className="font-bold text-sm">{item.G5_TenDichVu || 'N/A'}</div>
+                  <div className="text-xs text-slate-400">Mã lịch: #{item.G5_MaLich}</div>
+                </td>
+                <td className={`px-4 py-3 border-b ${isDark ? 'border-slate-700' : 'border-slate-200'} text-sm font-semibold`}>
+                  {item.G5_TenKhachHang || 'N/A'}
+                </td>
+                <td className={`px-4 py-3 border-b ${isDark ? 'border-slate-700' : 'border-slate-200'} text-sm font-bold text-blue-600`}>
+                  {item.G5_TenNhanVien || 'Chưa phân công'} (ID: #{item.G5_MaNhanVien})
+                </td>
+                <td className={`px-4 py-3 border-b ${isDark ? 'border-slate-700' : 'border-slate-200'} text-xs space-y-0.5 font-medium`}>
+                  <div><strong>BĐ:</strong> {item.G5_ThoiGianBatDau ? new Date(item.G5_ThoiGianBatDau).toLocaleString('vi-VN') : 'N/A'}</div>
+                  <div><strong>KT:</strong> {item.G5_ThoiGianKetThuc ? new Date(item.G5_ThoiGianKetThuc).toLocaleString('vi-VN') : 'N/A'}</div>
+                </td>
                 <td className={`px-4 py-3 border-b text-right ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
                   <Link to={`/admin/lich-nhanvien/edit/${item.G5_Id}`} className="text-blue-500 hover:text-blue-400 mr-4 font-medium">Sửa</Link>
                   <button onClick={() => handleDelete(item.G5_Id)} className="text-rose-500 hover:text-rose-400 font-medium">Xóa</button>

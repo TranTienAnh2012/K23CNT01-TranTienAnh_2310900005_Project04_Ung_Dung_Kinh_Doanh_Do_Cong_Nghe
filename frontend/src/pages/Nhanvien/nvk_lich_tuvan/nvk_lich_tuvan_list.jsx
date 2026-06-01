@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { lichTuvanApi } from '../../../api/admin/tta_rest_modules.api';
+import { lichTuvanApi } from '../../../api/nhanvien/tta_rest_modules.api';
 import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NvkLichTuVanList() {

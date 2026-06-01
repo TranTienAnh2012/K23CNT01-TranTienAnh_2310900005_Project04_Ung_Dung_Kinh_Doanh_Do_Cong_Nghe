@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { lichTuvanApi } from '../../../api/admin/tta_rest_modules.api';
+import { lichTuvanApi } from '../../../api/nhanvien/tta_rest_modules.api';
 import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NvkLichTuVanSua() {

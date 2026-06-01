@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { lichTuvanNhanVienApi } from '../../../api/admin/tta_rest_modules.api';
+import { lichTuvanNhanVienApi } from '../../../api/nhanvien/tta_rest_modules.api';
 import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NvkLichNhanVienList() {
@@ -88,15 +88,17 @@ export default function NvkLichNhanVienList() {
               <thead className={isDark ? 'bg-slate-800/50' : 'bg-slate-50'}>
                 <tr>
                   <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>ID</th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Mã Lịch Hẹn</th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Mã Nhân Viên</th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Lịch Hẹn Tư Vấn</th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Khách Hàng</th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Nhân Viên</th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Thời gian</th>
                   <th className={`px-6 py-4 text-right text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100/50">
                 {filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan="4" className="text-center py-10 text-sm text-slate-400 font-medium">
+                    <td colSpan="6" className="text-center py-10 text-sm text-slate-400 font-medium">
                       Không tìm thấy bản ghi phân công nào.
                     </td>
                   </tr>
@@ -104,8 +106,20 @@ export default function NvkLichNhanVienList() {
                   filteredData.map((item) => (
                     <tr key={item.G5_Id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50/50'}`}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-500">#{item.G5_Id}</td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>Mã Lịch #{item.G5_MaLich}</td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>Mã NV #{item.G5_MaNhanVien}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{item.G5_TenDichVu || 'N/A'}</div>
+                        <div className="text-xs text-slate-400">Mã lịch: #{item.G5_MaLich}</div>
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                        {item.G5_TenKhachHang || 'N/A'}
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-600`}>
+                        {item.G5_TenNhanVien || 'N/A'} (ID: #{item.G5_MaNhanVien})
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-xs space-y-0.5 font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+                        <div><strong>BĐ:</strong> {item.G5_ThoiGianBatDau ? new Date(item.G5_ThoiGianBatDau).toLocaleString('vi-VN') : 'N/A'}</div>
+                        <div><strong>KT:</strong> {item.G5_ThoiGianKetThuc ? new Date(item.G5_ThoiGianKetThuc).toLocaleString('vi-VN') : 'N/A'}</div>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
                         <div className="flex items-center justify-center gap-3">
                           <Link

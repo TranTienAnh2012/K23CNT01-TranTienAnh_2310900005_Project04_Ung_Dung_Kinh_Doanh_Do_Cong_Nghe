@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { lichTuvanNhanVienApi } from '../../../api/admin/tta_rest_modules.api';
+import { lichTuvanNhanVienApi } from '../../../api/nhanvien/tta_rest_modules.api';
 import { useAdminTheme } from '../../../hooks/useAdminTheme';
 import { useAuth } from '../../../context/AuthContext';
 

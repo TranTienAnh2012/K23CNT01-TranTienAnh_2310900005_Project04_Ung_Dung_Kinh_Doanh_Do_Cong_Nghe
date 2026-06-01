@@ -239,8 +239,11 @@ if (typeof window !== 'undefined' && !window.googleTranslateElementInit) {
   document.head.appendChild(style);
 
   const script = document.createElement('script');
-  script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+  script.src = 'https://translate.googleapis.com/translate_a/element.js?cb=googleTranslateElementInit';
   script.async = true;
+  script.onerror = (e) => {
+    console.warn("Google Translate script failed to load:", e);
+  };
   document.head.appendChild(script);
 
   // Vòng lặp dọn dẹp chủ động thanh công cụ Google Translate và căn chỉnh lại body/html

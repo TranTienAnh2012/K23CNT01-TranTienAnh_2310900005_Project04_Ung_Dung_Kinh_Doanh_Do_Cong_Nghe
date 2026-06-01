@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { dichvuTuvanApi } from '../../../api/admin/tta_rest_modules.api';
+import { dichvuTuvanApi } from '../../../api/nhanvien/tta_rest_modules.api';
 import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function NvkDichVuTuVanList() {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { sanphamThueApi } from '../../../api/admin/tta_thue.api';
+import { sanphamThueApi } from '../../../api/nhanvien/tta_thue.api';
 import { shopApi } from '../../../api/client/tta_shop.api';
 import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
