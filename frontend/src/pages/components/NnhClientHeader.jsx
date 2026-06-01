@@ -374,6 +374,9 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
                   if (onSelectCategory) {
                     onSelectCategory(cat.id);
                   }
+                  if (!isHomePage) {
+                    navigate('/');
+                  }
                 }}
                 className={`px-4 py-3 text-sm font-semibold whitespace-nowrap transition-all relative ${isActive
                   ? 'text-purple-700 font-bold'
