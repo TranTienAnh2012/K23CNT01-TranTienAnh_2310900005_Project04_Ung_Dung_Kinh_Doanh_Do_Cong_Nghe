@@ -240,10 +240,10 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
                 title={user.email}
               >
                 {user.avatarUrl ? (
-                  <img 
-                    src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:5000${user.avatarUrl}`} 
-                    alt="avatar" 
-                    className="w-full h-full object-cover" 
+                  <img
+                    src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:5000${user.avatarUrl}`}
+                    alt="avatar"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   user.email?.[0]?.toUpperCase() || 'U'
@@ -258,10 +258,10 @@ export default function NnhClientHeader({ categories = [], selectedCategory = ''
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center text-white font-black text-sm shadow-md overflow-hidden">
                         {user.avatarUrl ? (
-                          <img 
-                            src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:5000${user.avatarUrl}`} 
-                            alt="avatar" 
-                            className="w-full h-full object-cover" 
+                          <img
+                            src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `http://localhost:5000${user.avatarUrl}`}
+                            alt="avatar"
+                            className="w-full h-full object-cover"
                           />
                         ) : (
                           user.email?.[0]?.toUpperCase() || 'U'

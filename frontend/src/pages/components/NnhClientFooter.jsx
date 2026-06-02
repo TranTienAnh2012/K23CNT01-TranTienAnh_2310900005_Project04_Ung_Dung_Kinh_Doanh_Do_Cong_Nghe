@@ -25,7 +25,7 @@ export default function NnhClientFooter() {
             </div>
           </div>
         </div>
-        
+
         <div>
           <h4 className="font-bold text-primary mb-6">Sản phẩm</h4>
           <ul className="flex flex-col gap-3 text-sm text-on-surface-variant">
@@ -35,7 +35,7 @@ export default function NnhClientFooter() {
             <li><a className="hover:text-secondary" href="#">Phụ kiện Apple</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h4 className="font-bold text-primary mb-6">Hỗ trợ</h4>
           <ul className="flex flex-col gap-3 text-sm text-on-surface-variant">
@@ -45,7 +45,7 @@ export default function NnhClientFooter() {
             <li><a className="hover:text-secondary" href="#">Liên hệ</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h4 className="font-bold text-primary mb-6">Liên hệ</h4>
           <ul className="flex flex-col gap-3 text-sm text-on-surface-variant">
@@ -61,7 +61,7 @@ export default function NnhClientFooter() {
           </ul>
         </div>
       </div>
-      
+
       <div className="max-w-[1280px] mx-auto mt-12 pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-xs text-on-surface-variant">© 2026 Zenith Ztore. Mọi quyền được bảo lưu.</p>
         <div className="flex gap-6 text-xs text-on-surface-variant">
