@@ -1,0 +1,120 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { sanphamThueApi } from '../../../api/nhanvien/tta_thue.api';
+import { shopApi } from '../../../api/client/tta_shop.api';
+import { useAdminTheme } from '../../../hooks/useAdminTheme';
+
+export default function NvkThueSanPhamThem() {
+  const isDark = useAdminTheme();
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [formData, setFormData] = useState({});
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    shopApi.getProducts()
+      .then(res => {
+        const data = res.data?.data?.items || res.data?.data || res.data || [];
+        setProducts(Array.isArray(data) ? data : []);
+      })
+      .catch(err => console.error("Error fetching products:", err));
+  }, []);
+
+  useEffect(() => {
+    if (false && id) {
+      sanphamThueApi.getAll().then(res => {
+        if(res.data?.success) {
+          const items = res.data.data.items || res.data.data;
+          const item = items.find(x => String(x.G5_Id) === String(id));
+          if(item) setFormData(item);
+        }
+      });
+    }
+  }, [id]);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const maSP = parseInt(formData.G5_MaSanPham, 10);
+      if (!maSP || isNaN(maSP)) {
+        alert("Vui lòng chọn một sản phẩm!");
+        return;
+      }
+      const giaThue = parseFloat(formData.G5_GiaThueNgay);
+      if (isNaN(giaThue) || giaThue < 0) {
+        alert("Giá thuê ngày phải là một số hợp lệ!");
+        return;
+      }
+      const tienCoc = parseFloat(formData.G5_TienCoc || 0);
+      if (isNaN(tienCoc) || tienCoc < 0) {
+        alert("Tiền đặt cọc phải là một số hợp lệ!");
+        return;
+      }
+      const soLuong = parseInt(formData.G5_SoLuongChoThue, 10);
+      if (isNaN(soLuong) || soLuong < 0) {
+        alert("Số lượng phải là số nguyên không âm!");
+        return;
+      }
+
+      const payload = {
+        G5_MaSanPham: maSP,
+        G5_GiaThueNgay: giaThue,
+        G5_SoLuongChoThue: soLuong,
+        G5_TienCoc: tienCoc,
+      };
+
+      await sanphamThueApi.create(payload);
+      navigate('/admin/sanpham-thue');
+    } catch (err) {
+      console.error("Error saving data", err);
+      alert("Có lỗi xảy ra: " + (err.response?.data?.message || err.message));
+    }
+  };
+
+  return (
+    <div className={`p-6 min-h-screen ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'}`}>
+      <div className="max-w-2xl mx-auto">
+        <h1 className={`text-2xl font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>Thêm Sản Phẩm Thuê</h1>
+        <form onSubmit={handleSubmit} className={`p-6 rounded-lg shadow-xl border ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+        <div className="mb-4">
+          <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Sản Phẩm</label>
+          <select 
+            name="G5_MaSanPham" 
+            value={formData.G5_MaSanPham || ''} 
+            onChange={handleChange} 
+            className={`w-full p-2 rounded border focus:ring-2 focus:ring-blue-500/50 outline-none transition-all ${isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}
+            required
+          >
+            <option value="">-- Chọn sản phẩm có sẵn --</option>
+            {products.map(p => (
+              <option key={p.MaSanPham} value={p.MaSanPham}>
+                {p.TenSanPham} (ID: {p.MaSanPham})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-4">
+          <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Giá Ngày</label>
+          <input type="text" name="G5_GiaThueNgay" value={formData.G5_GiaThueNgay || ''} onChange={handleChange} className={`w-full p-2 rounded border focus:ring-2 focus:ring-blue-500/50 outline-none transition-all ${isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`} />
+        </div>
+        <div className="mb-4">
+          <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Tiền Đặt Cọc</label>
+          <input type="text" name="G5_TienCoc" value={formData.G5_TienCoc || ''} onChange={handleChange} className={`w-full p-2 rounded border focus:ring-2 focus:ring-blue-500/50 outline-none transition-all ${isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`} />
+        </div>
+        <div className="mb-4">
+          <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Số Lượng</label>
+          <input type="text" name="G5_SoLuongChoThue" value={formData.G5_SoLuongChoThue || ''} onChange={handleChange} className={`w-full p-2 rounded border focus:ring-2 focus:ring-blue-500/50 outline-none transition-all ${isDark ? 'bg-slate-950 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`} />
+        </div>
+          <div className="mt-6 flex justify-end gap-3">
+            <button type="button" onClick={() => navigate(-1)} className={`px-4 py-2 border rounded font-medium transition-colors ${isDark ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-slate-200 text-slate-600 hover:bg-slate-100'}`}>Hủy</button>
+            <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded shadow transition-colors font-medium">Lưu</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

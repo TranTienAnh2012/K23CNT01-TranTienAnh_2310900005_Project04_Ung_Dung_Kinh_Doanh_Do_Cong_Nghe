@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { sanphamApi } from '../../../api/tta_api';
+import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function TtaSanPhamList() {
+  const isDark = useAdminTheme();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,43 +15,8 @@ export default function TtaSanPhamList() {
       const res = await sanphamApi.getAll({ q });
       setProducts(res.data.data.items);
     } catch (err) {
-      console.error("Lỗi lấy dữ liệu thật, dùng mock:", err);
-      // Dữ liệu giả lập khi mất kết nối DB
-      setProducts([
-        { 
-          MaSanPham: 1, 
-          HinhAnh: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAxaZeJlPIDYtfGDBq7brPv8Asi3wP6qK_rObm4ZHy1OF5VdfMfsrWd2HQMDQe-UcwaTW3Y30da28hU1kH-gOHloiaj5cVoNxjYTgwf699XbAVQ-C4mU-uPo0h8J52TDNUNJ8mPhkaieFK80qWspYMd_fSiMcFg-JEXlIY41Uur9vobtuMUjwWsgS4KD1Z0sR9M6NB0u-3DjJh8J0RU9L_o56ZwoK5m5lDYzZhuuemeAXf5O52wKNXF5ke7TnEw31op4qil7YYAqQ', 
-          TenSanPham: 'Zenith Pulse Gen 4', 
-          brand: 'SKU-2490-W', 
-          TenDanhMuc: 'Wearables', 
-          Gia: 4000000, 
-          GiaBan: 3490000, 
-          SoLuongTon: 1420, 
-          TrangThai: true 
-        },
-        { 
-          MaSanPham: 2, 
-          HinhAnh: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDl3UmkR1cM5TgGbMTJrAO2FDgFUSBJPLRMQ0LEi9unyRFUXAilAeRF1Zjp1KMyY36qk23WVQBREWmEzi77fkRO9RKwPyb6t2fvfzPN2qS9wjR4k1WBXEEh6KQ-uuXZsISCFtV9SkqHwkqos0cPRUiuGFY8zVtamPh29j3LWDUkEtIh5Zko-8jkNmKMyZqTVD0dTunRjJa0ZZvucAfFd9Rx3qHA0ZmzMnZPGtqLDEqd-MqPI-CBxbeP7w_phQVQhHVtPqfdbxBDPQ', 
-          TenSanPham: 'AetherBook Pro', 
-          brand: 'SKU-8821-L', 
-          TenDanhMuc: 'Computing', 
-          Gia: 25000000, 
-          GiaBan: 21990000, 
-          SoLuongTon: 12, 
-          TrangThai: false 
-        },
-        { 
-          MaSanPham: 3, 
-          HinhAnh: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAU7iI1BvpXXplYL_pKyEl1etHtuB53uRJRZyjhbT_-rmnnpLA2izQ5VM022ZP1aiwXNAeLAP-jmdWfwKf2whgtefPc5somZkGsla3UJOcg555USPGN6_zqMAsTfuG7IeCpq10gbWTC1uEJtQ7YF9-MdImybiy0DShgeGcGC5KtfULARsS7NXNFMRimNs5gYNU9-JEp4vLX32jnLz9Jx7p9xivpPq2WdRcpAGovXbEzV-wA7wWap7WXjdFltFfGGhxLFmle5fjF1g', 
-          TenSanPham: 'Sonic-X Headphones', 
-          brand: 'SKU-3122-H', 
-          TenDanhMuc: 'Audio', 
-          Gia: 7000000, 
-          GiaBan: 5990000, 
-          SoLuongTon: 0, 
-          TrangThai: false 
-        }
-      ]);
+      console.error("Lỗi lấy dữ liệu:", err);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -77,26 +44,26 @@ export default function TtaSanPhamList() {
   if (loading) return <div className="p-8 text-slate-400">Đang tải sản phẩm...</div>;
 
   return (
-    <div className="p-8 min-h-[calc(100vh-64px)] bg-slate-950 font-['Inter']">
+    <div className={`p-8 min-h-[calc(100vh-64px)] ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'} transition-colors duration-300 font-['Inter']`}>
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
-          <h2 className="font-['Space_Grotesk'] text-3xl font-bold text-white mb-2">Quản Lý Sản Phẩm</h2>
-          <p className="text-slate-400 max-w-xl">Theo dõi danh mục sản phẩm, mức độ tồn kho và thông số kỹ thuật trên toàn hệ thống trung tâm phân phối.</p>
+          <h2 className={`font-['Space_Grotesk'] text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'} mb-2`}>Quản Lý Sản Phẩm</h2>
+          <p className={`${isDark ? 'text-slate-400' : 'text-slate-500'} max-w-xl`}>Theo dõi danh mục sản phẩm, mức độ tồn kho và thông số kỹ thuật trên toàn hệ thống trung tâm phân phối.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="bg-slate-900/60 backdrop-blur-md p-1 rounded-xl flex border border-white/5">
-            <button className="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium">Tất cả ({products.length})</button>
-            <button className="px-4 py-2 text-slate-400 hover:text-white text-sm font-medium">Sắp hết</button>
-            <button className="px-4 py-2 text-slate-400 hover:text-white text-sm font-medium">Đã ẩn</button>
+          <div className={`${isDark ? 'bg-slate-900/60 border-white/5' : 'bg-white border-slate-200 shadow-sm'} backdrop-blur-md p-1 rounded-xl flex border`}>
+            <button className={`px-4 py-2 ${isDark ? 'bg-slate-800 text-white' : 'bg-blue-600 text-white'} rounded-lg text-sm font-medium`}>Tất cả ({products.length})</button>
+            <button className={`px-4 py-2 ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} text-sm font-medium`}>Sắp hết</button>
+            <button className={`px-4 py-2 ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'} text-sm font-medium`}>Đã ẩn</button>
           </div>
         </div>
       </div>
 
-      <div className="bg-slate-900/60 backdrop-blur-md rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
-        <div className="p-6 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+      <div className={`${isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md rounded-2xl overflow-hidden border`}>
+        <div className={`p-6 border-b ${isDark ? 'border-slate-800' : 'border-slate-100'} flex flex-wrap items-center justify-between gap-4`}>
           <div className="flex items-center gap-4">
             <div className="relative">
-              <select className="appearance-none bg-slate-950 border border-slate-800 text-slate-300 text-sm rounded-lg pl-4 pr-10 py-2 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none">
+              <select className={`appearance-none ${isDark ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'} border text-sm rounded-lg pl-4 pr-10 py-2 focus:ring-1 focus:ring-blue-500 outline-none`}>
                 <option>Tất cả danh mục</option>
                 <option>Điện thoại</option>
                 <option>Laptop</option>
@@ -109,7 +76,7 @@ export default function TtaSanPhamList() {
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-lg">search</span>
               <input 
                 type="text" 
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 pl-10 pr-4 text-sm text-slate-200 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                className={`w-full ${isDark ? 'bg-slate-950 border-slate-800 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-900'} border rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-blue-500 outline-none transition-all`}
                 placeholder="Tìm kiếm mã/tên..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -125,7 +92,7 @@ export default function TtaSanPhamList() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
-              <tr className="bg-slate-950/50 text-slate-400 font-['Space_Grotesk'] uppercase text-[10px] tracking-widest border-b border-slate-800">
+              <tr className={`${isDark ? 'bg-slate-950/50 text-slate-400 border-slate-800' : 'bg-slate-50/50 text-slate-500 border-slate-100'} font-['Space_Grotesk'] uppercase text-[10px] tracking-widest border-b`}>
                 <th className="px-6 py-4 font-semibold">Hình</th>
                 <th className="px-6 py-4 font-semibold">Tên Sản Phẩm</th>
                 <th className="px-6 py-4 font-semibold">Danh Mục</th>
@@ -137,16 +104,16 @@ export default function TtaSanPhamList() {
                 <th className="px-6 py-4 font-semibold text-right">Hành Động</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/50">
+            <tbody className={`divide-y ${isDark ? 'divide-slate-800/50' : 'divide-slate-100'}`}>
               {products.map((sp) => (
-                <tr key={sp.MaSanPham} className="hover:bg-slate-800/30 transition-colors">
+                <tr key={sp.MaSanPham} className={`${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50/80'} transition-colors`}>
                   <td className="px-6 py-4">
-                    <div className="w-12 h-12 bg-slate-950 rounded-lg overflow-hidden border border-slate-800">
+                    <div className={`w-12 h-12 ${isDark ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'} rounded-lg overflow-hidden border`}>
                       <img src={getImageUrl(sp.HinhAnh)} alt={sp.TenSanPham} className="w-full h-full object-cover" />
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="font-bold text-slate-50 text-sm">{sp.TenSanPham}</p>
+                    <p className={`font-bold ${isDark ? 'text-slate-50' : 'text-slate-900'} text-sm`}>{sp.TenSanPham}</p>
                     <p className="text-xs text-slate-500">{sp.brand || 'SKU-0000'}</p>
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-400">{sp.TenDanhMuc}</td>
@@ -183,14 +150,14 @@ export default function TtaSanPhamList() {
           </table>
         </div>
         
-        <div className="p-6 border-t border-slate-800 flex items-center justify-between">
+        <div className={`p-6 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'} flex items-center justify-between`}>
           <p className="text-sm text-slate-500">Hiển thị 1-{products.length} sản phẩm</p>
           <div className="flex items-center gap-2">
-            <button className="px-4 py-2 bg-slate-950 text-slate-400 rounded-lg text-sm hover:text-white border border-slate-800 transition-colors">Trang trước</button>
+            <button className={`px-4 py-2 ${isDark ? 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'} rounded-lg text-sm border transition-colors`}>Trang trước</button>
             <div className="flex items-center px-2">
               <span className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white rounded-lg text-sm font-bold">1</span>
             </div>
-            <button className="px-4 py-2 bg-slate-950 text-slate-400 rounded-lg text-sm hover:text-white border border-slate-800 transition-colors">Trang sau</button>
+            <button className={`px-4 py-2 ${isDark ? 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'} rounded-lg text-sm border transition-colors`}>Trang sau</button>
           </div>
         </div>
       </div>

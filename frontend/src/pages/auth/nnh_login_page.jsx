@@ -12,14 +12,31 @@ export default function TtaLoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    
-    // Giả lập đăng nhập thành công luôn do mất kết nối DB
-    const mockToken = "mock_jwt_token_for_admin_user";
-    login(mockToken);
-    alert("Đăng nhập thành công (Chế độ giả lập)!");
-    navigate('/admin');
+    setError('');
+    setLoading(true);
+    try {
+      const res = await axios.post('/api/tta_auth/login', { email, password });
+      const token = res.data?.data?.token || res.data?.token || res.data?.data?.access_token;
+      if (!token) throw new Error('Không nhận được token từ server');
+      login(token);
+      const userRole = res.data?.data?.user?.vai_tro || '';
+      const roleLower = String(userRole).toLowerCase();
+      if (roleLower.includes('admin') || roleLower.includes('administrator') || roleLower === 'nhanvien') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Đăng nhập thất bại. Kiểm tra lại email/mật khẩu.';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -77,9 +94,18 @@ export default function TtaLoginPage() {
                 <input className="w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary/20 transition-all duration-200" id="remember" type="checkbox" />
                 <label className="font-body-md text-on-surface-variant cursor-pointer" htmlFor="remember">Remember me</label>
               </div>
-              <button className="w-full py-4 bg-secondary text-white font-headline-md text-[18px] rounded-lg shadow-md hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2" type="submit">
-                Sign In
-                <span className="material-symbols-outlined text-lg">arrow_forward</span>
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
+              <button 
+                className="w-full py-4 bg-secondary text-white font-headline-md text-[18px] rounded-lg shadow-md hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed" 
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? 'Đang đăng nhập...' : 'Sign In'}
+                {!loading && <span className="material-symbols-outlined text-lg">arrow_forward</span>}
               </button>
             </form>
             

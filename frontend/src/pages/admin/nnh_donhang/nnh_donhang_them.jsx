@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { donhangApi } from '../../../api/tta_api';
+import { useAdminTheme } from '../../../hooks/useAdminTheme';
 
 export default function TtaDonHangThem() {
+  const isDark = useAdminTheme();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     ho_ten: '',
@@ -25,71 +27,102 @@ export default function TtaDonHangThem() {
   };
 
   return (
-    <div className="form-container">
-      <div className="card">
-        <div className="card-header">
-          <h3 className="card-title">➕ Tạo đơn hàng mới</h3>
+    <div className={`p-8 min-h-[calc(100vh-64px)] ${isDark ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'} transition-colors duration-300 font-['Inter'] flex flex-col items-center justify-center`}>
+      <div className={`w-full max-w-2xl ${isDark ? 'bg-slate-900/70 border-slate-800 shadow-black/50' : 'bg-white border-slate-200 shadow-xl'} backdrop-blur-md rounded-3xl overflow-hidden border shadow-2xl`}>
+        <div className={`p-8 border-b ${isDark ? 'border-slate-800 bg-slate-900/40' : 'border-slate-100 bg-slate-50/50'}`}>
+          <h3 className={`font-['Space_Grotesk'] text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'} flex items-center gap-3`}>
+            <span className="material-symbols-outlined text-blue-500 text-3xl">add_shopping_cart</span>
+            Tạo đơn hàng mới
+          </h3>
+          <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'} mt-1`}>Điền đầy đủ thông tin để khởi tạo đơn hàng trên hệ thống.</p>
         </div>
-        <form onSubmit={handleSubmit} className="card-body">
-          <div className="form-group">
-            <label>Họ tên người nhận</label>
-            <input 
-              type="text" 
-              required 
-              value={formData.ho_ten}
-              onChange={e => setFormData({...formData, ho_ten: e.target.value})}
-              placeholder="Nhập tên người nhận..."
-            />
+
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Họ tên người nhận</label>
+              <input 
+                type="text" 
+                required 
+                className={`w-full px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-950 border-slate-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-400'} outline-none transition-all`}
+                value={formData.ho_ten}
+                onChange={e => setFormData({...formData, ho_ten: e.target.value})}
+                placeholder="Nhập tên người nhận..."
+              />
+            </div>
+            <div className="space-y-2">
+              <label className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Số điện thoại</label>
+              <input 
+                type="text" 
+                required 
+                className={`w-full px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-950 border-slate-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-400'} outline-none transition-all`}
+                value={formData.so_dien_thoai}
+                onChange={e => setFormData({...formData, so_dien_thoai: e.target.value})}
+                placeholder="0123.456.789"
+              />
+            </div>
           </div>
-          <div className="form-group">
-            <label>Số điện thoại</label>
-            <input 
-              type="text" 
-              required 
-              value={formData.so_dien_thoai}
-              onChange={e => setFormData({...formData, so_dien_thoai: e.target.value})}
-              placeholder="0123.456.789"
-            />
-          </div>
-          <div className="form-group">
-            <label>Địa chỉ giao hàng</label>
+
+          <div className="space-y-2">
+            <label className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Địa chỉ giao hàng</label>
             <textarea 
               required 
+              rows="3"
+              className={`w-full px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-950 border-slate-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-400'} outline-none transition-all`}
               value={formData.dia_chi}
               onChange={e => setFormData({...formData, dia_chi: e.target.value})}
               placeholder="Địa chỉ cụ thể..."
             />
           </div>
-          <div className="form-row">
-            <div className="form-group">
-              <label>Mã người dùng (ID)</label>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Mã người dùng (ID)</label>
               <input 
                 type="number" 
+                className={`w-full px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-950 border-slate-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-400'} outline-none transition-all`}
                 value={formData.ma_nguoi_dung}
                 onChange={e => setFormData({...formData, ma_nguoi_dung: e.target.value})}
               />
             </div>
-            <div className="form-group">
-              <label>Tổng tiền (VND)</label>
+            <div className="space-y-2">
+              <label className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Tổng tiền (VND)</label>
               <input 
                 type="number" 
                 required
+                className={`w-full px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-950 border-slate-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-400'} outline-none transition-all font-bold text-blue-500`}
                 value={formData.tong_tien}
                 onChange={e => setFormData({...formData, tong_tien: e.target.value})}
               />
             </div>
           </div>
-          <div className="form-group">
-            <label>Ghi chú</label>
+
+          <div className="space-y-2">
+            <label className={`text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Ghi chú</label>
             <textarea 
+              rows="2"
+              className={`w-full px-4 py-3 rounded-xl border ${isDark ? 'bg-slate-950 border-slate-800 text-white focus:border-blue-500' : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-blue-400'} outline-none transition-all`}
               value={formData.ghi_chu}
               onChange={e => setFormData({...formData, ghi_chu: e.target.value})}
+              placeholder="Yêu cầu đặc biệt nếu có..."
             />
           </div>
           
-          <div className="form-actions">
-            <button type="button" onClick={() => navigate('/admin/don-hang')} className="btn btn-secondary">Hủy</button>
-            <button type="submit" className="btn btn-primary">Lưu đơn hàng</button>
+          <div className="pt-4 flex items-center justify-end gap-4">
+            <button 
+              type="button" 
+              onClick={() => navigate('/admin/don-hang')} 
+              className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${isDark ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700'}`}
+            >
+              Hủy
+            </button>
+            <button 
+              type="submit" 
+              className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-900/20 hover:bg-blue-500 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-lg">save</span>
+              Lưu đơn hàng
+            </button>
           </div>
         </form>
       </div>

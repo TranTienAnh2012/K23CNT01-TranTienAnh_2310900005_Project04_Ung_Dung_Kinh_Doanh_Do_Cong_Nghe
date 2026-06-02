@@ -1,34 +1,50 @@
-# Zenith Zhop - Dự án Quản lý Kinh doanh Đồ công nghệ
-
-Dự án này là một ứng dụng thương mại điện tử hiện đại dành cho các thiết bị công nghệ, được phát triển dựa trên nền tảng của cả nhóm.
-
-## 👥 Đội ngũ phát triển (Contributors)
-
-Dự án được duy trì và phát triển bởi:
-
-| Contributor | Role | GitHub |
-| :--- | :--- | :--- |
-| **Nguyễn Ngọc Hiếu** | Main Developer | [@ra1nee1409](https://github.com/ra1nee1409) |
-| **Trần Tiến Anh** | Original Author / Collaborator | [@TranTienAnh2012](https://github.com/TranTienAnh2012) |
-
-### Biểu đồ đóng góp
-
-<div align="left">
-  <a href="https://github.com/ra1nee1409/K23CNT01-NguyenNgocHieu_2310900037_Project04_Ung_Dung_Kinh_Doanh_Do_Cong_Nghe/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=ra1nee1409/K23CNT01-NguyenNgocHieu_2310900037_Project04_Ung_Dung_Kinh_Doanh_Do_Cong_Nghe" />
-  </a>
-</div>
-
+# 🚀 Project 04 - Ứng Dụng Kinh Doanh Đồ Công Nghệ
+> Website bán và quản lý các sản phẩm công nghệ hiện đại  
+> Xây dựng với kiến trúc RESTful API sử dụng Flask và React.
 ---
-
-## 🚀 Công nghệ sử dụng
-- **Frontend**: ReactJS, Tailwind CSS
-- **Backend**: Python (FastAPI/Flask)
-- **Database**: SQL Server
-- **UI/UX**: Thiết kế hiện đại, tối ưu trải nghiệm người dùng.
-
-## 🛠️ Tính năng chính
-- Quản lý danh mục sản phẩm, thuộc tính sản phẩm.
-- Quản lý đơn hàng và chi tiết đơn hàng.
-- Hệ thống đánh giá và voucher giảm giá.
-- Giao diện Admin quản trị chuyên sâu.
+## 📌 Giới thiệu dự án
+Dự án xây dựng hệ thống website kinh doanh đồ công nghệ với các chức năng:
+- 🛒 Quản lý sản phẩm công nghệ
+- 👤 Đăng ký / đăng nhập người dùng
+- 🔐 Phân quyền người dùng
+- 📦 Quản lý đơn hàng
+- ❤️ Giỏ hàng & yêu thích
+- 📊 Quản trị hệ thống
+- 🔎 Tìm kiếm sản phẩm
+- 💳 Hỗ trợ thanh toán
+Hệ thống được phát triển theo mô hình tách biệt:
+- **Frontend:** ReactJS
+- **Backend:** Python Flask RESTful API
+- **Database:** MySQL
+---
+# 👨‍💻 Thành Viên & Phân Công Công Việc
+| Thành viên | Công việc |
+|---|---|
+| **Trần Tiến Anh** | 👑 Trưởng nhóm - Backend - Frontend - Database - PTTK |
+| **Nguyễn Vũ Kiên** | Backend - Database - PTTK |
+| **Nguyễn Ngọc Hiếu** | Frontend Admin - Word |
+| **Nguyễn Văn Thịnh** | Frontend User - Word |
+---
+# 🛠️ Công Nghệ Sử Dụng
+## 🔹 Frontend
+- ReactJS
+- Axios
+- React Router DOM
+- Bootstrap / CSS
+## 🔹 Backend
+- Python
+- Flask
+- Flask-RESTful
+- Flask-JWT-Extended
+- SQLAlchemy
+## 🔹 Database
+- SQLServer
+---
+# 📂 Cấu Trúc Thư Mục
+```bash
+├── api/                 # Backend Flask RESTful API
+├── frontend/            # Frontend ReactJS
+├── G5_Database_Data.sql
+├── G5_KD_DO_CONG_NGHE.sql
+├── databasewebprj04.sql
+└── README.md
