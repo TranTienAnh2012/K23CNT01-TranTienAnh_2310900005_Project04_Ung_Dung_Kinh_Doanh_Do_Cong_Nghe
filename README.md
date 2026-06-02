@@ -15,7 +15,7 @@ Dự án xây dựng hệ thống website kinh doanh đồ công nghệ với c�
 Hệ thống được phát triển theo mô hình tách biệt:
 - **Frontend:** ReactJS
 - **Backend:** Python Flask RESTful API
-- **Database:** MySQL
+- **Database:** SQLServer
 ---
 # 👨‍💻 Thành Viên & Phân Công Công Việc
 | Thành viên | Công việc |
