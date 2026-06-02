@@ -20,10 +20,10 @@ Hệ thống được phát triển theo mô hình tách biệt:
 # 👨‍💻 Thành Viên & Phân Công Công Việc
 | Thành viên | Công việc |
 |---|---|
-| **Trần Tiến Anh** | 👑 Trưởng nhóm - Backend - Frontend - Database - PTTK |
-| **Nguyễn Vũ Kiên** | Backend - Database - PTTK |
-| **Nguyễn Ngọc Hiếu** | Frontend Admin - Word |
-| **Nguyễn Văn Thịnh** | Frontend User - Word |
+| **Trần Tiến Anh** | 👑 Trưởng nhóm - Backend - Frontend - Database - API - PTTK |
+| **Nguyễn Vũ Kiên** | Backend - Frontend(nhân viên) - Database - PTTK - Kiểm Thử |
+| **Nguyễn Ngọc Hiếu** | Frontend Admin - Word - Database |
+| **Nguyễn Văn Thịnh** | Frontend User - Word - Database |
 ---
 # 🛠️ Công Nghệ Sử Dụng
 ## 🔹 Frontend
